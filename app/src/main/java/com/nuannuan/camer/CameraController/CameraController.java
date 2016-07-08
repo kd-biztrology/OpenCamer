@@ -20,6 +20,8 @@ import java.util.List;
  * additional logical/workarounds where such things are API-specific, but
  * otherwise the calling application still controls the behaviour of the
  * camera.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public abstract class CameraController {
   private static final String TAG = "CameraController";

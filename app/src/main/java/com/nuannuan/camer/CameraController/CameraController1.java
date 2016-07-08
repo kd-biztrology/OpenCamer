@@ -18,6 +18,8 @@ import java.util.Vector;
 /**
  * Provides support using Android's original camera API
  * android.hardware.Camera.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 @SuppressWarnings("deprecation") public class CameraController1 extends CameraController {
   private static final String TAG = "CameraController1";
