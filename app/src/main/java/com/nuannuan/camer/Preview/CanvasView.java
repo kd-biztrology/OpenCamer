@@ -12,6 +12,8 @@ import android.view.View;
  * work. Only used if using a MyTextureView (if using MySurfaceView, then that
  * class can handle the onDraw()). TextureViews can't be used for both a
  * camera preview, and used for drawing on.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class CanvasView extends View {
   private static final String TAG = "CanvasView";

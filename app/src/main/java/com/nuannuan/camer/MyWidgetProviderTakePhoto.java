@@ -11,6 +11,8 @@ import com.nuannuan.camer.log.Logger;
 /**
  * Handles the Open Camera "take photo" widget. This widget launches Open
  * Camera, and immediately takes a photo.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class MyWidgetProviderTakePhoto extends AppWidgetProvider {
   private static final String TAG = MyWidgetProviderTakePhoto.class.getSimpleName();

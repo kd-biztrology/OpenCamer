@@ -1,8 +1,5 @@
 package com.nuannuan.camer.preview;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.hardware.camera2.DngCreator;
@@ -12,180 +9,265 @@ import android.media.Image;
 import android.net.Uri;
 import android.util.Pair;
 import android.view.MotionEvent;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Provides communication between the Preview and the rest of the application
  * - so in theory one can drop the Preview/ (and CameraController/) classes
  * into a new application, by providing an appropriate implementation of this
  * ApplicationInterface.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public interface ApplicationInterface {
-  int VIDEOMETHOD_FILE = 0; // video will be saved to a file
-  int VIDEOMETHOD_SAF = 1; // video will be saved using Android 5's Storage Access Framework
-  int VIDEOMETHOD_URI = 2; // video will be written to the supplied Uri
+
+  // video will be saved to a file
+  int VIDEOMETHOD_FILE = 0;
+
+  // video will be saved using Android 5's Storage Access Framework
+  int VIDEOMETHOD_SAF = 1;
+
+  // video will be written to the supplied Uri
+  int VIDEOMETHOD_URI = 2;
+
+  // get the application context
 
   // methods that request information
-  Context getContext(); // get the application context
+  Context getContext();
 
-  boolean useCamera2(); // should Android 5's Camera 2 API be used?
+  // should Android 5's Camera 2 API be used?
+  boolean useCamera2();
 
-  Location getLocation(); // get current location - null if not available (or you don't care about geotagging)
+  // get current location - null if not available (or you don't care about geotagging)
+  Location getLocation();
 
-  int createOutputVideoMethod(); // return a VIDEOMETHOD_* value to specify how to create a video file
+  // return a VIDEOMETHOD_* value to specify how to create a video file
+  int createOutputVideoMethod();
 
-  File createOutputVideoFile()
-      throws IOException; // will be called if createOutputVideoUsingSAF() returns VIDEOMETHOD_FILE
+  // will be called if createOutputVideoUsingSAF() returns VIDEOMETHOD_FILE
+  File createOutputVideoFile() throws IOException;
 
-  Uri createOutputVideoSAF()
-      throws IOException; // will be called if createOutputVideoUsingSAF() returns VIDEOMETHOD_SAF
+  // will be called if createOutputVideoUsingSAF() returns VIDEOMETHOD_SAF
+  Uri createOutputVideoSAF() throws IOException;
 
-  Uri createOutputVideoUri()
-      throws IOException; // will be called if createOutputVideoUsingSAF() returns VIDEOMETHOD_URI
+  // will be called if createOutputVideoUsingSAF() returns VIDEOMETHOD_URI
+  Uri createOutputVideoUri() throws IOException;
 
-  // for all of the get*Pref() methods, you can use Preview methods to get the supported values (e.g., getSupportedSceneModes())
-  // if you just want a default or don't really care, see the comments for each method for a default or possible options
-  // if Preview doesn't support the requested setting, it will check this, and choose its own
-  int getCameraIdPref(); // camera to use, from 0 to getCameraControllerManager().getNumberOfCameras()
+  /**
+   * for all of the get*Pref() methods, you can use Preview methods to get the supported values
+   * (e.g., getSupportedSceneModes())
+   * if you just want a default or don't really care, see the comments for each method for a
+   * default
+   * or possible options
+   * if Preview doesn't support the requested setting, it will check this, and choose its own
+   */
 
-  String getFlashPref(); // flash_off, flash_auto, flash_on, flash_torch, flash_red_eye
+  // camera to use, from 0 to getCameraControllerManager().getNumberOfCameras()
+  int getCameraIdPref();
 
-  String getFocusPref(
-      boolean is_video); // focus_mode_auto, focus_mode_infinity, focus_mode_macro, focus_mode_locked, focus_mode_fixed, focus_mode_manual2, focus_mode_edof, focus_mode_continuous_video
+  // flash_off, flash_auto, flash_on, flash_torch, flash_red_eye
+  String getFlashPref();
 
-  boolean isVideoPref(); // start up in video mode?
+  // focus_mode_auto, focus_mode_infinity, focus_mode_macro, focus_mode_locked, focus_mode_fixed, focus_mode_manual2, focus_mode_edof, focus_mode_continuous_video
+  String getFocusPref(boolean is_video);
 
-  String getSceneModePref(); // "auto" for default (strings correspond to Android's scene mode constants in android.hardware.Camera.Parameters)
+  // start up in video mode?
+  boolean isVideoPref();
 
-  String getColorEffectPref(); // "node" for default (strings correspond to Android's color effect constants in android.hardware.Camera.Parameters)
+  // "auto" for default (strings correspond to Android's scene mode constants in android.hardware.Camera.Parameters)
+  String getSceneModePref();
 
-  String getWhiteBalancePref(); // "auto" for default (strings correspond to Android's white balance constants in android.hardware.Camera.Parameters)
+  // "node" for default (strings correspond to Android's color effect constants in android.hardware.Camera.Parameters)
+  String getColorEffectPref();
 
-  String getISOPref(); // "default" for default
+  // "auto" for default (strings correspond to Android's white balance constants in android.hardware.Camera.Parameters)
+  String getWhiteBalancePref();
 
-  int getExposureCompensationPref(); // 0 for default
+  // "default" for default
+  String getISOPref();
 
-  Pair<Integer, Integer> getCameraResolutionPref(); // return null to let Preview choose size
+  // 0 for default
+  int getExposureCompensationPref();
 
-  int getImageQualityPref(); // jpeg quality for taking photos; "90" is a recommended default
+  // return null to let Preview choose size
+  Pair<Integer, Integer> getCameraResolutionPref();
 
-  boolean getFaceDetectionPref(); // whether to use face detection mode
+  // jpeg quality for taking photos; "90" is a recommended default
+  int getImageQualityPref();
 
-  String getVideoQualityPref(); // should be one of Preview.getSupportedVideoQuality() (use Preview.getCamcorderProfile() or Preview.getCamcorderProfileDescription() for details); or return "" to let Preview choose quality
+  // whether to use face detection mode
+  boolean getFaceDetectionPref();
 
-  boolean getVideoStabilizationPref(); // whether to use video stabilization for video
+  // should be one of Preview.getSupportedVideoQuality() (use Preview.getCamcorderProfile() or
+  // Preview.getCamcorderProfileDescription() for details); or return "" to let Preview choose quality
+  String getVideoQualityPref();
 
-  boolean getForce4KPref(); // whether to force 4K mode - experimental, only really available for some devices that allow 4K recording but don't return it as an available resolution - not recommended for most uses
+  // whether to use video stabilization for video
+  boolean getVideoStabilizationPref();
 
-  String getVideoBitratePref(); // return "default" to let Preview choose
+  // whether to force 4K mode - experimental,
+  // only really available for some devices that allow 4K recording
+  // but don't return it as an available resolution - not recommended for most uses
+  boolean getForce4KPref();
 
-  String getVideoFPSPref(); // return "default" to let Preview choose
+  // return "default" to let Preview choose
+  String getVideoBitratePref();
 
-  long getVideoMaxDurationPref(); // time in ms after which to automatically stop video recording (return 0 for off)
+  // return "default" to let Preview choose
+  String getVideoFPSPref();
 
-  int getVideoRestartTimesPref(); // number of times to restart video recording after hitting max duration (return 0 for never auto-restarting)
+  // time in ms after which to automatically stop video recording (return 0 for off)
+  long getVideoMaxDurationPref();
 
-  long getVideoMaxFileSizePref(); // maximum file size in bytes for video (return 0 for device default)
+  // number of times to restart video recording after hitting max duration (return 0 for never auto-restarting)
+  int getVideoRestartTimesPref();
 
-  boolean getVideoRestartMaxFileSizePref(); // whether to restart on hitting max file size
+  // maximum file size in bytes for video (return 0 for device default)
+  long getVideoMaxFileSizePref();
 
-  boolean getVideoFlashPref(); // option to switch flash on/off while recording video (should be false in most cases!)
+  boolean getVideoRestartMaxFileSizePref();
+  // whether to restart on hitting max file size
 
-  String getPreviewSizePref(); // "preference_preview_size_wysiwyg" is recommended (preview matches aspect ratio of photo resolution as close as possible), but can also be "preference_preview_size_display" to maximise the preview size
+  // option to switch flash on/off while recording video (should be false in most cases!)
+  boolean getVideoFlashPref();
 
-  String getPreviewRotationPref(); // return "0" for default; use "180" to rotate the preview 180 degrees
+  // "preference_preview_size_wysiwyg" is recommended (preview matches aspect ratio
+  // of photo resolution as close as possible), but can also be "preference_preview_size_display" to maximise the preview size
+  String getPreviewSizePref();
 
-  String getLockOrientationPref(); // return "none" for default; use "portrait" or "landscape" to lock photos/videos to that orientation
+  // return "0" for default; use "180" to rotate the preview 180 degrees
+  String getPreviewRotationPref();
 
-  boolean getTouchCapturePref(); // whether to enable touch to capture
+  // return "none" for default; use "portrait" or "landscape" to lock photos/videos to that orientation
+  String getLockOrientationPref();
 
-  boolean getDoubleTapCapturePref(); // whether to enable double-tap to capture
+  // whether to enable touch to capture
+  boolean getTouchCapturePref();
 
-  boolean getPausePreviewPref(); // whether to pause the preview after taking a photo
+  // whether to enable double-tap to capture
+  boolean getDoubleTapCapturePref();
+
+  // whether to pause the preview after taking a photo
+  boolean getPausePreviewPref();
 
   boolean getShowToastsPref();
 
-  boolean getShutterSoundPref(); // whether to play sound when taking photo
+  // whether to play sound when taking photo
+  boolean getShutterSoundPref();
 
-  boolean getStartupFocusPref(); // whether to do autofocus on startup
+  // whether to do autofocus on startup
+  boolean getStartupFocusPref();
 
-  long getTimerPref(); // time in ms for timer (so 0 for off)
+  // time in ms for timer (so 0 for off)
+  long getTimerPref();
 
-  String getRepeatPref(); // return number of times to repeat photo in a row (as a string), so "1" for default; return "unlimited" for unlimited
+  // return number of times to repeat photo in a row (as a string), so "1" for default; return "unlimited" for unlimited
+  String getRepeatPref();
 
-  long getRepeatIntervalPref(); // time in ms between repeat
+  // time in ms between repeat
+  long getRepeatIntervalPref();
 
-  boolean getGeotaggingPref(); // whether to geotag photos
+  // whether to geotag photos
+  boolean getGeotaggingPref();
 
-  boolean getRequireLocationPref(); // if getGeotaggingPref() returns true, and this method returns true, then phot/video will only be taken if location data is available
+  // if getGeotaggingPref() returns true, and this method returns true, then phot/video will only be taken if location data is available
+  boolean getRequireLocationPref();
 
-  boolean getRecordAudioPref(); // whether to record audio when recording video
+  // whether to record audio when recording video
+  boolean getRecordAudioPref();
 
-  String getRecordAudioChannelsPref(); // either "audio_default", "audio_mono" or "audio_stereo"
+  // either "audio_default", "audio_mono" or "audio_stereo"
+  String getRecordAudioChannelsPref();
 
-  String getRecordAudioSourcePref(); // "audio_src_camcorder" is recommended, but other options are: "audio_src_mic", "audio_src_default", "audio_src_voice_communication"; see corresponding values in android.media.MediaRecorder.AudioSource
+  // "audio_src_camcorder" is recommended, but other options
+  // are: "audio_src_mic", "audio_src_default", "audio_src_voice_communication";
+  // see corresponding values in android.media.MediaRecorder.AudioSource
+  String getRecordAudioSourcePref();
 
-  int getZoomPref(); // index into Preview.getSupportedZoomRatios() array (each entry is the zoom factor, scaled by 100; array is sorted from min to max zoom)
+  // index into Preview.getSupportedZoomRatios() array (each entry is the zoom factor, scaled by 100; array is sorted from min to max zoom)
+  int getZoomPref();
 
   // Camera2 only modes:
-  long getExposureTimePref(); // only called if getISOPref() is not "default"
+
+  // only called if getISOPref() is not "default"
+  long getExposureTimePref();
 
   float getFocusDistancePref();
 
-  boolean isRawPref(); // whether to enable RAW photos
+  // whether to enable RAW photos
+  boolean isRawPref();
 
   // for testing purposes:
-  boolean isTestAlwaysFocus(); // if true, pretend autofocus always successful
+  // if true, pretend autofocus always successful
+  boolean isTestAlwaysFocus();
 
   // methods that transmit information/events (up to the Application whether to do anything or not)
-  void cameraSetup(); // called when the camera is (re-)set up - should update UI elements/parameters that depend on camera settings
+
+  // called when the camera is (re-)set up - should update UI elements/parameters that depend on camera settings
+  void cameraSetup();
 
   void touchEvent(MotionEvent event);
 
-  void startingVideo(); // called just before video recording starts
+  // called just before video recording starts
+  void startingVideo();
 
-  void stoppingVideo(); // called just before video recording stops
+  // called just before video recording stops
+  void stoppingVideo();
 
-  void stoppedVideo(final int video_method,final Uri uri,
-      final String filename); // called after video recording stopped (uri/filename will be null if video is corrupt or not created)
+  // called after video recording stopped (uri/filename will be null if video is corrupt or not created)
+  void stoppedVideo(final int video_method,final Uri uri,final String filename);
 
-  void onFailedStartPreview(); // called if failed to start camera preview
+  // called if failed to start camera preview
+  void onFailedStartPreview();
 
-  void onPhotoError(); // callback for failing to take a photo
+  // callback for failing to take a photo
+  void onPhotoError();
 
-  void onVideoInfo(int what,
-      int extra); // callback for info when recording video (see MediaRecorder.OnInfoListener)
+  // callback for info when recording video (see MediaRecorder.OnInfoListener)
+  void onVideoInfo(int what,int extra);
 
-  void onVideoError(int what,
-      int extra); // callback for errors when recording video (see MediaRecorder.OnErrorListener)
+  // callback for errors when recording video (see MediaRecorder.OnErrorListener)
+  void onVideoError(int what,int extra);
 
-  void onVideoRecordStartError(
-      CamcorderProfile profile); // callback for video recording failing to start
+  // callback for video recording failing to start
+  void onVideoRecordStartError(CamcorderProfile profile);
 
-  void onVideoRecordStopError(
-      CamcorderProfile profile); // callback for video recording being corrupted
+  // callback for video recording being corrupted
+  void onVideoRecordStopError(CamcorderProfile profile);
 
-  void onFailedReconnectError(); // failed to reconnect camera after stopping video recording
+  // failed to reconnect camera after stopping video recording
+  void onFailedReconnectError();
 
-  void onFailedCreateVideoFileError(); // callback if unable to create file for recording video
+  // callback if unable to create file for recording video
+  void onFailedCreateVideoFileError();
 
-  void hasPausedPreview(
-      boolean paused); // called when the preview is paused or unpaused (due to getPausePreviewPref())
+  // called when the preview is paused or unpaused (due to getPausePreviewPref())
+  void hasPausedPreview(boolean paused);
 
-  void cameraInOperation(
-      boolean in_operation); // called when the camera starts/stops being operation (taking photos or recording video), use to disable GUI elements during camera operation
+  // called when the camera starts/stops being operation (taking photos or recording video),
+  // use to disable GUI elements during camera operation
+  void cameraInOperation(boolean in_operation);
 
   void cameraClosed();
 
-  void timerBeep(
-      long remaining_time); // n.b., called once per second on timer countdown - so application can beep, or do whatever it likes
+  // n.b., called once per second on timer countdown - so application can beep, or do whatever it likes
+  void timerBeep(long remaining_time);
 
   // methods that request actions
-  void layoutUI(); // application should layout UI that's on top of the preview
 
-  void multitouchZoom(int new_zoom); // zoom has changed due to multitouch gesture on preview
+  // application should layout UI that's on top of the preview
+  void layoutUI();
 
-  // the set/clear*Pref() methods are called if Preview decides to override the requested pref (because Camera device doesn't support requested pref) (clear*Pref() is called if the feature isn't supported at all)
-  // the application can use this information to update its preferences
+  // zoom has changed due to multitouch gesture on preview
+  void multitouchZoom(int new_zoom);
+
+  /**
+   * the set/clear*Pref() methods are called if Preview decides to override the requested pref
+   * (because Camera device doesn't support requested pref) (clear*Pref() is called if the feature
+   * isn't supported at all)
+   * the application can use this information to update its preferences
+   */
   void setCameraIdPref(int cameraId);
 
   void setFlashPref(String flash_value);
@@ -234,6 +316,6 @@ public interface ApplicationInterface {
 
   boolean onRawPictureTaken(DngCreator dngCreator,Image image);
 
-  void onContinuousFocusMove(
-      boolean start); // called when focusing starts/stop in continuous picture mode (in photo mode only)
+  // called when focusing starts/stop in continuous picture mode (in photo mode only)
+  void onContinuousFocusMove(boolean start);
 }

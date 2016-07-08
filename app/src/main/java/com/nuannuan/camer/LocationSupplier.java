@@ -16,6 +16,8 @@ import com.nuannuan.camer.log.Logger;
 
 /**
  * Handles listening for GPS location (both coarse and fine).
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class LocationSupplier {
   private static final String TAG = "LocationSupplier";

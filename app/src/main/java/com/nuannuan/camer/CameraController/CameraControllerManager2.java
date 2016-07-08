@@ -12,6 +12,9 @@ import com.nuannuan.camer.log.Logger;
 /**
  * Provides support using Android 5's Camera 2 API
  * android.hardware.camera2.*.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
+ *
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP) public class CameraControllerManager2 extends CameraControllerManager {
   private static final String TAG = "CameraControllerManager2";

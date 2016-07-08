@@ -7,6 +7,8 @@ import com.nuannuan.camer.log.Logger;
 
 /**
  * Sets up a listener to listen for noise level.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class AudioListener {
   private static final String TAG = "AudioListener";

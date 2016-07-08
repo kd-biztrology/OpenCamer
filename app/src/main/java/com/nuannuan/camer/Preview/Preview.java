@@ -79,6 +79,8 @@ import java.util.Vector;
  * supports much of the Open Camera logic and functionality). Communication to
  * the rest of the application is available through ApplicationInterface.
  * We could probably do with decoupling this class into separate components!
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextureListener {
   private static final String TAG = "Preview";
@@ -961,8 +963,9 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
         pausePreview();
 
-        Logger.d(TAG,"closeCamera: about to release camera controller: " + (System.currentTimeMillis()
-            - debug_time));
+        Logger.d(TAG,
+            "closeCamera: about to release camera controller: " + (System.currentTimeMillis()
+                - debug_time));
 
         camera_controller.release();
         camera_controller = null;
@@ -1012,7 +1015,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
     }
     this.setPreviewPaused(false);
 
-    Logger.d(TAG,"pausePreview: about to stop preview: " + (System.currentTimeMillis() - debug_time));
+    Logger.d(TAG,
+        "pausePreview: about to stop preview: " + (System.currentTimeMillis() - debug_time));
 
     camera_controller.stopPreview();
     this.phase = PHASE_NORMAL;
@@ -1350,8 +1354,9 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
       }
     }
 
-    Logger.d(TAG,"setupCameraParameters: time after setting scene mode: " + (System.currentTimeMillis()
-        - debug_time));
+    Logger.d(TAG,
+        "setupCameraParameters: time after setting scene mode: " + (System.currentTimeMillis()
+            - debug_time));
 
     {
       // grab all read-only info from parameters
@@ -1742,8 +1747,9 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
       }
     }
 
-    Logger.d(TAG,"setupCameraParameters: time after setting up flash: " + (System.currentTimeMillis()
-        - debug_time));
+    Logger.d(TAG,
+        "setupCameraParameters: time after setting up flash: " + (System.currentTimeMillis()
+            - debug_time));
 
     {
 
@@ -1778,8 +1784,9 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
       applicationInterface.setFocusDistancePref(focus_distance_value);
     }
 
-    Logger.d(TAG,"setupCameraParameters: time after setting up focus: " + (System.currentTimeMillis()
-        - debug_time));
+    Logger.d(TAG,
+        "setupCameraParameters: time after setting up focus: " + (System.currentTimeMillis()
+            - debug_time));
     {
 
       Logger.d(TAG,"set up exposure lock");
@@ -2925,7 +2932,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
   }
 
   /* It's important to set a preview FPS using chooseBestPreviewFps() rather than just leaving it to the default, as some devices
-	 * have a poor choice of default - e.g., Nexus 5 and Nexus 6 on original Camera API default to (15000, 15000), which means very dark
+   * have a poor choice of default - e.g., Nexus 5 and Nexus 6 on original Camera API default to (15000, 15000), which means very dark
 	 * preview and photos in low light, as well as a less smooth framerate in good light.
 	 * See http://stackoverflow.com/questions/18882461/why-is-the-default-android-camera-preview-smoother-than-my-own-camera-preview .
 	 */
@@ -3030,7 +3037,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         if (!is_video && focus_value != null && focus_value.equals(
             "focus_mode_continuous_picture")) {
 
-          Logger.d(TAG,"restart camera due to returning to continuous picture mode from video mode");
+          Logger.d(TAG,
+              "restart camera due to returning to continuous picture mode from video mode");
 
           // workaround for bug on Nexus 6 at least where switching to video and back to photo mode causes continuous picture mode to stop
           this.onPause();
@@ -3301,7 +3309,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
   private void updateFocus(int new_focus_index,boolean quiet,boolean save,boolean auto_focus) {
 
-    Logger.d(TAG,"updateFocus(): " + new_focus_index + " current_focus_index: " + current_focus_index);
+    Logger.d(TAG,
+        "updateFocus(): " + new_focus_index + " current_focus_index: " + current_focus_index);
 
     // updates the Focus button, and Focus camera mode
     if (this.supported_focus_values != null && new_focus_index != current_focus_index) {
@@ -3940,7 +3949,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                     restartVideo(false);
                   } else {
 
-                    Logger.d(TAG,"restartVideoTimerTask: don't restart video, as already cancelled");
+                    Logger.d(TAG,
+                        "restartVideoTimerTask: don't restart video, as already cancelled");
                   }
                 }
               });
@@ -4347,7 +4357,8 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             camera_controller.setFlashValue("flash_off");
           }
 
-          Logger.d(TAG,"set_flash_value_after_autofocus is now: " + set_flash_value_after_autofocus);
+          Logger.d(TAG,
+              "set_flash_value_after_autofocus is now: " + set_flash_value_after_autofocus);
         }
         CameraController.AutoFocusCallback autoFocusCallback =
             new CameraController.AutoFocusCallback() {

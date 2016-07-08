@@ -35,6 +35,8 @@ import java.util.TimeZone;
 /**
  * Provides access to the filesystem. Supports both standard and Storage
  * Access Framework.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class StorageUtils {
   private static final String TAG = "StorageUtils";

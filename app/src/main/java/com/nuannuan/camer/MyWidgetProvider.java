@@ -14,6 +14,8 @@ import com.nuannuan.camer.view.MainActivity;
  * longer supported in Android 5 onwards (instead Open Camera can be launched
  * from the lock screen using the standard camera icon), but this is kept here
  * for older Android versions.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class MyWidgetProvider extends AppWidgetProvider {
   private static final String TAG = MyWidgetProvider.class.getSimpleName();

@@ -42,6 +42,8 @@ import java.util.Date;
 
 /**
  * Our implementation of ApplicationInterface, see there for details.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class MyApplicationInterface implements ApplicationInterface {
   private static final String TAG = "MyApplicationInterface";

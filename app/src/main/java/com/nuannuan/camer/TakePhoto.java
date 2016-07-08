@@ -10,6 +10,8 @@ import com.nuannuan.camer.view.MainActivity;
  * Entry Activity for the "take photo" widget (see MyWidgetProviderTakePhoto).
  * This redirects to MainActivity, but uses an intent extra/bundle to pass the
  * "take photo" request.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class TakePhoto extends Activity {
   private static final String TAG = "TakePhoto";

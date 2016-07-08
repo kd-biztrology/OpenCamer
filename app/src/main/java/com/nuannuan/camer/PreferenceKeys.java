@@ -1,6 +1,8 @@
 package com.nuannuan.camer;
 
 /** Stores all of the string keys used for SharedPreferences.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class PreferenceKeys {
     // must be static, to safely call from other Activities

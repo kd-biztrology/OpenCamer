@@ -14,6 +14,8 @@ import com.nuannuan.camer.cameracontroller.CameraControllerException;
 import com.nuannuan.camer.preview.Preview;
 
 /** Provides support for the surface used for the preview, using a TextureView.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class MyTextureView extends TextureView implements CameraSurface {
 	private static final String TAG = "MyTextureView";

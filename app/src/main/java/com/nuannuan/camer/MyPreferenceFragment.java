@@ -39,6 +39,8 @@ import java.util.Locale;
  * meaning we couldn't access data from that class. This no longer applies due
  * to now using a PreferenceFragment, but I've still kept with transferring
  * information via the bundle (for the most part, at least).
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class MyPreferenceFragment extends PreferenceFragment
     implements OnSharedPreferenceChangeListener {

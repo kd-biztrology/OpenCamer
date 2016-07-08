@@ -84,6 +84,8 @@ import java.util.Map;
 
 /**
  * The main Activity for Open Camera.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class MainActivity extends Activity implements AudioListener.AudioListenerCallback {
   private static final String TAG = "MainActivity";
@@ -1705,7 +1707,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
   /**
    * Opens the Storage Access Framework dialog to select a folder.
    */
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP) private void openFolderChooserDialogSAF() {
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP) public void openFolderChooserDialogSAF() {
 
     Logger.d(TAG,"openFolderChooserDialogSAF");
 

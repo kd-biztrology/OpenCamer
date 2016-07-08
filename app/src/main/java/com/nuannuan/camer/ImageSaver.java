@@ -37,6 +37,8 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * Handles the saving (and any required processing) of photos.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class ImageSaver extends Thread {
   private static final String TAG = "ImageSaver";
@@ -276,7 +278,7 @@ public class ImageSaver extends Thread {
   /**
    * Wait until the queue is empty and all pending images have been saved.
    */
-  void waitUntilDone() {
+  public void waitUntilDone() {
 
     synchronized (this) {
 
