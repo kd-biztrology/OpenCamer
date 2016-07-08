@@ -32,13 +32,87 @@
       android:supportsRtl="true"
       android:theme="@style/AppTheme"
       >
-    <activity android:name=".MainActivity">
+    <activity
+        android:name=".view.MainActivity"
+        android:configChanges="orientation|screenSize|keyboardHidden"
+        android:label="@string/app_name"
+        android:screenOrientation="landscape"
+        >
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
         <category android:name="android.intent.category.LAUNCHER"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.media.action.IMAGE_CAPTURE"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.media.action.IMAGE_CAPTURE_SECURE"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.media.action.STILL_IMAGE_CAMERA"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.media.action.STILL_IMAGE_CAMERA_SECURE"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.media.action.VIDEO_CAMERA"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.media.action.VIDEO_CAPTURE"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </activity>
+    <!-- should not change the android:name, including moving to a subpackage - see http://android-developers.blogspot.co.uk/2011/06/things-that-cannot-change.html -->
+    <activity
+        android:name="TakePhoto"
+        android:configChanges="orientation|screenSize|keyboardHidden"
+        android:excludeFromRecents="true"
+        android:icon="@drawable/ic_launcher_take_photo"
+        android:label="@string/take_photo"
+        android:screenOrientation="landscape"
+        android:taskAffinity="" >
+    </activity>
+    <!-- should not change the android:name, including moving to a subpackage - see http://android-developers.blogspot.co.uk/2011/06/things-that-cannot-change.html -->
+    <receiver
+        android:name="MyWidgetProvider"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" >
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/widget_info" />
+    </receiver>
+    <!-- should not change the android:name, including moving to a subpackage - see http://android-developers.blogspot.co.uk/2011/06/things-that-cannot-change.html -->
+    <receiver
+        android:name="MyWidgetProviderTakePhoto"
+        android:icon="@drawable/ic_launcher_take_photo"
+        android:label="@string/take_photo" >
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/widget_info_take_photo" />
+    </receiver>
+
+
   </application>
 
 </manifest>
