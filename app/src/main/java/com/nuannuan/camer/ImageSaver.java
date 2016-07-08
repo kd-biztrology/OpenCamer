@@ -41,7 +41,7 @@ import java.util.concurrent.BlockingQueue;
  * @author kevin
  */
 public class ImageSaver extends Thread {
-  private static final String TAG = "ImageSaver";
+  private static final String TAG = ImageSaver.class.getSimpleName();
 
   private static final String TAG_GPS_IMG_DIRECTION = "GPSImgDirection";
   private static final String TAG_GPS_IMG_DIRECTION_REF = "GPSImgDirectionRef";

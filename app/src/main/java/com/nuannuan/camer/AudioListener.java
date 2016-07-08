@@ -11,7 +11,7 @@ import com.nuannuan.camer.log.Logger;
  * @author kevin
  */
 public class AudioListener {
-  private static final String TAG = "AudioListener";
+  private static final String TAG = AudioListener.class.getSimpleName();
   private boolean is_running = true;
   private int buffer_size = -1;
   private AudioRecord ar = null;
@@ -60,7 +60,7 @@ public class AudioListener {
 
     this.thread = new Thread() {
       @Override public void run() {
-				/*int sample_delay = (1000 * buffer_size) / sample_rate;
+        /*int sample_delay = (1000 * buffer_size) / sample_rate;
 				if( MyDebug.LOG )
 					Logger.e(TAG, "sample_delay: " + sample_delay);*/
 

@@ -46,7 +46,8 @@ import java.util.Date;
  * @author kevin
  */
 public class MyApplicationInterface implements ApplicationInterface {
-  private static final String TAG = "MyApplicationInterface";
+
+  private static final String TAG = MyApplicationInterface.class.getSimpleName();
 
   private MainActivity main_activity = null;
   private LocationSupplier locationSupplier = null;

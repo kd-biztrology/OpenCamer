@@ -14,7 +14,7 @@ import com.nuannuan.camer.view.MainActivity;
  * @author kevin
  */
 public class TakePhoto extends Activity {
-  private static final String TAG = "TakePhoto";
+  private static final String TAG = TakePhoto.class.getSimpleName();
   public static final String TAKE_PHOTO = "com.nuannuan.camer.TAKE_PHOTO";
 
   @Override protected void onCreate(Bundle savedInstanceState) {

@@ -29,6 +29,11 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 
+/**
+ * @author Mark Harman 18 June 2016
+ * @author kevin
+ */
+
 public class DrawPreview {
   private static final String TAG = "DrawPreview";
 
@@ -487,7 +492,7 @@ public class DrawPreview {
       int this_left = gui_location[0];
       int diff_x = view_left - (this_left + canvas.getWidth() / 2);
         /*if( MyDebug.LOG ) {
-    			Logger.d(TAG, "view left: " + view_left);
+          Logger.d(TAG, "view left: " + view_left);
     			Logger.d(TAG, "this left: " + this_left);
     			Logger.d(TAG, "canvas is " + canvas.getWidth() + " x " + canvas.getHeight());
     		}*/

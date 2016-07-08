@@ -44,7 +44,7 @@ import java.util.Locale;
  */
 public class MyPreferenceFragment extends PreferenceFragment
     implements OnSharedPreferenceChangeListener {
-  private static final String TAG = "MyPreferenceFragment";
+  private static final String TAG = MyPreferenceFragment.class.getSimpleName();
 
   @Override public void onCreate(Bundle savedInstanceState) {
 

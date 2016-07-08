@@ -23,6 +23,8 @@ import com.nuannuan.camer.log.Logger;
 
 /**
  * This contains functionality related to the main UI.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class MainUI {
   private static final String TAG = "MainUI";
@@ -37,7 +39,7 @@ public class MainUI {
 
   private boolean immersive_mode = false;
   private boolean show_gui = true;
-      // result of call to showGUI() - false means a "reduced" GUI is displayed, whilst taking photo or video
+  // result of call to showGUI() - false means a "reduced" GUI is displayed, whilst taking photo or video
 
   public MainUI(MainActivity main_activity) {
 
@@ -452,7 +454,7 @@ public class MainUI {
   }
 
   public void onOrientationChanged(int orientation) {
-		/*if( MyDebug.LOG ) {
+    /*if( MyDebug.LOG ) {
 			Logger.d(TAG, "onOrientationChanged()");
 			Logger.d(TAG, "orientation: " + orientation);
 			Logger.d(TAG, "current_orientation: " + current_orientation);
@@ -575,11 +577,13 @@ public class MainUI {
           switchVideoButton.setVisibility(
               visibility); // still allow switch video when recording video
         }
-        if (main_activity.supportsExposureButton() && !main_activity.getPreview().isVideo()) // still allow exposure when recording video
+        if (main_activity.supportsExposureButton() && !main_activity.getPreview()
+            .isVideo()) // still allow exposure when recording video
         {
           exposureButton.setVisibility(visibility);
         }
-        if (main_activity.getPreview().supportsExposureLock() && !main_activity.getPreview().isVideo()) // still allow exposure lock when recording video
+        if (main_activity.getPreview().supportsExposureLock() && !main_activity.getPreview()
+            .isVideo()) // still allow exposure lock when recording video
         {
           exposureLockButton.setVisibility(visibility);
         }

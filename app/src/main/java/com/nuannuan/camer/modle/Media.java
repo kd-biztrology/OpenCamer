@@ -1,4 +1,4 @@
-package com.nuannuan.camer.utils;
+package com.nuannuan.camer.modle;
 
 import android.net.Uri;
 

@@ -24,7 +24,7 @@ import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;
 import android.support.v4.content.ContextCompat;
 import com.nuannuan.camer.log.Logger;
-import com.nuannuan.camer.utils.Media;
+import com.nuannuan.camer.modle.Media;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -39,7 +39,7 @@ import java.util.TimeZone;
  * @author kevin
  */
 public class StorageUtils {
-  private static final String TAG = "StorageUtils";
+  private static final String TAG = StorageUtils.class.getSimpleName();
 
   public static final int MEDIA_TYPE_IMAGE = 1;
   public static final int MEDIA_TYPE_VIDEO = 2;

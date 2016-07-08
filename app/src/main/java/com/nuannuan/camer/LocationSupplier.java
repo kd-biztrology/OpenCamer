@@ -20,7 +20,7 @@ import com.nuannuan.camer.log.Logger;
  * @author kevin
  */
 public class LocationSupplier {
-  private static final String TAG = "LocationSupplier";
+  private static final String TAG = LocationSupplier.class.getSimpleName();
 
   private Context context = null;
   private LocationManager locationManager = null;

@@ -72,7 +72,7 @@ import com.nuannuan.camer.log.Logger;
 import com.nuannuan.camer.preview.Preview;
 import com.nuannuan.camer.ui.FolderChooserDialog;
 import com.nuannuan.camer.ui.MainUI;
-import com.nuannuan.camer.utils.Media;
+import com.nuannuan.camer.modle.Media;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ import java.util.Map;
  * @author kevin
  */
 public class MainActivity extends Activity implements AudioListener.AudioListenerCallback {
-  private static final String TAG = "MainActivity";
+  private static final String TAG = MainActivity.class.getSimpleName();
   private SensorManager mSensorManager = null;
   private Sensor mSensorAccelerometer = null;
   private Sensor mSensorMagnetic = null;

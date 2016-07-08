@@ -39,6 +39,8 @@ import java.util.Map;
 /**
  * This defines the UI for the "popup" button, that provides quick access to a
  * range of options.
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
 public class PopupView extends LinearLayout {
   private static final String TAG = "PopupView";

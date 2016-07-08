@@ -31,7 +31,12 @@ import java.util.Locale;
 /**
  * Dialog to pick a folder. Also allows creating new folders. Used when not
  * using the Storage Access Framework.
+ *
+ * @author Mark Harman 18 June 2016
+ * @author kevin
  */
+
+
 public class FolderChooserDialog extends DialogFragment {
   private static final String TAG = FolderChooserDialog.class.getSimpleName();
 
