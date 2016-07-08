@@ -52,11 +52,11 @@ public class StorageUtils {
     this.context = context;
   }
 
-  Uri getLastMediaScanned() {
+  public Uri getLastMediaScanned() {
     return last_media_scanned;
   }
 
-  void clearLastMediaScanned() {
+  public void clearLastMediaScanned() {
     last_media_scanned = null;
   }
 
@@ -149,7 +149,7 @@ public class StorageUtils {
     }
   }
 
-  boolean isUsingSAF() {
+  public boolean isUsingSAF() {
     // check Android version just to be safe
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -161,7 +161,7 @@ public class StorageUtils {
   }
 
   // only valid if !isUsingSAF()
-  String getSaveLocation() {
+  public String getSaveLocation() {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     String folder_name =
         sharedPreferences.getString(PreferenceKeys.getSaveLocationPreferenceKey(),"OpenCamera");
@@ -197,7 +197,7 @@ public class StorageUtils {
 
   // only valid if isUsingSAF()
   // return a human readable name for the SAF save folder location
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP) String getImageFolderNameSAF() {
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP) public String getImageFolderNameSAF() {
 
     Logger.d(TAG,"getImageFolderNameSAF");
 
@@ -251,7 +251,7 @@ public class StorageUtils {
 
   // valid if whether or not isUsingSAF()
   // but note that if isUsingSAF(), this may return null - it can't be assumed that there is a File corresponding to the SAF Uri
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP) File getImageFolder() {
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP) public File getImageFolder() {
     File file = null;
     if (isUsingSAF()) {
       Uri uri = getTreeUriSAF();

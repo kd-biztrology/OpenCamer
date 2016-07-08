@@ -122,7 +122,7 @@ public class MyApplicationInterface implements ApplicationInterface {
     return storageUtils;
   }
 
-  ImageSaver getImageSaver() {
+  public ImageSaver getImageSaver() {
     return imageSaver;
   }
 
@@ -377,7 +377,8 @@ public class MyApplicationInterface implements ApplicationInterface {
       video_max_duration = (long) Integer.parseInt(video_max_duration_value) * 1000;
     } catch (NumberFormatException e) {
 
-      Logger.e(TAG,"failed to parse preference_video_max_duration value: " + video_max_duration_value);
+      Logger.e(TAG,
+          "failed to parse preference_video_max_duration value: " + video_max_duration_value);
       e.printStackTrace();
       video_max_duration = 0;
     }
@@ -411,7 +412,8 @@ public class MyApplicationInterface implements ApplicationInterface {
       video_max_filesize = Integer.parseInt(video_max_filesize_value);
     } catch (NumberFormatException e) {
 
-      Logger.e(TAG,"failed to parse preference_video_max_filesize value: " + video_max_filesize_value);
+      Logger.e(TAG,
+          "failed to parse preference_video_max_filesize value: " + video_max_filesize_value);
       e.printStackTrace();
       video_max_filesize = 0;
     }
@@ -752,14 +754,14 @@ public class MyApplicationInterface implements ApplicationInterface {
         int width = thumbnail.getWidth();
         int height = thumbnail.getHeight();
 
-          Logger.d(TAG,"    video thumbnail size " + width + " x " + height);
+        Logger.d(TAG,"    video thumbnail size " + width + " x " + height);
 
         if (width > galleryButton.getWidth()) {
           float scale = (float) galleryButton.getWidth() / width;
           int new_width = Math.round(scale * width);
           int new_height = Math.round(scale * height);
 
-            Logger.d(TAG,"    scale video thumbnail to " + new_width + " x " + new_height);
+          Logger.d(TAG,"    scale video thumbnail to " + new_width + " x " + new_height);
 
           Bitmap scaled_thumbnail = Bitmap.createScaledBitmap(thumbnail,new_width,new_height,true);
           // careful, as scaled_thumbnail is sometimes not a copy!
@@ -776,8 +778,7 @@ public class MyApplicationInterface implements ApplicationInterface {
         });
       }
 
-        Logger.d(TAG,"    time to create thumbnail: " + (System.currentTimeMillis() - time_s));
-
+      Logger.d(TAG,"    time to create thumbnail: " + (System.currentTimeMillis() - time_s));
     }
   }
 
@@ -788,7 +789,7 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   @Override public void onContinuousFocusMove(boolean start) {
 
-      Logger.d(TAG,"onContinuousFocusMove: " + start);
+    Logger.d(TAG,"onContinuousFocusMove: " + start);
 
     drawPreview.onContinuousFocusMove(start);
   }
@@ -816,7 +817,7 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   @Override public void stoppingVideo() {
 
-      Logger.d(TAG,"stoppingVideo()");
+    Logger.d(TAG,"stoppingVideo()");
 
     main_activity.unlockScreen();
     ImageButton view = (ImageButton) main_activity.findViewById(R.id.take_photo);
@@ -831,12 +832,12 @@ public class MyApplicationInterface implements ApplicationInterface {
       int message_id = 0;
       if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
 
-          Logger.d(TAG,"max duration reached");
+        Logger.d(TAG,"max duration reached");
 
         message_id = R.string.video_max_duration;
       } else {
 
-          Logger.d(TAG,"max filesize reached");
+        Logger.d(TAG,"max filesize reached");
 
         message_id = R.string.video_max_filesize;
       }
@@ -864,12 +865,12 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   @Override public void onVideoError(int what,int extra) {
 
-      Logger.d(TAG,"onVideoError: " + what + " extra: " + extra);
+    Logger.d(TAG,"onVideoError: " + what + " extra: " + extra);
 
     int message_id = R.string.video_error_unknown;
     if (what == MediaRecorder.MEDIA_ERROR_SERVER_DIED) {
 
-        Logger.d(TAG,"error: server died");
+      Logger.d(TAG,"error: server died");
 
       message_id = R.string.video_error_server_died;
     }
@@ -886,7 +887,7 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   @Override public void onVideoRecordStartError(CamcorderProfile profile) {
 
-      Logger.d(TAG,"onVideoRecordStartError");
+    Logger.d(TAG,"onVideoRecordStartError");
 
     String error_message = "";
     String features = main_activity.getPreview().getErrorFeatures(profile);
@@ -908,7 +909,7 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   @Override public void onVideoRecordStopError(CamcorderProfile profile) {
 
-      Logger.d(TAG,"onVideoRecordStopError");
+    Logger.d(TAG,"onVideoRecordStopError");
 
     //main_activity.getPreview().showToast(null, R.string.failed_to_record_video);
     String features = main_activity.getPreview().getErrorFeatures(profile);
@@ -933,8 +934,8 @@ public class MyApplicationInterface implements ApplicationInterface {
   }
 
   @Override public void hasPausedPreview(boolean paused) {
-    View shareButton = (View) main_activity.findViewById(R.id.share);
-    View trashButton = (View) main_activity.findViewById(R.id.trash);
+    View shareButton = main_activity.findViewById(R.id.share);
+    View trashButton = main_activity.findViewById(R.id.trash);
     if (paused) {
       shareButton.setVisibility(View.VISIBLE);
       trashButton.setVisibility(View.VISIBLE);
@@ -958,7 +959,7 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   void updateThumbnail(Bitmap thumbnail) {
 
-      Logger.d(TAG,"updateThumbnail");
+    Logger.d(TAG,"updateThumbnail");
 
     main_activity.updateGalleryIcon(thumbnail);
     drawPreview.updateThumbnail(thumbnail);
@@ -966,21 +967,21 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   @Override public void timerBeep(long remaining_time) {
 
-      Logger.d(TAG,"timerBeep()");
-      Logger.d(TAG,"remaining_time: " + remaining_time);
+    Logger.d(TAG,"timerBeep()");
+    Logger.d(TAG,"remaining_time: " + remaining_time);
 
     SharedPreferences sharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(getContext());
     if (sharedPreferences.getBoolean(PreferenceKeys.getTimerBeepPreferenceKey(),true)) {
 
-        Logger.d(TAG,"play beep!");
+      Logger.d(TAG,"play beep!");
 
       boolean is_last = remaining_time <= 1000;
       main_activity.playSound(is_last ? R.raw.beep_hi : R.raw.beep);
     }
     if (sharedPreferences.getBoolean(PreferenceKeys.getTimerSpeakPreferenceKey(),false)) {
 
-        Logger.d(TAG,"speak countdown!");
+      Logger.d(TAG,"speak countdown!");
 
       int remaining_time_s = (int) (remaining_time / 1000);
       if (remaining_time_s <= 60) {
@@ -1115,7 +1116,7 @@ public class MyApplicationInterface implements ApplicationInterface {
   @Override public void setCameraResolutionPref(int width,int height) {
     String resolution_value = width + " " + height;
 
-      Logger.d(TAG,"save new resolution_value: " + resolution_value);
+    Logger.d(TAG,"save new resolution_value: " + resolution_value);
 
     SharedPreferences sharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -1246,8 +1247,7 @@ public class MyApplicationInterface implements ApplicationInterface {
   @Override public boolean onPictureTaken(byte[] data) {
     System.gc();
 
-      Logger.d(TAG,"onPictureTaken");
-
+    Logger.d(TAG,"onPictureTaken");
 
     Date current_date = new Date(); // do asap so we date corresponds to actual photo time
 
@@ -1257,15 +1257,14 @@ public class MyApplicationInterface implements ApplicationInterface {
     if (MediaStore.ACTION_IMAGE_CAPTURE.equals(action)
         || MediaStore.ACTION_IMAGE_CAPTURE_SECURE.equals(action)) {
 
-        Logger.d(TAG,"from image capture intent");
+      Logger.d(TAG,"from image capture intent");
 
       image_capture_intent = true;
       Bundle myExtras = main_activity.getIntent().getExtras();
       if (myExtras != null) {
         image_capture_intent_uri = (Uri) myExtras.getParcelable(MediaStore.EXTRA_OUTPUT);
 
-          Logger.d(TAG,"save to: " + image_capture_intent_uri);
-
+        Logger.d(TAG,"save to: " + image_capture_intent_uri);
       }
     }
 
@@ -1312,9 +1311,7 @@ public class MyApplicationInterface implements ApplicationInterface {
         preference_stamp_gpsformat,store_location,location,store_geo_direction,geo_direction,
         has_thumbnail_animation);
 
-
-      Logger.d(TAG,"onPictureTaken complete, success: " + success);
-
+    Logger.d(TAG,"onPictureTaken complete, success: " + success);
 
     return success;
   }
@@ -1322,8 +1319,7 @@ public class MyApplicationInterface implements ApplicationInterface {
   @Override public boolean onRawPictureTaken(DngCreator dngCreator,Image image) {
     System.gc();
 
-      Logger.d(TAG,"onRawPictureTaken");
-
+    Logger.d(TAG,"onRawPictureTaken");
 
     Date current_date = new Date(); // do asap so we date corresponds to actual photo time
 
@@ -1331,14 +1327,14 @@ public class MyApplicationInterface implements ApplicationInterface {
 
     boolean success = imageSaver.saveImageRaw(do_in_background,dngCreator,image,current_date);
 
-      Logger.d(TAG,"onRawPictureTaken complete");
+    Logger.d(TAG,"onRawPictureTaken complete");
 
     return success;
   }
 
   void setLastImage(File file) {
 
-      Logger.d(TAG,"setLastImage");
+    Logger.d(TAG,"setLastImage");
 
     last_image_saf = false;
     last_image_name = file.getAbsolutePath();
@@ -1347,7 +1343,7 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   void setLastImageSAF(Uri uri) {
 
-      Logger.d(TAG,"setLastImageSAF");
+    Logger.d(TAG,"setLastImageSAF");
 
     last_image_saf = true;
     last_image_name = null;
@@ -1356,19 +1352,19 @@ public class MyApplicationInterface implements ApplicationInterface {
 
   void clearLastImage() {
 
-      Logger.d(TAG,"clearLastImage");
+    Logger.d(TAG,"clearLastImage");
 
     last_image_saf = false;
     last_image_name = null;
     last_image_uri = null;
   }
 
-  void shareLastImage() {
+  public void shareLastImage() {
     Preview preview = main_activity.getPreview();
     if (preview.isPreviewPaused()) {
       if (last_image_uri != null) {
 
-          Logger.d(TAG,"Share: " + last_image_uri);
+        Logger.d(TAG,"Share: " + last_image_uri);
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("image/jpeg");
@@ -1380,22 +1376,21 @@ public class MyApplicationInterface implements ApplicationInterface {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP) void trashLastImage() {
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP) public void trashLastImage() {
     Preview preview = main_activity.getPreview();
     if (preview.isPreviewPaused()) {
       if (last_image_saf && last_image_uri != null) {
 
-          Logger.d(TAG,"Delete: " + last_image_uri);
+        Logger.d(TAG,"Delete: " + last_image_uri);
 
         File file = storageUtils.getFileFromDocumentUriSAF(
             last_image_uri); // need to get file before deleting it, as fileFromDocumentUriSAF may depend on the file still existing
         if (!DocumentsContract.deleteDocument(main_activity.getContentResolver(),last_image_uri)) {
 
-            Logger.e(TAG,"failed to delete " + last_image_uri);
-
+          Logger.e(TAG,"failed to delete " + last_image_uri);
         } else {
 
-            Logger.d(TAG,"successfully deleted " + last_image_uri);
+          Logger.d(TAG,"successfully deleted " + last_image_uri);
 
           preview.showToast(null,R.string.photo_deleted);
           if (file != null) {
@@ -1405,16 +1400,15 @@ public class MyApplicationInterface implements ApplicationInterface {
         }
       } else if (last_image_name != null) {
 
-          Logger.d(TAG,"Delete: " + last_image_name);
+        Logger.d(TAG,"Delete: " + last_image_name);
 
         File file = new File(last_image_name);
         if (!file.delete()) {
 
-            Logger.e(TAG,"failed to delete " + last_image_name);
-
+          Logger.e(TAG,"failed to delete " + last_image_name);
         } else {
 
-            Logger.d(TAG,"successfully deleted " + last_image_name);
+          Logger.d(TAG,"successfully deleted " + last_image_name);
 
           preview.showToast(null,R.string.photo_deleted);
           storageUtils.broadcastFile(file,false,false,true);

@@ -271,7 +271,7 @@ public class ImageSaver extends Thread {
     return success;
   }
 
-  void waitUntilDone() {
+  public void waitUntilDone() {
 
     Logger.d(TAG,"waitUntilDone");
     synchronized (this) {

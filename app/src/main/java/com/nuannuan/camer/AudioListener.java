@@ -111,7 +111,7 @@ public class AudioListener {
   /**
    * Start listening.
    */
-  void start() {
+  public void start() {
 
     Logger.d(TAG,"start");
     if (thread != null) {
@@ -122,14 +122,14 @@ public class AudioListener {
   /**
    * Stop listening and release the resources.
    */
-  void release() {
+  public void release() {
 
     Logger.d(TAG,"release");
     is_running = false;
     thread = null;
   }
 
-  boolean hasAudioRecorder() {
+  public boolean hasAudioRecorder() {
     return ar != null;
   }
 }

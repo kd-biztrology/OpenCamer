@@ -102,7 +102,7 @@ public class LocationSupplier {
   }
 
   // returns false if location permission not available for either coarse or fine
-  boolean setupLocationListener() {
+  public boolean setupLocationListener() {
 
     Logger.d(TAG,"setupLocationListener");
 
