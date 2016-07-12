@@ -22,7 +22,7 @@ import java.util.Vector;
  * @author kevin
  */
 @SuppressWarnings("deprecation") public class CameraController1 extends CameraController {
-  private static final String TAG = "CameraController1";
+  private static final String TAG = CameraController1.class.getSimpleName();
 
   private Camera camera = null;
   private int display_orientation = 0;

@@ -47,7 +47,7 @@ import java.util.Vector;
  * @author kevin
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP) public class CameraController2 extends CameraController {
-  private static final String TAG = "CameraController2";
+  private static final String TAG = CameraController2.class.getSimpleName();
 
   private Context context = null;
   private CameraDevice camera = null;

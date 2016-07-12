@@ -14,10 +14,10 @@ import com.nuannuan.camer.log.Logger;
  * android.hardware.camera2.*.
  * @author Mark Harman 18 June 2016
  * @author kevin
- *
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP) public class CameraControllerManager2 extends CameraControllerManager {
-  private static final String TAG = "CameraControllerManager2";
+@TargetApi(Build.VERSION_CODES.LOLLIPOP) public class CameraControllerManager2
+    extends CameraControllerManager {
+  private static final String TAG = CameraControllerManager2.class.getSimpleName();
 
   private Context context = null;
 
@@ -29,9 +29,7 @@ import com.nuannuan.camer.log.Logger;
     CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
     try {
       return manager.getCameraIdList().length;
-    } catch (CameraAccessException e) {
-      e.printStackTrace();
-    } catch (AssertionError e) {
+    } catch (CameraAccessException | AssertionError e) {
       // had reported java.lang.AssertionError on Google Play, "Expected to get non-empty characteristics" from CameraManager.getOrCreateDeviceIdListLocked(CameraManager.java:465)
       // yes, in theory we shouldn't catch AssertionError as it represents a programming error, however it's a programming error by Google (a condition they thought couldn't happen)
       e.printStackTrace();

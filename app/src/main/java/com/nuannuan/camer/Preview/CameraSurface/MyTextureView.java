@@ -13,66 +13,59 @@ import com.nuannuan.camer.cameracontroller.CameraController;
 import com.nuannuan.camer.cameracontroller.CameraControllerException;
 import com.nuannuan.camer.preview.Preview;
 
-/** Provides support for the surface used for the preview, using a TextureView.
+/**
+ * Provides support for the surface used for the preview, using a TextureView.
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
 public class MyTextureView extends TextureView implements CameraSurface {
-	private static final String TAG = "MyTextureView";
+  private static final String TAG = MyTextureView.class.getSimpleName();
 
-	private Preview preview = null;
-	private int [] measure_spec = new int[2];
-	
-	public MyTextureView(Context context, Bundle savedInstanceState, Preview preview) {
-		super(context);
-		this.preview = preview;
+  private Preview preview = null;
+  private int[] measure_spec = new int[2];
 
-			Log.d(TAG, "new MyTextureView");
+  public MyTextureView(Context context,Bundle savedInstanceState,Preview preview) {
+    super(context);
+    this.preview = preview;
 
+    Log.d(TAG,"new MyTextureView");
 
-		// Install a TextureView.SurfaceTextureListener so we get notified when the
-		// underlying surface is created and destroyed.
-		this.setSurfaceTextureListener(preview);
-	}
-	
-	@Override
-	public View getView() {
-		return this;
-	}
-	
-	@Override
-	public void setPreviewDisplay(CameraController camera_controller) {
+    // Install a TextureView.SurfaceTextureListener so we get notified when the
+    // underlying surface is created and destroyed.
+    this.setSurfaceTextureListener(preview);
+  }
 
-			Log.d(TAG, "setPreviewDisplay");
-		try {
-			camera_controller.setPreviewTexture(this.getSurfaceTexture());
-		}
-		catch(CameraControllerException e) {
+  @Override public View getView() {
+    return this;
+  }
 
-				Log.e(TAG, "Failed to set preview display: " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
+  @Override public void setPreviewDisplay(CameraController camera_controller) {
 
-	@Override
-	public void setVideoRecorder(MediaRecorder video_recorder) {
-		// should be no need to do anything (see documentation for MediaRecorder.setPreviewDisplay())
-	}
+    Log.d(TAG,"setPreviewDisplay");
+    try {
+      camera_controller.setPreviewTexture(this.getSurfaceTexture());
+    } catch (CameraControllerException e) {
 
-	@SuppressLint("ClickableViewAccessibility")
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		return preview.touchEvent(event);
+      Log.e(TAG,"Failed to set preview display: " + e.getMessage());
+      e.printStackTrace();
     }
+  }
 
-    @Override
-    protected void onMeasure(int widthSpec, int heightSpec) {
-    	preview.getMeasureSpec(measure_spec, widthSpec, heightSpec);
-    	super.onMeasure(measure_spec[0], measure_spec[1]);
-    }
+  @Override public void setVideoRecorder(MediaRecorder video_recorder) {
+    // should be no need to do anything (see documentation for MediaRecorder.setPreviewDisplay())
+  }
 
-	@Override
-	public void setTransform(Matrix matrix) {
-		super.setTransform(matrix);
-	}
+  @SuppressLint("ClickableViewAccessibility") @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    return preview.touchEvent(event);
+  }
+
+  @Override protected void onMeasure(int widthSpec,int heightSpec) {
+    preview.getMeasureSpec(measure_spec,widthSpec,heightSpec);
+    super.onMeasure(measure_spec[0],measure_spec[1]);
+  }
+
+  @Override public void setTransform(Matrix matrix) {
+    super.setTransform(matrix);
+  }
 }

@@ -24,7 +24,7 @@ import java.util.List;
  * @author kevin
  */
 public abstract class CameraController {
-  private static final String TAG = "CameraController";
+  private static final String TAG = CameraController.class.getSimpleName();
   int cameraId = 0;
 
   public static final long EXPOSURE_TIME_DEFAULT = 1000000000l / 30;

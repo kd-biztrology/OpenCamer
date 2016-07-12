@@ -11,7 +11,7 @@ import com.nuannuan.camer.log.Logger;
  */
 @SuppressWarnings("deprecation") public class CameraControllerManager1
     extends CameraControllerManager {
-  private static final String TAG = "CameraControllerManager1";
+  private static final String TAG = CameraControllerManager1.class.getSimpleName();
 
   public int getNumberOfCameras() {
     return Camera.getNumberOfCameras();

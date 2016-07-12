@@ -83,7 +83,7 @@ import java.util.Vector;
  * @author kevin
  */
 public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextureListener {
-  private static final String TAG = "Preview";
+  private static final String TAG = Preview.class.getSimpleName();
 
   private boolean using_android_l = false;
   private boolean using_texture_view = false;
@@ -3018,7 +3018,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
           false); // first restore the saved focus for the new photo/video mode; don't do autofocus, as it'll be cancelled when restarting preview
       updateFocusForVideo(
           false); // don't do autofocus, as it'll be cancelled when restarting preview
-			/*if( !is_video ) {
+      /*if( !is_video ) {
 				// changing from video to photo mode
 				setFocusPref(false); // first restore the saved focus for the new photo/video mode; don't do autofocus, as it'll be cancelled when restarting preview
 			}*/

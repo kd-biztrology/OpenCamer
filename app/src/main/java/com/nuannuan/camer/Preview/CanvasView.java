@@ -16,7 +16,7 @@ import android.view.View;
  * @author kevin
  */
 public class CanvasView extends View {
-  private static final String TAG = "CanvasView";
+  private static final String TAG = CanvasView.class.getSimpleName();
 
   private Preview preview = null;
   private int[] measure_spec = new int[2];
