@@ -1,12 +1,14 @@
 package com.nuannuan.camer;
 
+import com.nuannuan.camer.log.Logger;
+
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import com.nuannuan.camer.log.Logger;
 
 /**
  * Sets up a listener to listen for noise level.
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -21,37 +23,38 @@ public class AudioListener {
     void onAudio(int level);
   }
 
+
   /**
    * Create a new AudioListener. The caller should call the start() method to start listening.
    */
   public AudioListener(final AudioListenerCallback cb) {
 
-    Logger.d(TAG,"new AudioListener");
+    Logger.d(TAG, "new AudioListener");
     final int sample_rate = 8000;
     int channel_config = AudioFormat.CHANNEL_IN_MONO;
     int audio_format = AudioFormat.ENCODING_PCM_16BIT;
     try {
-      buffer_size = AudioRecord.getMinBufferSize(sample_rate,channel_config,audio_format);
+      buffer_size = AudioRecord.getMinBufferSize(sample_rate, channel_config, audio_format);
       //buffer_size = -1; // test
 
-      Logger.d(TAG,"buffer_size: " + buffer_size);
+      Logger.d(TAG, "buffer_size: " + buffer_size);
       if (buffer_size <= 0) {
 
         if (buffer_size == AudioRecord.ERROR) {
-          Logger.e(TAG,"getMinBufferSize returned ERROR");
+          Logger.e(TAG, "getMinBufferSize returned ERROR");
         } else if (buffer_size == AudioRecord.ERROR_BAD_VALUE) {
-          Logger.e(TAG,"getMinBufferSize returned ERROR_BAD_VALUE");
+          Logger.e(TAG, "getMinBufferSize returned ERROR_BAD_VALUE");
         }
 
         return;
       }
 
-      ar = new AudioRecord(MediaRecorder.AudioSource.MIC,sample_rate,channel_config,audio_format,
+      ar = new AudioRecord(MediaRecorder.AudioSource.MIC, sample_rate, channel_config, audio_format,
           buffer_size);
     } catch (Exception e) {
       e.printStackTrace();
 
-      Logger.e(TAG,"failed to create audiorecord");
+      Logger.e(TAG, "failed to create audiorecord");
       return;
     }
 
@@ -61,7 +64,7 @@ public class AudioListener {
     this.thread = new Thread() {
       @Override public void run() {
         /*int sample_delay = (1000 * buffer_size) / sample_rate;
-				if( MyDebug.LOG )
+        if( MyDebug.LOG )
 					Logger.e(TAG, "sample_delay: " + sample_delay);*/
 
         while (is_running) {
@@ -72,14 +75,14 @@ public class AudioListener {
 						e.printStackTrace();
 					}*/
           try {
-            int n_read = ar.read(buffer,0,buffer_size);
+            int n_read = ar.read(buffer, 0, buffer_size);
             if (n_read > 0) {
               int average_noise = 0;
               int max_noise = 0;
               for (int i = 0; i < n_read; i++) {
                 int value = Math.abs(buffer[i]);
                 average_noise += value;
-                max_noise = Math.max(max_noise,value);
+                max_noise = Math.max(max_noise, value);
               }
               average_noise /= n_read;
 							/*if( MyDebug.LOG ) {
@@ -90,17 +93,17 @@ public class AudioListener {
               cb.onAudio(average_noise);
             } else {
 
-              Logger.d(TAG,"n_read: " + n_read);
+              Logger.d(TAG, "n_read: " + n_read);
               if (n_read == AudioRecord.ERROR_INVALID_OPERATION) {
-                Logger.e(TAG,"read returned ERROR_INVALID_OPERATION");
+                Logger.e(TAG, "read returned ERROR_INVALID_OPERATION");
               } else if (n_read == AudioRecord.ERROR_BAD_VALUE) {
-                Logger.e(TAG,"read returned ERROR_BAD_VALUE");
+                Logger.e(TAG, "read returned ERROR_BAD_VALUE");
               }
             }
           } catch (Exception e) {
             e.printStackTrace();
 
-            Logger.e(TAG,"failed to read from audiorecord");
+            Logger.e(TAG, "failed to read from audiorecord");
           }
         }
         ar.release();
@@ -110,26 +113,29 @@ public class AudioListener {
     // n.b., not good practice to start threads in constructors, so we require the caller to call start() instead
   }
 
+
   /**
    * Start listening.
    */
   public void start() {
 
-    Logger.d(TAG,"start");
+    Logger.d(TAG, "start");
     if (thread != null) {
       thread.start();
     }
   }
+
 
   /**
    * Stop listening and release the resources.
    */
   public void release() {
 
-    Logger.d(TAG,"release");
+    Logger.d(TAG, "release");
     is_running = false;
     thread = null;
   }
+
 
   public boolean hasAudioRecorder() {
     return ar != null;
