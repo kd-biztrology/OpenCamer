@@ -1,5 +1,21 @@
 package com.nuannuan.camer;
 
+import com.nuannuan.camer.cameracontroller.CameraController;
+import com.nuannuan.camer.view.MainActivity;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -19,22 +35,6 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-
-import com.nuannuan.camer.cameracontroller.CameraController;
-import com.nuannuan.camer.view.MainActivity;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Handles the saving (and any required processing) of photos.
