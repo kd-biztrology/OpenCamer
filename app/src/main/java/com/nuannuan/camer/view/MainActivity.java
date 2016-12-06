@@ -1,8 +1,32 @@
 package com.nuannuan.camer.view;
 
+import com.nuannuan.camer.AudioListener;
+import com.nuannuan.camer.LocationSupplier;
+import com.nuannuan.camer.MyApplicationInterface;
+import com.nuannuan.camer.MyPreferenceFragment;
+import com.nuannuan.camer.PreferenceKeys;
+import com.nuannuan.camer.R;
+import com.nuannuan.camer.StorageUtils;
+import com.nuannuan.camer.TakePhoto;
+import com.nuannuan.camer.ToastBoxer;
+import com.nuannuan.camer.cameracontroller.CameraController;
+import com.nuannuan.camer.cameracontroller.CameraControllerManager2;
+import com.nuannuan.camer.log.Logger;
+import com.nuannuan.camer.modle.Media;
+import com.nuannuan.camer.preview.Preview;
+import com.nuannuan.camer.ui.FolderChooserDialog;
+import com.nuannuan.camer.ui.MainUI;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -57,30 +81,6 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.ZoomControls;
-import com.nuannuan.camer.AudioListener;
-import com.nuannuan.camer.LocationSupplier;
-import com.nuannuan.camer.MyApplicationInterface;
-import com.nuannuan.camer.MyPreferenceFragment;
-import com.nuannuan.camer.PreferenceKeys;
-import com.nuannuan.camer.R;
-import com.nuannuan.camer.StorageUtils;
-import com.nuannuan.camer.TakePhoto;
-import com.nuannuan.camer.ToastBoxer;
-import com.nuannuan.camer.cameracontroller.CameraController;
-import com.nuannuan.camer.cameracontroller.CameraControllerManager2;
-import com.nuannuan.camer.log.Logger;
-import com.nuannuan.camer.preview.Preview;
-import com.nuannuan.camer.ui.FolderChooserDialog;
-import com.nuannuan.camer.ui.MainUI;
-import com.nuannuan.camer.modle.Media;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * The main Activity for Open Camera.
@@ -271,10 +271,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         "onCreate: time after creating preview: " + (System.currentTimeMillis() - debug_time));
 
     // initialise on-screen button visibility
-    View switchCameraButton = (View) findViewById(R.id.switch_camera);
+    View switchCameraButton = findViewById(R.id.switch_camera);
     switchCameraButton.setVisibility(
         preview.getCameraControllerManager().getNumberOfCameras() > 1 ? View.VISIBLE : View.GONE);
-    View speechRecognizerButton = (View) findViewById(R.id.audio_control);
+    View speechRecognizerButton =  findViewById(R.id.audio_control);
     speechRecognizerButton.setVisibility(
         View.GONE); // disabled by default, until the speech recognizer is created
 
@@ -293,13 +293,11 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             - debug_time));
 
     // set up gallery button long click
-    View galleryButton = (View) findViewById(R.id.gallery);
-    galleryButton.setOnLongClickListener(new View.OnLongClickListener() {
-      @Override public boolean onLongClick(View v) {
-        //preview.showToast(null, "Long click");
-        longClickedGallery();
-        return true;
-      }
+    View galleryButton =  findViewById(R.id.gallery);
+    galleryButton.setOnLongClickListener(v -> {
+      //preview.showToast(null, "Long click");
+      longClickedGallery();
+      return true;
     });
 
     Logger.d(TAG,
@@ -314,34 +312,32 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
 
     // set up listener to handle immersive mode options
     View decorView = getWindow().getDecorView();
-    decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-      @Override public void onSystemUiVisibilityChange(int visibility) {
-        // Note that system bars will only be "visible" if none of the
-        // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
-        if (!usingKitKatImmersiveMode()) {
-          return;
-        }
+    decorView.setOnSystemUiVisibilityChangeListener(visibility -> {
+      // Note that system bars will only be "visible" if none of the
+      // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+      if (!usingKitKatImmersiveMode()) {
+        return;
+      }
 
-        Logger.d(TAG,"onSystemUiVisibilityChange: " + visibility);
+      Logger.d(TAG,"onSystemUiVisibilityChange: " + visibility);
 
-        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+      if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
 
-          Logger.d(TAG,"system bars now visible");
+        Logger.d(TAG,"system bars now visible");
 
-          // The system bars are visible. Make any desired
-          // adjustments to your UI, such as showing the action bar or
-          // other navigational controls.
-          mainUI.setImmersiveMode(false);
-          setImmersiveTimer();
-        } else {
+        // The system bars are visible. Make any desired
+        // adjustments to your UI, such as showing the action bar or
+        // other navigational controls.
+        mainUI.setImmersiveMode(false);
+        setImmersiveTimer();
+      } else {
 
-          Logger.d(TAG,"system bars now NOT visible");
+        Logger.d(TAG,"system bars now NOT visible");
 
-          // The system bars are NOT visible. Make any desired
-          // adjustments to your UI, such as hiding the action bar or
-          // other navigational controls.
-          mainUI.setImmersiveMode(true);
-        }
+        // The system bars are NOT visible. Make any desired
+        // adjustments to your UI, such as hiding the action bar or
+        // other navigational controls.
+        mainUI.setImmersiveMode(true);
       }
     });
 
@@ -374,19 +370,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     // run in separate thread so as to not delay startup time
     new Thread(new Runnable() {
       public void run() {
-        textToSpeech = new TextToSpeech(MainActivity.this,new TextToSpeech.OnInitListener() {
-          @Override public void onInit(int status) {
+        textToSpeech = new TextToSpeech(MainActivity.this, status -> {
 
-            Logger.d(TAG,"TextToSpeech initialised");
+          Logger.d(TAG,"TextToSpeech initialised");
 
-            if (status == TextToSpeech.SUCCESS) {
-              textToSpeechSuccess = true;
+          if (status == TextToSpeech.SUCCESS) {
+            textToSpeechSuccess = true;
 
-              Logger.d(TAG,"TextToSpeech succeeded");
-            } else {
+            Logger.d(TAG,"TextToSpeech succeeded");
+          } else {
 
-              Logger.d(TAG,"TextToSpeech failed");
-            }
+            Logger.d(TAG,"TextToSpeech failed");
           }
         });
       }
@@ -1773,6 +1767,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     showPreview(false);
     setWindowFlagsForSettings();
     final String orig_save_location = applicationInterface.getStorageUtils().getSaveLocation();
+
     FolderChooserDialog fragment = new FolderChooserDialog() {
       @Override public void onDismiss(DialogInterface dialog) {
 
@@ -1831,78 +1826,68 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     items[index++] = getResources().getString(R.string.clear_folder_history);
     final int new_index = index;
     items[index++] = getResources().getString(R.string.choose_another_folder);
-    alertDialog.setItems(items,new DialogInterface.OnClickListener() {
-      @Override public void onClick(DialogInterface dialog,int which) {
-        if (which == clear_index) {
+    alertDialog.setItems(items, (dialog, which) -> {
+      if (which == clear_index) {
 
-          Logger.d(TAG,"selected clear save history");
+        Logger.d(TAG,"selected clear save history");
 
-          new AlertDialog.Builder(MainActivity.this).setIcon(android.R.drawable.ic_dialog_alert)
-              .setTitle(R.string.clear_folder_history)
-              .setMessage(R.string.clear_folder_history_question)
-              .setPositiveButton(R.string.answer_yes,new DialogInterface.OnClickListener() {
-                @Override public void onClick(DialogInterface dialog,int which) {
+        new AlertDialog.Builder(MainActivity.this).setIcon(android.R.drawable.ic_dialog_alert)
+            .setTitle(R.string.clear_folder_history)
+            .setMessage(R.string.clear_folder_history_question)
+            .setPositiveButton(R.string.answer_yes, (dialog1, which1) -> {
 
-                  Logger.d(TAG,"confirmed clear save history");
+              Logger.d(TAG,"confirmed clear save history");
 
-                  clearFolderHistory();
-                  setWindowFlagsForCamera();
-                  showPreview(true);
-                }
-              })
-              .setNegativeButton(R.string.answer_no,new DialogInterface.OnClickListener() {
-                @Override public void onClick(DialogInterface dialog,int which) {
+              clearFolderHistory();
+              setWindowFlagsForCamera();
+              showPreview(true);
+            })
+            .setNegativeButton(R.string.answer_no, (dialog12, which12) -> {
 
-                  Logger.d(TAG,"don't clear save history");
+              Logger.d(TAG,"don't clear save history");
 
-                  setWindowFlagsForCamera();
-                  showPreview(true);
-                }
-              })
-              .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override public void onCancel(DialogInterface arg0) {
+              setWindowFlagsForCamera();
+              showPreview(true);
+            })
+            .setOnCancelListener(arg0 -> {
 
-                  Logger.d(TAG,"cancelled clear save history");
+              Logger.d(TAG,"cancelled clear save history");
 
-                  setWindowFlagsForCamera();
-                  showPreview(true);
-                }
-              })
-              .show();
-        } else if (which == new_index) {
+              setWindowFlagsForCamera();
+              showPreview(true);
+            })
+            .show();
+      } else if (which == new_index) {
 
-          Logger.d(TAG,"selected choose new folder");
+        Logger.d(TAG,"selected choose new folder");
 
-          openFolderChooserDialog();
-        } else {
+        openFolderChooserDialog();
+      } else {
 
-          Logger.d(TAG,"selected: " + which);
+        Logger.d(TAG,"selected: " + which);
 
-          if (which >= 0 && which < save_location_history.size()) {
-            String save_folder =
-                save_location_history.get(save_location_history.size() - 1 - which);
+        if (which >= 0 && which < save_location_history.size()) {
+          String save_folder =
+              save_location_history.get(save_location_history.size() - 1 - which);
 
-            Logger.d(TAG,"changed save_folder from history to: " + save_folder);
+          Logger.d(TAG,"changed save_folder from history to: " + save_folder);
 
-            preview.showToast(null,
-                getResources().getString(R.string.changed_save_location) + "\n" + save_folder);
-            SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(PreferenceKeys.getSaveLocationPreferenceKey(),save_folder);
-            editor.apply();
-            updateFolderHistory(true); // to move new selection to most recent
-          }
-          setWindowFlagsForCamera();
-          showPreview(true);
+          preview.showToast(null,
+              getResources().getString(R.string.changed_save_location) + "\n" + save_folder);
+          SharedPreferences sharedPreferences =
+              PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+          SharedPreferences.Editor editor = sharedPreferences.edit();
+          editor.putString(PreferenceKeys.getSaveLocationPreferenceKey(),save_folder);
+          editor.apply();
+          updateFolderHistory(true); // to move new selection to most recent
         }
-      }
-    });
-    alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-      @Override public void onCancel(DialogInterface arg0) {
         setWindowFlagsForCamera();
         showPreview(true);
       }
+    });
+    alertDialog.setOnCancelListener(arg0 -> {
+      setWindowFlagsForCamera();
+      showPreview(true);
     });
     alertDialog.show();
 
@@ -1948,12 +1933,9 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
    * not the standard Android lock.
    */
   public void lockScreen() {
-    ((ViewGroup) findViewById(R.id.locker)).setOnTouchListener(new View.OnTouchListener() {
-      @SuppressLint("ClickableViewAccessibility") @Override
-      public boolean onTouch(View arg0,MotionEvent event) {
-        return gestureDetector.onTouchEvent(event);
-        //return true;
-      }
+    ((ViewGroup) findViewById(R.id.locker)).setOnTouchListener((arg0, event) -> {
+      return gestureDetector.onTouchEvent(event);
+      //return true;
     });
     screen_is_locked = true;
   }
@@ -2273,16 +2255,8 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         });
 
         ZoomControls seek_bar_zoom = (ZoomControls) findViewById(R.id.exposure_seekbar_zoom);
-        seek_bar_zoom.setOnZoomInClickListener(new View.OnClickListener() {
-          public void onClick(View v) {
-            changeExposure(1);
-          }
-        });
-        seek_bar_zoom.setOnZoomOutClickListener(new View.OnClickListener() {
-          public void onClick(View v) {
-            changeExposure(-1);
-          }
-        });
+        seek_bar_zoom.setOnZoomInClickListener(v -> changeExposure(1));
+        seek_bar_zoom.setOnZoomOutClickListener(v -> changeExposure(-1));
       }
     }
 

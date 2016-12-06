@@ -12,6 +12,7 @@ import android.view.View;
  * work. Only used if using a MyTextureView (if using MySurfaceView, then that
  * class can handle the onDraw()). TextureViews can't be used for both a
  * camera preview, and used for drawing on.
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -21,11 +22,12 @@ public class CanvasView extends View {
   private Preview preview = null;
   private int[] measure_spec = new int[2];
 
-  CanvasView(Context context,Bundle savedInstanceState,Preview preview) {
+
+  CanvasView(Context context, Bundle savedInstanceState, Preview preview) {
     super(context);
     this.preview = preview;
 
-    Log.d(TAG,"new CanvasView");
+    Log.d(TAG, "new CanvasView");
 
     // deprecated setting, but required on Android versions prior to 3.0
     //getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // deprecated
@@ -34,19 +36,21 @@ public class CanvasView extends View {
     Runnable tick = new Runnable() {
       public void run() {
         invalidate();
-        handler.postDelayed(this,100);
+        handler.postDelayed(this, 100);
       }
     };
     tick.run();
   }
+
 
   @Override public void onDraw(Canvas canvas) {
 
     preview.draw(canvas);
   }
 
-  @Override protected void onMeasure(int widthSpec,int heightSpec) {
-    preview.getMeasureSpec(measure_spec,widthSpec,heightSpec);
-    super.onMeasure(measure_spec[0],measure_spec[1]);
+
+  @Override protected void onMeasure(int widthSpec, int heightSpec) {
+    preview.getMeasureSpec(measure_spec, widthSpec, heightSpec);
+    super.onMeasure(measure_spec[0], measure_spec[1]);
   }
 }

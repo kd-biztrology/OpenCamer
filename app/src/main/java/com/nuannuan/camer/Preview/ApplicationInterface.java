@@ -9,6 +9,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.util.Pair;
 import android.view.MotionEvent;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -17,6 +18,7 @@ import java.io.IOException;
  * - so in theory one can drop the Preview/ (and CameraController/) classes
  * into a new application, by providing an appropriate implementation of this
  * ApplicationInterface.
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -216,7 +218,7 @@ public interface ApplicationInterface {
   void stoppingVideo();
 
   // called after video recording stopped (uri/filename will be null if video is corrupt or not created)
-  void stoppedVideo(final int video_method,final Uri uri,final String filename);
+  void stoppedVideo(final int video_method, final Uri uri, final String filename);
 
   // called if failed to start camera preview
   void onFailedStartPreview();
@@ -225,10 +227,10 @@ public interface ApplicationInterface {
   void onPhotoError();
 
   // callback for info when recording video (see MediaRecorder.OnInfoListener)
-  void onVideoInfo(int what,int extra);
+  void onVideoInfo(int what, int extra);
 
   // callback for errors when recording video (see MediaRecorder.OnErrorListener)
-  void onVideoError(int what,int extra);
+  void onVideoError(int what, int extra);
 
   // callback for video recording failing to start
   void onVideoRecordStartError(CamcorderProfile profile);
@@ -272,7 +274,7 @@ public interface ApplicationInterface {
 
   void setFlashPref(String flash_value);
 
-  void setFocusPref(String focus_value,boolean is_video);
+  void setFocusPref(String focus_value, boolean is_video);
 
   void setVideoPref(boolean is_video);
 
@@ -296,7 +298,7 @@ public interface ApplicationInterface {
 
   void clearExposureCompensationPref();
 
-  void setCameraResolutionPref(int width,int height);
+  void setCameraResolutionPref(int width, int height);
 
   void setVideoQualityPref(String video_quality);
 
@@ -314,7 +316,7 @@ public interface ApplicationInterface {
 
   boolean onPictureTaken(byte[] data);
 
-  boolean onRawPictureTaken(DngCreator dngCreator,Image image);
+  boolean onRawPictureTaken(DngCreator dngCreator, Image image);
 
   // called when focusing starts/stop in continuous picture mode (in photo mode only)
   void onContinuousFocusMove(boolean start);
