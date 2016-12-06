@@ -68,7 +68,7 @@ public class AudioListener {
 					Logger.e(TAG, "sample_delay: " + sample_delay);*/
 
         while (is_running) {
-					/*try{
+          /*try{
 						Thread.sleep(sample_delay);
 					}
 					catch(InterruptedException e) {
