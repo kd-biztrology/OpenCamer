@@ -34,6 +34,7 @@ import android.util.Range;
 import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +44,7 @@ import java.util.Vector;
 /**
  * Provides support using Android 5's Camera 2 API
  * android.hardware.camera2.*.
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -144,6 +146,7 @@ import java.util.Vector;
     private int face_detect_mode = CaptureRequest.STATISTICS_FACE_DETECT_MODE_OFF;
     private boolean video_stabilization = false;
 
+
     private int getExifOrientation() {
       int exif_orientation = ExifInterface.ORIENTATION_NORMAL;
       switch ((rotation + 360) % 360) {
@@ -152,27 +155,28 @@ import java.util.Vector;
           break;
         case 90:
           exif_orientation = isFrontFacing() ? ExifInterface.ORIENTATION_ROTATE_270
-              : ExifInterface.ORIENTATION_ROTATE_90;
+                                             : ExifInterface.ORIENTATION_ROTATE_90;
           break;
         case 180:
           exif_orientation = ExifInterface.ORIENTATION_ROTATE_180;
           break;
         case 270:
           exif_orientation = isFrontFacing() ? ExifInterface.ORIENTATION_ROTATE_90
-              : ExifInterface.ORIENTATION_ROTATE_270;
+                                             : ExifInterface.ORIENTATION_ROTATE_270;
           break;
       }
 
       return exif_orientation;
     }
 
-    private void setupBuilder(CaptureRequest.Builder builder,boolean is_still) {
-      builder.set(CaptureRequest.CONTROL_AF_TRIGGER,CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+
+    private void setupBuilder(CaptureRequest.Builder builder, boolean is_still) {
+      builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
 
       setSceneMode(builder);
       setColorEffect(builder);
       setWhiteBalance(builder);
-      setAEMode(builder,is_still);
+      setAEMode(builder, is_still);
       setCropRegion(builder);
       setExposureCompensation(builder);
       setFocusMode(builder);
@@ -185,91 +189,97 @@ import java.util.Vector;
 
       if (is_still) {
         if (location != null) {
-          builder.set(CaptureRequest.JPEG_GPS_LOCATION,location);
+          builder.set(CaptureRequest.JPEG_GPS_LOCATION, location);
         }
-        builder.set(CaptureRequest.JPEG_ORIENTATION,rotation);
-        builder.set(CaptureRequest.JPEG_QUALITY,jpeg_quality);
+        builder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
+        builder.set(CaptureRequest.JPEG_QUALITY, jpeg_quality);
       }
     }
+
 
     private boolean setSceneMode(CaptureRequest.Builder builder) {
       if (builder.get(CaptureRequest.CONTROL_SCENE_MODE) == null
           || builder.get(CaptureRequest.CONTROL_SCENE_MODE) != scene_mode) {
 
-        Log.d(TAG,"setting scene mode: " + scene_mode);
+        Log.d(TAG, "setting scene mode: " + scene_mode);
         if (scene_mode == CameraMetadata.CONTROL_SCENE_MODE_DISABLED) {
-          builder.set(CaptureRequest.CONTROL_MODE,CameraMetadata.CONTROL_MODE_AUTO);
+          builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
         } else {
-          builder.set(CaptureRequest.CONTROL_MODE,CameraMetadata.CONTROL_MODE_USE_SCENE_MODE);
+          builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_USE_SCENE_MODE);
         }
-        builder.set(CaptureRequest.CONTROL_SCENE_MODE,scene_mode);
+        builder.set(CaptureRequest.CONTROL_SCENE_MODE, scene_mode);
         return true;
       }
       return false;
     }
+
 
     private boolean setColorEffect(CaptureRequest.Builder builder) {
       if (builder.get(CaptureRequest.CONTROL_EFFECT_MODE) == null
           || builder.get(CaptureRequest.CONTROL_EFFECT_MODE) != color_effect) {
 
-        Log.d(TAG,"setting color effect: " + color_effect);
-        builder.set(CaptureRequest.CONTROL_EFFECT_MODE,color_effect);
+        Log.d(TAG, "setting color effect: " + color_effect);
+        builder.set(CaptureRequest.CONTROL_EFFECT_MODE, color_effect);
         return true;
       }
       return false;
     }
+
 
     private boolean setWhiteBalance(CaptureRequest.Builder builder) {
       if (builder.get(CaptureRequest.CONTROL_AWB_MODE) == null
           || builder.get(CaptureRequest.CONTROL_AWB_MODE) != white_balance) {
 
-        Log.d(TAG,"setting white balance: " + white_balance);
-        builder.set(CaptureRequest.CONTROL_AWB_MODE,white_balance);
+        Log.d(TAG, "setting white balance: " + white_balance);
+        builder.set(CaptureRequest.CONTROL_AWB_MODE, white_balance);
         return true;
       }
       return false;
     }
 
-    private boolean setAEMode(CaptureRequest.Builder builder,boolean is_still) {
 
-      Log.d(TAG,"setAEMode");
+    private boolean setAEMode(CaptureRequest.Builder builder, boolean is_still) {
+
+      Log.d(TAG, "setAEMode");
       if (has_iso) {
 
-        builder.set(CaptureRequest.CONTROL_AE_MODE,CameraMetadata.CONTROL_AE_MODE_OFF);
-        builder.set(CaptureRequest.SENSOR_SENSITIVITY,iso);
-        builder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,exposure_time);
+        builder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_OFF);
+        builder.set(CaptureRequest.SENSOR_SENSITIVITY, iso);
+        builder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, exposure_time);
         // for now, flash is disabled when using manual iso - it seems to cause ISO level to jump to 100 on Nexus 6 when flash is turned on!
-        builder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_OFF);
+        builder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
       } else {
 
         // prefer to set flash via the ae mode (otherwise get even worse results), except for torch which we can't
         if (flash_value.equals("flash_off")) {
-          builder.set(CaptureRequest.CONTROL_AE_MODE,CameraMetadata.CONTROL_AE_MODE_ON);
-          builder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_OFF);
+          builder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+          builder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
         } else if (flash_value.equals("flash_auto")) {
-          builder.set(CaptureRequest.CONTROL_AE_MODE,CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH);
-          builder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_OFF);
+          builder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH);
+          builder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
         } else if (flash_value.equals("flash_on")) {
           builder.set(CaptureRequest.CONTROL_AE_MODE,
               CameraMetadata.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
-          builder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_OFF);
+          builder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
         } else if (flash_value.equals("flash_torch")) {
-          builder.set(CaptureRequest.CONTROL_AE_MODE,CameraMetadata.CONTROL_AE_MODE_ON);
-          builder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_TORCH);
+          builder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+          builder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
         } else if (flash_value.equals("flash_red_eye")) {
           builder.set(CaptureRequest.CONTROL_AE_MODE,
               CameraMetadata.CONTROL_AE_MODE_ON_AUTO_FLASH_REDEYE);
-          builder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_OFF);
+          builder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
         }
       }
       return true;
     }
 
+
     private void setCropRegion(CaptureRequest.Builder builder) {
       if (scalar_crop_region != null) {
-        builder.set(CaptureRequest.SCALER_CROP_REGION,scalar_crop_region);
+        builder.set(CaptureRequest.SCALER_CROP_REGION, scalar_crop_region);
       }
     }
+
 
     private boolean setExposureCompensation(CaptureRequest.Builder builder) {
       if (!has_ae_exposure_compensation) {
@@ -277,60 +287,67 @@ import java.util.Vector;
       }
       if (has_iso) {
 
-        Log.d(TAG,"don't set exposure compensation in manual iso mode");
+        Log.d(TAG, "don't set exposure compensation in manual iso mode");
         return false;
       }
       if (builder.get(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION) == null
           || ae_exposure_compensation != builder.get(
           CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION)) {
 
-        Log.d(TAG,"change exposure to " + ae_exposure_compensation);
-        builder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION,ae_exposure_compensation);
+        Log.d(TAG, "change exposure to " + ae_exposure_compensation);
+        builder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, ae_exposure_compensation);
         return true;
       }
       return false;
     }
 
+
     private void setFocusMode(CaptureRequest.Builder builder) {
       if (has_af_mode) {
 
-        builder.set(CaptureRequest.CONTROL_AF_MODE,af_mode);
+        builder.set(CaptureRequest.CONTROL_AF_MODE, af_mode);
       }
     }
 
+
     private void setFocusDistance(CaptureRequest.Builder builder) {
 
-      builder.set(CaptureRequest.LENS_FOCUS_DISTANCE,focus_distance);
+      builder.set(CaptureRequest.LENS_FOCUS_DISTANCE, focus_distance);
     }
 
+
     private void setAutoExposureLock(CaptureRequest.Builder builder) {
-      builder.set(CaptureRequest.CONTROL_AE_LOCK,ae_lock);
+      builder.set(CaptureRequest.CONTROL_AE_LOCK, ae_lock);
     }
+
 
     private void setAFRegions(CaptureRequest.Builder builder) {
       if (af_regions != null
           && characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF) > 0) {
-        builder.set(CaptureRequest.CONTROL_AF_REGIONS,af_regions);
+        builder.set(CaptureRequest.CONTROL_AF_REGIONS, af_regions);
       }
     }
+
 
     private void setAERegions(CaptureRequest.Builder builder) {
       if (ae_regions != null
           && characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE) > 0) {
-        builder.set(CaptureRequest.CONTROL_AE_REGIONS,ae_regions);
+        builder.set(CaptureRequest.CONTROL_AE_REGIONS, ae_regions);
       }
     }
 
+
     private void setFaceDetectMode(CaptureRequest.Builder builder) {
       if (has_face_detect_mode) {
-        builder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE,face_detect_mode);
+        builder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, face_detect_mode);
       }
     }
+
 
     private void setVideoStabilization(CaptureRequest.Builder builder) {
       builder.set(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE,
           video_stabilization ? CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_ON
-              : CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_OFF);
+                              : CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_OFF);
     }
 
     // n.b., if we add more methods, remember to update setupBuilder() above!
@@ -342,7 +359,8 @@ import java.util.Vector;
   /*private boolean push_set_ae_lock = false;
   private CaptureRequest push_set_ae_lock_id = null;*/
 
-  public CameraController2(Context context,int cameraId,ErrorCallback preview_error_cb)
+
+  public CameraController2(Context context, int cameraId, ErrorCallback preview_error_cb)
       throws CameraControllerException {
     super(cameraId);
     this.context = context;
@@ -358,6 +376,7 @@ import java.util.Vector;
       boolean callback_done = false;
       boolean first_callback = true;
       // Google Camera says we may get multiple callbacks, but only the first indicates the status of the camera opening operation
+
 
       @Override public void onOpened(CameraDevice cam) {
 
@@ -382,6 +401,7 @@ import java.util.Vector;
         }
       }
 
+
       @Override public void onClosed(CameraDevice cam) {
 
         // caller should ensure camera variables are set to null
@@ -389,6 +409,7 @@ import java.util.Vector;
           first_callback = false;
         }
       }
+
 
       @Override public void onDisconnected(CameraDevice cam) {
 
@@ -404,7 +425,8 @@ import java.util.Vector;
         }
       }
 
-      @Override public void onError(CameraDevice cam,int error) {
+
+      @Override public void onError(CameraDevice cam, int error) {
 
         if (first_callback) {
           first_callback = false;
@@ -423,7 +445,7 @@ import java.util.Vector;
 
     try {
       this.cameraIdS = manager.getCameraIdList()[cameraId];
-      manager.openCamera(cameraIdS,myStateCallback,handler);
+      manager.openCamera(cameraIdS, myStateCallback, handler);
     } catch (CameraAccessException e) {
 
       e.printStackTrace();
@@ -447,6 +469,7 @@ import java.util.Vector;
       throw new CameraControllerException();
     }
   }
+
 
   @Override public void release() {
 
@@ -472,6 +495,7 @@ import java.util.Vector;
     closePictureImageReader();
   }
 
+
   private void closePictureImageReader() {
 
     if (imageReader != null) {
@@ -484,15 +508,17 @@ import java.util.Vector;
     }
   }
 
+
   private List<String> convertFocusModesToValues(int[] supported_focus_modes_arr,
-      float minimum_focus_distance) {
+                                                 float minimum_focus_distance) {
 
     if (supported_focus_modes_arr.length == 0) {
       return null;
     }
     List<Integer> supported_focus_modes = new ArrayList<Integer>();
-    for (int i = 0; i < supported_focus_modes_arr.length; i++)
+    for (int i = 0; i < supported_focus_modes_arr.length; i++) {
       supported_focus_modes.add(supported_focus_modes_arr[i]);
+    }
     List<String> output_modes = new Vector<String>();
     // also resort as well as converting
     if (supported_focus_modes.contains(CaptureRequest.CONTROL_AF_MODE_AUTO)) {
@@ -522,22 +548,24 @@ import java.util.Vector;
     return output_modes;
   }
 
+
   public String getAPI() {
     return "Camera2 (Android L)";
   }
+
 
   @Override public CameraFeatures getCameraFeatures() {
 
     CameraFeatures camera_features = new CameraFeatures();
     int hardware_level = characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
     if (hardware_level == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY) {
-      Log.d(TAG,"Hardware Level: LEGACY");
+      Log.d(TAG, "Hardware Level: LEGACY");
     } else if (hardware_level == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED) {
-      Log.d(TAG,"Hardware Level: LIMITED");
+      Log.d(TAG, "Hardware Level: LIMITED");
     } else if (hardware_level == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_FULL) {
-      Log.d(TAG,"Hardware Level: FULL");
+      Log.d(TAG, "Hardware Level: FULL");
     } else {
-      Log.e(TAG,"Unknown Hardware Level!");
+      Log.e(TAG, "Unknown Hardware Level!");
     }
 
     float max_zoom = characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
@@ -548,7 +576,7 @@ import java.util.Vector;
       final int steps_per_2x_factor = 20;
       //final double scale_factor = Math.pow(2.0, 1.0/(double)steps_per_2x_factor);
       int n_steps = (int) ((steps_per_2x_factor * Math.log(max_zoom + 1.0e-11)) / Math.log(2.0));
-      final double scale_factor = Math.pow(max_zoom,1.0 / (double) n_steps);
+      final double scale_factor = Math.pow(max_zoom, 1.0 / (double) n_steps);
 
       camera_features.zoom_ratios = new ArrayList<Integer>();
       camera_features.zoom_ratios.add(100);
@@ -598,7 +626,7 @@ import java.util.Vector;
     for (android.util.Size camera_size : camera_picture_sizes) {
 
       camera_features.picture_sizes.add(
-          new CameraController.Size(camera_size.getWidth(),camera_size.getHeight()));
+          new CameraController.Size(camera_size.getWidth(), camera_size.getHeight()));
     }
 
     raw_size = null;
@@ -636,7 +664,7 @@ import java.util.Vector;
         continue; // Nexus 6 returns these, even though not supported?!
       }
       camera_features.video_sizes.add(
-          new CameraController.Size(camera_size.getWidth(),camera_size.getHeight()));
+          new CameraController.Size(camera_size.getWidth(), camera_size.getHeight()));
     }
 
     android.util.Size[] camera_preview_sizes = configs.getOutputSizes(SurfaceTexture.class);
@@ -655,7 +683,7 @@ import java.util.Vector;
         continue;
       }
       camera_features.preview_sizes.add(
-          new CameraController.Size(camera_size.getWidth(),camera_size.getHeight()));
+          new CameraController.Size(camera_size.getWidth(), camera_size.getHeight()));
     }
 
     if (characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE)) {
@@ -708,6 +736,7 @@ import java.util.Vector;
 
     return camera_features;
   }
+
 
   private String convertSceneMode(int value2) {
     String value = null;
@@ -773,6 +802,7 @@ import java.util.Vector;
     return value;
   }
 
+
   @Override public SupportedValues setSceneMode(String value) {
 
     // we convert to/from strings to be compatible with original Android Camera API
@@ -790,9 +820,9 @@ import java.util.Vector;
       }
     }
     if (!has_disabled) {
-      values.add(0,"auto");
+      values.add(0, "auto");
     }
-    SupportedValues supported_values = checkModeIsSupported(values,value,default_value);
+    SupportedValues supported_values = checkModeIsSupported(values, value, default_value);
     if (supported_values != null) {
       int selected_value2 = CameraMetadata.CONTROL_SCENE_MODE_DISABLED;
       if (supported_values.selected_value.equals("action")) {
@@ -830,7 +860,7 @@ import java.util.Vector;
       } else if (supported_values.selected_value.equals("theatre")) {
         selected_value2 = CameraMetadata.CONTROL_SCENE_MODE_THEATRE;
       } else {
-        Log.d(TAG,"unknown selected_value: " + supported_values.selected_value);
+        Log.d(TAG, "unknown selected_value: " + supported_values.selected_value);
       }
 
       camera_settings.scene_mode = selected_value2;
@@ -845,6 +875,7 @@ import java.util.Vector;
     return supported_values;
   }
 
+
   @Override public String getSceneMode() {
     if (previewBuilder.get(CaptureRequest.CONTROL_SCENE_MODE) == null) {
       return null;
@@ -853,6 +884,7 @@ import java.util.Vector;
     String value = convertSceneMode(value2);
     return value;
   }
+
 
   private String convertColorEffect(int value2) {
     String value = null;
@@ -885,12 +917,13 @@ import java.util.Vector;
         value = "whiteboard";
         break;
       default:
-        Log.d(TAG,"unknown effect mode: " + value2);
+        Log.d(TAG, "unknown effect mode: " + value2);
         value = null;
         break;
     }
     return value;
   }
+
 
   @Override public SupportedValues setColorEffect(String value) {
 
@@ -905,7 +938,7 @@ import java.util.Vector;
         values.add(this_value);
       }
     }
-    SupportedValues supported_values = checkModeIsSupported(values,value,default_value);
+    SupportedValues supported_values = checkModeIsSupported(values, value, default_value);
     if (supported_values != null) {
       int selected_value2 = CameraMetadata.CONTROL_EFFECT_MODE_OFF;
       if (supported_values.selected_value.equals("aqua")) {
@@ -928,7 +961,7 @@ import java.util.Vector;
         selected_value2 = CameraMetadata.CONTROL_EFFECT_MODE_WHITEBOARD;
       } else {
 
-        Log.d(TAG,"unknown selected_value: " + supported_values.selected_value);
+        Log.d(TAG, "unknown selected_value: " + supported_values.selected_value);
       }
 
       camera_settings.color_effect = selected_value2;
@@ -944,6 +977,7 @@ import java.util.Vector;
     return supported_values;
   }
 
+
   @Override public String getColorEffect() {
     if (previewBuilder.get(CaptureRequest.CONTROL_EFFECT_MODE) == null) {
       return null;
@@ -952,6 +986,7 @@ import java.util.Vector;
     String value = convertColorEffect(value2);
     return value;
   }
+
 
   private String convertWhiteBalance(int value2) {
     String value = null;
@@ -982,13 +1017,14 @@ import java.util.Vector;
         break;
       default:
 
-        Log.d(TAG,"unknown white balance: " + value2);
+        Log.d(TAG, "unknown white balance: " + value2);
 
         value = null;
         break;
     }
     return value;
   }
+
 
   @Override public SupportedValues setWhiteBalance(String value) {
 
@@ -1002,7 +1038,7 @@ import java.util.Vector;
         values.add(this_value);
       }
     }
-    SupportedValues supported_values = checkModeIsSupported(values,value,default_value);
+    SupportedValues supported_values = checkModeIsSupported(values, value, default_value);
     if (supported_values != null) {
       int selected_value2 = CameraMetadata.CONTROL_AWB_MODE_AUTO;
       if (supported_values.selected_value.equals("auto")) {
@@ -1023,7 +1059,7 @@ import java.util.Vector;
         selected_value2 = CameraMetadata.CONTROL_AWB_MODE_WARM_FLUORESCENT;
       } else {
 
-        Log.d(TAG,"unknown selected_value: " + supported_values.selected_value);
+        Log.d(TAG, "unknown selected_value: " + supported_values.selected_value);
       }
 
       camera_settings.white_balance = selected_value2;
@@ -1039,6 +1075,7 @@ import java.util.Vector;
     return supported_values;
   }
 
+
   @Override public String getWhiteBalance() {
     if (previewBuilder.get(CaptureRequest.CONTROL_AWB_MODE) == null) {
       return null;
@@ -1047,6 +1084,7 @@ import java.util.Vector;
     String value = convertWhiteBalance(value2);
     return value;
   }
+
 
   @Override public SupportedValues setISO(String value) {
     String default_value = getDefaultISO();
@@ -1059,7 +1097,7 @@ import java.util.Vector;
 
     List<String> values = new ArrayList<String>();
     values.add(default_value);
-    int[] iso_values = { 50,100,200,400,800,1600,3200,6400 };
+    int[] iso_values = { 50, 100, 200, 400, 800, 1600, 3200, 6400 };
     values.add("" + iso_range.getLower());
     for (int i = 0; i < iso_values.length; i++) {
       if (iso_values[i] > iso_range.getLower() && iso_values[i] < iso_range.getUpper()) {
@@ -1072,10 +1110,10 @@ import java.util.Vector;
     SupportedValues supported_values = null;
     try {
       if (value.equals(default_value)) {
-        supported_values = new SupportedValues(values,value);
+        supported_values = new SupportedValues(values, value);
         camera_settings.has_iso = false;
         camera_settings.iso = 0;
-        if (camera_settings.setAEMode(previewBuilder,false)) {
+        if (camera_settings.setAEMode(previewBuilder, false)) {
           setRepeatingRequest();
         }
       } else {
@@ -1088,18 +1126,18 @@ import java.util.Vector;
             selected_value2 = iso_range.getUpper();
           }
 
-          supported_values = new SupportedValues(values,"" + selected_value2);
+          supported_values = new SupportedValues(values, "" + selected_value2);
           camera_settings.has_iso = true;
           camera_settings.iso = selected_value2;
-          if (camera_settings.setAEMode(previewBuilder,false)) {
+          if (camera_settings.setAEMode(previewBuilder, false)) {
             setRepeatingRequest();
           }
         } catch (NumberFormatException exception) {
 
-          supported_values = new SupportedValues(values,default_value);
+          supported_values = new SupportedValues(values, default_value);
           camera_settings.has_iso = false;
           camera_settings.iso = 0;
-          if (camera_settings.setAEMode(previewBuilder,false)) {
+          if (camera_settings.setAEMode(previewBuilder, false)) {
             setRepeatingRequest();
           }
         }
@@ -1111,13 +1149,16 @@ import java.util.Vector;
     return supported_values;
   }
 
+
   @Override public String getISOKey() {
     return "";
   }
 
+
   @Override public int getISO() {
     return camera_settings.iso;
   }
+
 
   @Override
   // Returns whether ISO was modified
@@ -1128,7 +1169,7 @@ import java.util.Vector;
     }
     try {
       camera_settings.iso = iso;
-      if (camera_settings.setAEMode(previewBuilder,false)) {
+      if (camera_settings.setAEMode(previewBuilder, false)) {
         setRepeatingRequest();
       }
     } catch (CameraAccessException e) {
@@ -1137,9 +1178,11 @@ import java.util.Vector;
     return true;
   }
 
+
   @Override public long getExposureTime() {
     return camera_settings.exposure_time;
   }
+
 
   @Override
   // Returns whether exposure time was modified
@@ -1150,7 +1193,7 @@ import java.util.Vector;
     }
     try {
       camera_settings.exposure_time = exposure_time;
-      if (camera_settings.setAEMode(previewBuilder,false)) {
+      if (camera_settings.setAEMode(previewBuilder, false)) {
         setRepeatingRequest();
       }
     } catch (CameraAccessException e) {
@@ -1159,12 +1202,14 @@ import java.util.Vector;
     return true;
   }
 
+
   @Override public Size getPictureSize() {
-    Size size = new Size(picture_width,picture_height);
+    Size size = new Size(picture_width, picture_height);
     return size;
   }
 
-  @Override public void setPictureSize(int width,int height) {
+
+  @Override public void setPictureSize(int width, int height) {
     if (camera == null) {
       return;
     }
@@ -1175,6 +1220,7 @@ import java.util.Vector;
     this.picture_width = width;
     this.picture_height = height;
   }
+
 
   @Override public void setRaw(boolean want_raw) {
     if (camera == null) {
@@ -1193,6 +1239,7 @@ import java.util.Vector;
     this.want_raw = want_raw;
   }
 
+
   private void createPictureImageReader() {
     if (captureSession != null) {
       // can only call this when captureSession not created - as the surface of the imageReader we create has to match the surface we pass to the captureSession
@@ -1202,7 +1249,7 @@ import java.util.Vector;
     if (picture_width == 0 || picture_height == 0) {
       throw new RuntimeException(); // throw as RuntimeException, as this is a programming error
     }
-    imageReader = ImageReader.newInstance(picture_width,picture_height,ImageFormat.JPEG,2);
+    imageReader = ImageReader.newInstance(picture_width, picture_height, ImageFormat.JPEG, 2);
     imageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
       @Override public void onImageAvailable(ImageReader reader) {
         if (jpeg_cb == null) {
@@ -1224,10 +1271,10 @@ import java.util.Vector;
           cb.onCompleted();
         }
       }
-    },null);
+    }, null);
     if (want_raw && raw_size != null) {
       imageReaderRaw =
-          ImageReader.newInstance(raw_size.getWidth(),raw_size.getHeight(),ImageFormat.RAW_SENSOR,
+          ImageReader.newInstance(raw_size.getWidth(), raw_size.getHeight(), ImageFormat.RAW_SENSOR,
               2);
 
       imageReaderRaw.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
@@ -1236,7 +1283,7 @@ import java.util.Vector;
             return;
           }
           Image image = reader.acquireNextImage();
-          DngCreator dngCreator = new DngCreator(characteristics,still_capture_result);
+          DngCreator dngCreator = new DngCreator(characteristics, still_capture_result);
           // set fields
           dngCreator.setOrientation(camera_settings.getExifOrientation());
           if (camera_settings.location != null) {
@@ -1251,12 +1298,13 @@ import java.util.Vector;
             takePendingRaw();
             cb.onCompleted();
           } else {
-            Log.d(TAG,"need to wait for jpeg callback");
+            Log.d(TAG, "need to wait for jpeg callback");
           }
         }
-      },null);
+      }, null);
     }
   }
+
 
   private void clearPendingRaw() {
 
@@ -1264,26 +1312,30 @@ import java.util.Vector;
     pending_image = null;
   }
 
+
   private void takePendingRaw() {
 
     if (pending_dngCreator != null) {
       PictureCallback cb = raw_cb;
       raw_cb = null;
-      cb.onRawPictureTaken(pending_dngCreator,pending_image);
+      cb.onRawPictureTaken(pending_dngCreator, pending_image);
       // image and dngCreator should be closed by the application (we don't do it here, so that applications can keep hold of the data, e.g., in a queue for background processing)
       pending_dngCreator = null;
       pending_image = null;
     }
   }
 
+
   @Override public Size getPreviewSize() {
-    return new Size(preview_width,preview_height);
+    return new Size(preview_width, preview_height);
   }
 
-  @Override public void setPreviewSize(int width,int height) {
+
+  @Override public void setPreviewSize(int width, int height) {
     preview_width = width;
     preview_height = height;
   }
+
 
   @Override public void setVideoStabilization(boolean enabled) {
     camera_settings.video_stabilization = enabled;
@@ -1295,13 +1347,16 @@ import java.util.Vector;
     }
   }
 
+
   @Override public boolean getVideoStabilization() {
     return camera_settings.video_stabilization;
   }
 
+
   @Override public int getJpegQuality() {
     return this.camera_settings.jpeg_quality;
   }
+
 
   @Override public void setJpegQuality(int quality) {
     if (quality < 0 || quality > 100) {
@@ -1310,9 +1365,11 @@ import java.util.Vector;
     this.camera_settings.jpeg_quality = (byte) quality;
   }
 
+
   @Override public int getZoom() {
     return this.current_zoom_value;
   }
+
 
   @Override public void setZoom(int value) {
     if (zoom_ratios == null) {
@@ -1333,7 +1390,7 @@ import java.util.Vector;
     right += hwidth;
     top -= hheight;
     bottom += hheight;
-    camera_settings.scalar_crop_region = new Rect(left,top,right,bottom);
+    camera_settings.scalar_crop_region = new Rect(left, top, right, bottom);
     camera_settings.setCropRegion(previewBuilder);
     this.current_zoom_value = value;
     try {
@@ -1343,12 +1400,14 @@ import java.util.Vector;
     }
   }
 
+
   @Override public int getExposureCompensation() {
     if (previewBuilder.get(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION) == null) {
       return 0;
     }
     return previewBuilder.get(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION);
   }
+
 
   @Override
   // Returns whether exposure was modified
@@ -1366,21 +1425,25 @@ import java.util.Vector;
     return false;
   }
 
-  @Override public void setPreviewFpsRange(int min,int max) {
+
+  @Override public void setPreviewFpsRange(int min, int max) {
     // TODO Auto-generated method stub
 
   }
+
 
   @Override public List<int[]> getSupportedPreviewFpsRange() {
     // TODO Auto-generated method stub
     return null;
   }
 
+
   @Override
   // note, responsibility of callers to check that this is within the valid min/max range
   public long getDefaultExposureTime() {
     return 1000000000l / 30;
   }
+
 
   @Override public void setFocusValue(String focus_value) {
     int focus_mode = CaptureRequest.CONTROL_AF_MODE_AUTO;
@@ -1401,7 +1464,7 @@ import java.util.Vector;
     } else if (focus_value.equals("focus_mode_continuous_video")) {
       focus_mode = CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO;
     } else {
-      Log.d(TAG,"setFocusValue() received unknown focus value " + focus_value);
+      Log.d(TAG, "setFocusValue() received unknown focus value " + focus_value);
       return;
     }
     camera_settings.has_af_mode = true;
@@ -1415,6 +1478,7 @@ import java.util.Vector;
       e.printStackTrace();
     }
   }
+
 
   private String convertFocusModeToValue(int focus_mode) {
     String focus_value = "";
@@ -1434,6 +1498,7 @@ import java.util.Vector;
     return focus_value;
   }
 
+
   @Override public String getFocusValue() {
     int focus_mode =
         previewBuilder.get(CaptureRequest.CONTROL_AF_MODE) != null ? previewBuilder.get(
@@ -1441,9 +1506,11 @@ import java.util.Vector;
     return convertFocusModeToValue(focus_mode);
   }
 
+
   @Override public float getFocusDistance() {
     return camera_settings.focus_distance;
   }
+
 
   @Override public boolean setFocusDistance(float focus_distance) {
     if (camera_settings.focus_distance == focus_distance) {
@@ -1460,6 +1527,7 @@ import java.util.Vector;
     return true;
   }
 
+
   @Override public void setFlashValue(String flash_value) {
     if (!characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE)) {
       return;
@@ -1471,19 +1539,19 @@ import java.util.Vector;
       if (camera_settings.flash_value.equals("flash_torch") && !flash_value.equals("flash_off")) {
         // hack - if switching to something other than flash_off, we first need to turn torch off, otherwise torch remains on (at least on Nexus 6)
         camera_settings.flash_value = "flash_off";
-        camera_settings.setAEMode(previewBuilder,false);
+        camera_settings.setAEMode(previewBuilder, false);
         CaptureRequest request = previewBuilder.build();
 
         // need to wait until torch actually turned off
         camera_settings.flash_value = flash_value;
-        camera_settings.setAEMode(previewBuilder,false);
+        camera_settings.setAEMode(previewBuilder, false);
         push_repeating_request_when_torch_off = true;
         push_repeating_request_when_torch_off_id = request;
 
         setRepeatingRequest(request);
       } else {
         camera_settings.flash_value = flash_value;
-        if (camera_settings.setAEMode(previewBuilder,false)) {
+        if (camera_settings.setAEMode(previewBuilder, false)) {
           setRepeatingRequest();
         }
       }
@@ -1491,6 +1559,7 @@ import java.util.Vector;
       e.printStackTrace();
     }
   }
+
 
   @Override public String getFlashValue() {
     // returns "" if flash isn't supported
@@ -1500,9 +1569,11 @@ import java.util.Vector;
     return camera_settings.flash_value;
   }
 
+
   @Override public void setRecordingHint(boolean hint) {
     // not relevant for CameraController2
   }
+
 
   @Override public void setAutoExposureLock(boolean enabled) {
     camera_settings.ae_lock = enabled;
@@ -1514,6 +1585,7 @@ import java.util.Vector;
     }
   }
 
+
   @Override public boolean getAutoExposureLock() {
     if (previewBuilder.get(CaptureRequest.CONTROL_AE_LOCK) == null) {
       return false;
@@ -1521,21 +1593,26 @@ import java.util.Vector;
     return previewBuilder.get(CaptureRequest.CONTROL_AE_LOCK);
   }
 
+
   @Override public void setRotation(int rotation) {
     this.camera_settings.rotation = rotation;
   }
+
 
   @Override public void setLocationInfo(Location location) {
     this.camera_settings.location = location;
   }
 
+
   @Override public void removeLocationInfo() {
     this.camera_settings.location = null;
   }
 
+
   @Override public void enableShutterSound(boolean enabled) {
     this.sounds_enabled = enabled;
   }
+
 
   /**
    * Returns the viewable rect - this is crop region if available.
@@ -1559,7 +1636,8 @@ import java.util.Vector;
     return sensor_rect;
   }
 
-  private Rect convertRectToCamera2(Rect crop_rect,Rect rect) {
+
+  private Rect convertRectToCamera2(Rect crop_rect, Rect rect) {
     // CameraController.Area is always [-1000, -1000] to [1000, 1000] for the viewable region
     // but for CameraController2, we must convert to be relative to the crop region
     double left_f = (rect.left + 1000) / 2000.0;
@@ -1570,26 +1648,28 @@ import java.util.Vector;
     int right = (int) (crop_rect.left + right_f * (crop_rect.width() - 1));
     int top = (int) (crop_rect.top + top_f * (crop_rect.height() - 1));
     int bottom = (int) (crop_rect.top + bottom_f * (crop_rect.height() - 1));
-    left = Math.max(left,crop_rect.left);
-    right = Math.max(right,crop_rect.left);
-    top = Math.max(top,crop_rect.top);
-    bottom = Math.max(bottom,crop_rect.top);
-    left = Math.min(left,crop_rect.right);
-    right = Math.min(right,crop_rect.right);
-    top = Math.min(top,crop_rect.bottom);
-    bottom = Math.min(bottom,crop_rect.bottom);
+    left = Math.max(left, crop_rect.left);
+    right = Math.max(right, crop_rect.left);
+    top = Math.max(top, crop_rect.top);
+    bottom = Math.max(bottom, crop_rect.top);
+    left = Math.min(left, crop_rect.right);
+    right = Math.min(right, crop_rect.right);
+    top = Math.min(top, crop_rect.bottom);
+    bottom = Math.min(bottom, crop_rect.bottom);
 
-    Rect camera2_rect = new Rect(left,top,right,bottom);
+    Rect camera2_rect = new Rect(left, top, right, bottom);
     return camera2_rect;
   }
 
-  private MeteringRectangle convertAreaToMeteringRectangle(Rect sensor_rect,Area area) {
-    Rect camera2_rect = convertRectToCamera2(sensor_rect,area.rect);
-    MeteringRectangle metering_rectangle = new MeteringRectangle(camera2_rect,area.weight);
+
+  private MeteringRectangle convertAreaToMeteringRectangle(Rect sensor_rect, Area area) {
+    Rect camera2_rect = convertRectToCamera2(sensor_rect, area.rect);
+    MeteringRectangle metering_rectangle = new MeteringRectangle(camera2_rect, area.weight);
     return metering_rectangle;
   }
 
-  private Rect convertRectFromCamera2(Rect crop_rect,Rect camera2_rect) {
+
+  private Rect convertRectFromCamera2(Rect crop_rect, Rect camera2_rect) {
     // inverse of convertRectToCamera2()
     double left_f = (camera2_rect.left - crop_rect.left) / (double) (crop_rect.width() - 1);
     double top_f = (camera2_rect.top - crop_rect.top) / (double) (crop_rect.height() - 1);
@@ -1600,32 +1680,35 @@ import java.util.Vector;
     int top = (int) (top_f * 2000) - 1000;
     int bottom = (int) (bottom_f * 2000) - 1000;
 
-    left = Math.max(left,-1000);
-    right = Math.max(right,-1000);
-    top = Math.max(top,-1000);
-    bottom = Math.max(bottom,-1000);
-    left = Math.min(left,1000);
-    right = Math.min(right,1000);
-    top = Math.min(top,1000);
-    bottom = Math.min(bottom,1000);
+    left = Math.max(left, -1000);
+    right = Math.max(right, -1000);
+    top = Math.max(top, -1000);
+    bottom = Math.max(bottom, -1000);
+    left = Math.min(left, 1000);
+    right = Math.min(right, 1000);
+    top = Math.min(top, 1000);
+    bottom = Math.min(bottom, 1000);
 
-    Rect rect = new Rect(left,top,right,bottom);
+    Rect rect = new Rect(left, top, right, bottom);
     return rect;
   }
 
+
   private Area convertMeteringRectangleToArea(Rect sensor_rect,
-      MeteringRectangle metering_rectangle) {
-    Rect area_rect = convertRectFromCamera2(sensor_rect,metering_rectangle.getRect());
-    Area area = new Area(area_rect,metering_rectangle.getMeteringWeight());
+                                              MeteringRectangle metering_rectangle) {
+    Rect area_rect = convertRectFromCamera2(sensor_rect, metering_rectangle.getRect());
+    Area area = new Area(area_rect, metering_rectangle.getMeteringWeight());
     return area;
   }
 
+
   private CameraController.Face convertFromCameraFace(Rect sensor_rect,
-      android.hardware.camera2.params.Face camera2_face) {
-    Rect area_rect = convertRectFromCamera2(sensor_rect,camera2_face.getBounds());
-    CameraController.Face face = new CameraController.Face(camera2_face.getScore(),area_rect);
+                                                      android.hardware.camera2.params.Face camera2_face) {
+    Rect area_rect = convertRectFromCamera2(sensor_rect, camera2_face.getBounds());
+    CameraController.Face face = new CameraController.Face(camera2_face.getScore(), area_rect);
     return face;
   }
+
 
   @Override public boolean setFocusAndMeteringArea(List<Area> areas) {
     Rect sensor_rect = getViewableRect();
@@ -1636,7 +1719,7 @@ import java.util.Vector;
       camera_settings.af_regions = new MeteringRectangle[areas.size()];
       int i = 0;
       for (CameraController.Area area : areas) {
-        camera_settings.af_regions[i++] = convertAreaToMeteringRectangle(sensor_rect,area);
+        camera_settings.af_regions[i++] = convertAreaToMeteringRectangle(sensor_rect, area);
       }
       camera_settings.setAFRegions(previewBuilder);
     } else {
@@ -1647,7 +1730,7 @@ import java.util.Vector;
       camera_settings.ae_regions = new MeteringRectangle[areas.size()];
       int i = 0;
       for (CameraController.Area area : areas) {
-        camera_settings.ae_regions[i++] = convertAreaToMeteringRectangle(sensor_rect,area);
+        camera_settings.ae_regions[i++] = convertAreaToMeteringRectangle(sensor_rect, area);
       }
       camera_settings.setAERegions(previewBuilder);
     } else {
@@ -1664,6 +1747,7 @@ import java.util.Vector;
     return has_focus;
   }
 
+
   @Override public void clearFocusAndMetering() {
     Rect sensor_rect = getViewableRect();
     boolean has_focus = false;
@@ -1677,7 +1761,7 @@ import java.util.Vector;
         has_focus = true;
         camera_settings.af_regions = new MeteringRectangle[1];
         camera_settings.af_regions[0] =
-            new MeteringRectangle(0,0,sensor_rect.width() - 1,sensor_rect.height() - 1,0);
+            new MeteringRectangle(0, 0, sensor_rect.width() - 1, sensor_rect.height() - 1, 0);
         camera_settings.setAFRegions(previewBuilder);
       } else {
         camera_settings.af_regions = null;
@@ -1686,7 +1770,7 @@ import java.util.Vector;
         has_metering = true;
         camera_settings.ae_regions = new MeteringRectangle[1];
         camera_settings.ae_regions[0] =
-            new MeteringRectangle(0,0,sensor_rect.width() - 1,sensor_rect.height() - 1,0);
+            new MeteringRectangle(0, 0, sensor_rect.width() - 1, sensor_rect.height() - 1, 0);
         camera_settings.setAERegions(previewBuilder);
       } else {
         camera_settings.ae_regions = null;
@@ -1701,6 +1785,7 @@ import java.util.Vector;
     }
   }
 
+
   @Override public List<Area> getFocusAreas() {
     if (characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF) == 0) {
       return null;
@@ -1711,7 +1796,7 @@ import java.util.Vector;
     }
     Rect sensor_rect = getViewableRect();
     camera_settings.af_regions[0] =
-        new MeteringRectangle(0,0,sensor_rect.width() - 1,sensor_rect.height() - 1,0);
+        new MeteringRectangle(0, 0, sensor_rect.width() - 1, sensor_rect.height() - 1, 0);
     if (metering_rectangles.length == 1
         && metering_rectangles[0].getRect().left == 0
         && metering_rectangles[0].getRect().top == 0
@@ -1722,10 +1807,11 @@ import java.util.Vector;
     }
     List<Area> areas = new ArrayList<Area>();
     for (int i = 0; i < metering_rectangles.length; i++) {
-      areas.add(convertMeteringRectangleToArea(sensor_rect,metering_rectangles[i]));
+      areas.add(convertMeteringRectangleToArea(sensor_rect, metering_rectangles[i]));
     }
     return areas;
   }
+
 
   @Override public List<Area> getMeteringAreas() {
     if (characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AE) == 0) {
@@ -1746,10 +1832,11 @@ import java.util.Vector;
     }
     List<Area> areas = new ArrayList<Area>();
     for (int i = 0; i < metering_rectangles.length; i++) {
-      areas.add(convertMeteringRectangleToArea(sensor_rect,metering_rectangles[i]));
+      areas.add(convertMeteringRectangleToArea(sensor_rect, metering_rectangles[i]));
     }
     return areas;
   }
+
 
   @Override public boolean supportsAutoFocus() {
     if (previewBuilder.get(CaptureRequest.CONTROL_AF_MODE) == null) {
@@ -1763,6 +1850,7 @@ import java.util.Vector;
     return false;
   }
 
+
   @Override public boolean focusIsContinuous() {
     if (previewBuilder.get(CaptureRequest.CONTROL_AF_MODE) == null) {
       return false;
@@ -1775,6 +1863,7 @@ import java.util.Vector;
     return false;
   }
 
+
   @Override public boolean focusIsVideo() {
     if (previewBuilder.get(CaptureRequest.CONTROL_AF_MODE) == null) {
       return false;
@@ -1786,10 +1875,12 @@ import java.util.Vector;
     return false;
   }
 
+
   @Override public void setPreviewDisplay(SurfaceHolder holder) throws CameraControllerException {
 
     throw new RuntimeException(); // throw as RuntimeException, as this is a programming error
   }
+
 
   @Override public void setPreviewTexture(SurfaceTexture texture) throws CameraControllerException {
     if (this.texture != null) {
@@ -1798,27 +1889,32 @@ import java.util.Vector;
     this.texture = texture;
   }
 
+
   private void setRepeatingRequest() throws CameraAccessException {
     setRepeatingRequest(previewBuilder.build());
   }
+
 
   private void setRepeatingRequest(CaptureRequest request) throws CameraAccessException {
     if (camera == null || captureSession == null) {
       return;
     }
-    captureSession.setRepeatingRequest(request,previewCaptureCallback,handler);
+    captureSession.setRepeatingRequest(request, previewCaptureCallback, handler);
   }
+
 
   private void capture() throws CameraAccessException {
     capture(previewBuilder.build());
   }
 
+
   private void capture(CaptureRequest request) throws CameraAccessException {
     if (camera == null || captureSession == null) {
       return;
     }
-    captureSession.capture(request,previewCaptureCallback,handler);
+    captureSession.capture(request, previewCaptureCallback, handler);
   }
+
 
   private void createPreviewRequest() {
     if (camera == null) {
@@ -1828,15 +1924,17 @@ import java.util.Vector;
       previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
       previewBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT,
           CaptureRequest.CONTROL_CAPTURE_INTENT_PREVIEW);
-      camera_settings.setupBuilder(previewBuilder,false);
+      camera_settings.setupBuilder(previewBuilder, false);
     } catch (CameraAccessException e) {
       e.printStackTrace();
     }
   }
 
+
   private Surface getPreviewSurface() {
     return surface_texture;
   }
+
 
   private void createCaptureSession(final MediaRecorder video_recorder)
       throws CameraControllerException {
@@ -1866,7 +1964,7 @@ import java.util.Vector;
         if (preview_width == 0 || preview_height == 0) {
           throw new RuntimeException(); // throw as RuntimeException, as this is a programming error
         }
-        texture.setDefaultBufferSize(preview_width,preview_height);
+        texture.setDefaultBufferSize(preview_width, preview_height);
         // also need to create a new surface for the texture, in case the size has changed - but make sure we remove the old one first!
         if (surface_texture != null) {
           previewBuilder.removeTarget(surface_texture);
@@ -1876,6 +1974,7 @@ import java.util.Vector;
 
       class MyStateCallback extends CameraCaptureSession.StateCallback {
         boolean callback_done = false;
+
 
         @Override public void onConfigured(CameraCaptureSession session) {
 
@@ -1900,6 +1999,7 @@ import java.util.Vector;
           callback_done = true;
         }
 
+
         @Override public void onConfigureFailed(CameraCaptureSession session) {
 
           callback_done = true;
@@ -1911,37 +2011,37 @@ import java.util.Vector;
       Surface preview_surface = getPreviewSurface();
       List<Surface> surfaces = null;
       if (video_recorder != null) {
-        surfaces = Arrays.asList(preview_surface,video_recorder.getSurface());
+        surfaces = Arrays.asList(preview_surface, video_recorder.getSurface());
       } else if (imageReaderRaw != null) {
         surfaces =
-            Arrays.asList(preview_surface,imageReader.getSurface(),imageReaderRaw.getSurface());
+            Arrays.asList(preview_surface, imageReader.getSurface(), imageReaderRaw.getSurface());
       } else {
-        surfaces = Arrays.asList(preview_surface,imageReader.getSurface());
+        surfaces = Arrays.asList(preview_surface, imageReader.getSurface());
       }
 
-      Log.d(TAG,"texture: " + texture);
-      Log.d(TAG,"preview_surface: " + preview_surface);
+      Log.d(TAG, "texture: " + texture);
+      Log.d(TAG, "preview_surface: " + preview_surface);
       if (video_recorder == null) {
         if (imageReaderRaw != null) {
-          Log.d(TAG,"imageReaderRaw: " + imageReaderRaw);
-          Log.d(TAG,"imageReaderRaw: " + imageReaderRaw.getWidth());
-          Log.d(TAG,"imageReaderRaw: " + imageReaderRaw.getHeight());
-          Log.d(TAG,"imageReaderRaw: " + imageReaderRaw.getImageFormat());
+          Log.d(TAG, "imageReaderRaw: " + imageReaderRaw);
+          Log.d(TAG, "imageReaderRaw: " + imageReaderRaw.getWidth());
+          Log.d(TAG, "imageReaderRaw: " + imageReaderRaw.getHeight());
+          Log.d(TAG, "imageReaderRaw: " + imageReaderRaw.getImageFormat());
         } else {
-          Log.d(TAG,"imageReader: " + imageReader);
-          Log.d(TAG,"imageReader: " + imageReader.getWidth());
-          Log.d(TAG,"imageReader: " + imageReader.getHeight());
-          Log.d(TAG,"imageReader: " + imageReader.getImageFormat());
+          Log.d(TAG, "imageReader: " + imageReader);
+          Log.d(TAG, "imageReader: " + imageReader.getWidth());
+          Log.d(TAG, "imageReader: " + imageReader.getHeight());
+          Log.d(TAG, "imageReader: " + imageReader.getImageFormat());
         }
       }
-      camera.createCaptureSession(surfaces,myStateCallback,handler);
+      camera.createCaptureSession(surfaces, myStateCallback, handler);
 
       while (!myStateCallback.callback_done) {
       }
 
       if (captureSession == null) {
 
-        Log.e(TAG,"failed to create capture session");
+        Log.e(TAG, "failed to create capture session");
         throw new CameraControllerException();
       }
     } catch (CameraAccessException e) {
@@ -1949,6 +2049,7 @@ import java.util.Vector;
       throw new CameraControllerException();
     }
   }
+
 
   @Override public void startPreview() throws CameraControllerException {
 
@@ -1965,6 +2066,7 @@ import java.util.Vector;
     }
     createCaptureSession(null);
   }
+
 
   @Override public void stopPreview() {
 
@@ -1984,6 +2086,7 @@ import java.util.Vector;
     }
   }
 
+
   @Override public boolean startFaceDetection() {
     if (previewBuilder.get(CaptureRequest.STATISTICS_FACE_DETECT_MODE) != null
         && previewBuilder.get(CaptureRequest.STATISTICS_FACE_DETECT_MODE)
@@ -2001,9 +2104,11 @@ import java.util.Vector;
     return true;
   }
 
+
   @Override public void setFaceDetectionListener(final FaceDetectionListener listener) {
     this.face_detection_listener = listener;
   }
+
 
   @Override public void autoFocus(final AutoFocusCallback cb) {
     if (camera == null || captureSession == null) {
@@ -2016,7 +2121,7 @@ import java.util.Vector;
     {
       MeteringRectangle[] areas = afBuilder.get(CaptureRequest.CONTROL_AF_REGIONS);
       for (int i = 0; areas != null && i < areas.length; i++) {
-        Log.d(TAG,i
+        Log.d(TAG, i
             + " focus area: "
             + areas[i].getX()
             + " , "
@@ -2032,7 +2137,7 @@ import java.util.Vector;
     {
       MeteringRectangle[] areas = afBuilder.get(CaptureRequest.CONTROL_AE_REGIONS);
       for (int i = 0; areas != null && i < areas.length; i++) {
-        Log.d(TAG,i
+        Log.d(TAG, i
             + " metering area: "
             + areas[i].getX()
             + " , "
@@ -2051,9 +2156,9 @@ import java.util.Vector;
     // Camera2Basic sets a trigger with capture
     // Google Camera sets to idle with a repeating request, then sets af trigger to start with a capture
     try {
-      afBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+      afBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
       setRepeatingRequest(afBuilder.build());
-      afBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,CameraMetadata.CONTROL_AF_TRIGGER_START);
+      afBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
       capture(afBuilder.build());
     } catch (CameraAccessException e) {
 
@@ -2067,19 +2172,20 @@ import java.util.Vector;
         CameraMetadata.CONTROL_AF_TRIGGER_IDLE); // ensure set back to idle
   }
 
+
   @Override public void cancelAutoFocus() {
 
     if (camera == null || captureSession == null) {
       return;
     }
-    previewBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+    previewBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
     // Camera2Basic does a capture then sets a repeating request - do the same here just to be safe
     try {
       capture();
     } catch (CameraAccessException e) {
       e.printStackTrace();
     }
-    previewBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+    previewBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
     this.autofocus_cb = null;
     state = STATE_NORMAL;
     precapture_started = -1;
@@ -2091,10 +2197,12 @@ import java.util.Vector;
     }
   }
 
+
   @Override public void setContinuousFocusMoveCallback(ContinuousFocusMoveCallback cb) {
 
     this.continuous_focus_move_callback = cb;
   }
+
 
   private void takePictureAfterPrecapture() {
 
@@ -2104,11 +2212,11 @@ import java.util.Vector;
     }
     try {
       if (imageReaderRaw != null) {
-        Log.d(TAG,"imageReaderRaw: " + imageReaderRaw.toString());
-        Log.d(TAG,"imageReaderRaw surface: " + imageReaderRaw.getSurface().toString());
+        Log.d(TAG, "imageReaderRaw: " + imageReaderRaw.toString());
+        Log.d(TAG, "imageReaderRaw surface: " + imageReaderRaw.getSurface().toString());
       } else {
-        Log.d(TAG,"imageReader: " + imageReader.toString());
-        Log.d(TAG,"imageReader surface: " + imageReader.getSurface().toString());
+        Log.d(TAG, "imageReader: " + imageReader.toString());
+        Log.d(TAG, "imageReader surface: " + imageReader.getSurface().toString());
       }
 
       CaptureRequest.Builder stillBuilder =
@@ -2116,7 +2224,7 @@ import java.util.Vector;
       stillBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT,
           CaptureRequest.CONTROL_CAPTURE_INTENT_STILL_CAPTURE);
       stillBuilder.setTag(RequestTag.CAPTURE);
-      camera_settings.setupBuilder(stillBuilder,true);
+      camera_settings.setupBuilder(stillBuilder, true);
       //stillBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
       //stillBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
       clearPendingRaw();
@@ -2129,7 +2237,7 @@ import java.util.Vector;
       }
 
       captureSession.stopRepeating(); // need to stop preview before capture (as done in Camera2Basic; otherwise we get bugs such as flash remaining on after taking a photo with flash)
-      captureSession.capture(stillBuilder.build(),previewCaptureCallback,handler);
+      captureSession.capture(stillBuilder.build(), previewCaptureCallback, handler);
     } catch (CameraAccessException e) {
 
       e.printStackTrace();
@@ -2142,6 +2250,7 @@ import java.util.Vector;
     }
   }
 
+
   private void runPrecapture() {
     // first run precapture sequence
     try {
@@ -2151,7 +2260,7 @@ import java.util.Vector;
       precaptureBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT,
           CaptureRequest.CONTROL_CAPTURE_INTENT_STILL_CAPTURE);
 
-      camera_settings.setupBuilder(precaptureBuilder,false);
+      camera_settings.setupBuilder(precaptureBuilder, false);
       precaptureBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
           CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
       precaptureBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
@@ -2163,13 +2272,14 @@ import java.util.Vector;
       precapture_started = System.currentTimeMillis();
 
       // first set precapture to idle - this is needed, otherwise we hang in state STATE_WAITING_PRECAPTURE_START, because precapture already occurred whilst autofocusing, and it doesn't occur again unless we first set the precapture trigger to idle
-      captureSession.capture(precaptureBuilder.build(),previewCaptureCallback,handler);
-      captureSession.setRepeatingRequest(precaptureBuilder.build(),previewCaptureCallback,handler);
+      captureSession.capture(precaptureBuilder.build(), previewCaptureCallback, handler);
+      captureSession.setRepeatingRequest(precaptureBuilder.build(), previewCaptureCallback,
+          handler);
 
       // now set precapture
       precaptureBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
           CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_START);
-      captureSession.capture(precaptureBuilder.build(),previewCaptureCallback,handler);
+      captureSession.capture(precaptureBuilder.build(), previewCaptureCallback, handler);
     } catch (CameraAccessException e) {
       e.printStackTrace();
       jpeg_cb = null;
@@ -2181,7 +2291,8 @@ import java.util.Vector;
     }
   }
 
-  @Override public void takePicture(final PictureCallback picture,final ErrorCallback error) {
+
+  @Override public void takePicture(final PictureCallback picture, final ErrorCallback error) {
 
     if (camera == null || captureSession == null) {
 
@@ -2211,33 +2322,40 @@ import java.util.Vector;
     }
   }
 
+
   @Override public void setDisplayOrientation(int degrees) {
     // for CameraController2, the preview display orientation is handled via the TextureView's transform
 
     throw new RuntimeException(); // throw as RuntimeException, as this is a programming error
   }
 
+
   @Override public int getDisplayOrientation() {
 
     throw new RuntimeException(); // throw as RuntimeException, as this is a programming error
   }
 
+
   @Override public int getCameraOrientation() {
     return characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
   }
+
 
   @Override public boolean isFrontFacing() {
     return characteristics.get(CameraCharacteristics.LENS_FACING)
         == CameraCharacteristics.LENS_FACING_FRONT;
   }
 
+
   @Override public void unlock() {
     // do nothing at this stage
   }
 
+
   @Override public void initVideoRecorderPrePrepare(MediaRecorder video_recorder) {
     // do nothing at this stage
   }
+
 
   @Override public void initVideoRecorderPostPrepare(MediaRecorder video_recorder)
       throws CameraControllerException {
@@ -2247,7 +2365,7 @@ import java.util.Vector;
       previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
       previewBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT,
           CaptureRequest.CONTROL_CAPTURE_INTENT_VIDEO_RECORD);
-      camera_settings.setupBuilder(previewBuilder,false);
+      camera_settings.setupBuilder(previewBuilder, false);
       createCaptureSession(video_recorder);
     } catch (CameraAccessException e) {
 
@@ -2256,59 +2374,72 @@ import java.util.Vector;
     }
   }
 
+
   @Override public void reconnect() throws CameraControllerException {
 
     createPreviewRequest();
     createCaptureSession(null);
   }
 
+
   @Override public String getParametersString() {
     return null;
   }
+
 
   @Override public boolean captureResultHasIso() {
     return capture_result_has_iso;
   }
 
+
   @Override public int captureResultIso() {
     return capture_result_iso;
   }
+
 
   @Override public boolean captureResultHasExposureTime() {
     return capture_result_has_exposure_time;
   }
 
+
   @Override public long captureResultExposureTime() {
     return capture_result_exposure_time;
   }
+
 
   @Override public boolean captureResultHasFrameDuration() {
     return capture_result_has_frame_duration;
   }
 
+
   @Override public long captureResultFrameDuration() {
     return capture_result_frame_duration;
   }
+
 
   @Override public boolean captureResultHasFocusDistance() {
     return capture_result_has_focus_distance;
   }
 
+
   @Override public float captureResultFocusDistanceMin() {
     return capture_result_focus_distance_min;
   }
 
+
   @Override public float captureResultFocusDistanceMax() {
     return capture_result_focus_distance_max;
   }
+
 
   private CameraCaptureSession.CaptureCallback previewCaptureCallback =
       new CameraCaptureSession.CaptureCallback() {
         private long last_process_frame_number = 0;
         private int last_af_state = -1;
 
-        public void onCaptureStarted(CameraCaptureSession session,CaptureRequest request,
-            long timestamp,long frameNumber) {
+
+        public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request,
+                                     long timestamp, long frameNumber) {
           if (request.getTag() == RequestTag.CAPTURE) {
             if (sounds_enabled) {
               media_action_sound.play(MediaActionSound.SHUTTER_CLICK);
@@ -2316,24 +2447,27 @@ import java.util.Vector;
           }
         }
 
-        public void onCaptureProgressed(CameraCaptureSession session,CaptureRequest request,
-            CaptureResult partialResult) {
-          process(request,partialResult);
-          super.onCaptureProgressed(session,request,
+
+        public void onCaptureProgressed(CameraCaptureSession session, CaptureRequest request,
+                                        CaptureResult partialResult) {
+          process(request, partialResult);
+          super.onCaptureProgressed(session, request,
               partialResult); // API docs say this does nothing, but call it just to be safe (as with Google Camera)
         }
 
-        public void onCaptureCompleted(CameraCaptureSession session,CaptureRequest request,
-            TotalCaptureResult result) {
-          process(request,result);
-          processCompleted(request,result);
-          super.onCaptureCompleted(session,request,
+
+        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request,
+                                       TotalCaptureResult result) {
+          process(request, result);
+          processCompleted(request, result);
+          super.onCaptureCompleted(session, request,
               result); // API docs say this does nothing, but call it just to be safe (as with Google Camera)
         }
 
+
         /** Processes either a partial or total result.
          */
-        private void process(CaptureRequest request,CaptureResult result) {
+        private void process(CaptureRequest request, CaptureResult result) {
 
           if (result.getFrameNumber() < last_process_frame_number) {
 
@@ -2387,7 +2521,8 @@ import java.util.Vector;
             Integer ae_state = result.get(CaptureResult.CONTROL_AE_STATE);
             if (ae_state == null
                 || ae_state
-                == CaptureResult.CONTROL_AE_STATE_PRECAPTURE /*|| ae_state == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED*/) {
+                ==
+                CaptureResult.CONTROL_AE_STATE_PRECAPTURE /*|| ae_state == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED*/) {
               // we have to wait for CONTROL_AE_STATE_PRECAPTURE; if we allow CONTROL_AE_STATE_FLASH_REQUIRED, then on Nexus 6 at least we get poor quality results with flash:
               // varying levels of brightness, sometimes too bright or too dark, sometimes with blue tinge, sometimes even with green corruption
               state = STATE_WAITING_PRECAPTURE_DONE;
@@ -2429,9 +2564,10 @@ import java.util.Vector;
           }
         }
 
+
         /** Processes a total result.
          */
-        private void processCompleted(CaptureRequest request,CaptureResult result) {
+        private void processCompleted(CaptureRequest request, CaptureResult result) {
 
           if (result.get(CaptureResult.SENSOR_SENSITIVITY) != null) {
             capture_result_has_iso = true;
@@ -2473,7 +2609,7 @@ import java.util.Vector;
 			}*/
           if (result.get(CaptureResult.LENS_FOCUS_RANGE) != null) {
             Pair<Float, Float> focus_range = result.get(CaptureResult.LENS_FOCUS_RANGE);
-				/*if( MyDebug.LOG ) {
+        /*if( MyDebug.LOG ) {
 					Log.d(TAG, "capture result focus range: " + focus_range.first + " to " + focus_range.second);
 				}*/
             capture_result_has_focus_distance = true;
@@ -2494,7 +2630,7 @@ import java.util.Vector;
             if (camera_faces != null) {
               CameraController.Face[] faces = new CameraController.Face[camera_faces.length];
               for (int i = 0; i < camera_faces.length; i++) {
-                faces[i] = convertFromCameraFace(sensor_rect,camera_faces[i]);
+                faces[i] = convertFromCameraFace(sensor_rect, camera_faces[i]);
               }
               face_detection_listener.onFaceDetection(faces);
             }

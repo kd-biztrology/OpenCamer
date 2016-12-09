@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Vector;
 /**
  * Provides support using Android's original camera API
  * android.hardware.Camera.
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -29,14 +31,15 @@ import java.util.Vector;
   private Camera.CameraInfo camera_info = new Camera.CameraInfo();
   private String iso_key = null;
 
+
   public CameraController1(int cameraId) throws CameraControllerException {
     super(cameraId);
-    Log.d(TAG,"create new CameraController1: " + cameraId);
+    Log.d(TAG, "create new CameraController1: " + cameraId);
     try {
       camera = Camera.open(cameraId);
     } catch (RuntimeException e) {
 
-      Log.e(TAG,"failed to open camera");
+      Log.e(TAG, "failed to open camera");
       e.printStackTrace();
       throw new CameraControllerException();
     }
@@ -45,22 +48,22 @@ import java.util.Vector;
       // I've seen this in some crashes reported in Google Play; also see:
       // http://stackoverflow.com/questions/12054022/camera-open-returns-null
 
-      Log.e(TAG,"camera.open returned null");
+      Log.e(TAG, "camera.open returned null");
       throw new CameraControllerException();
     }
     try {
-      Camera.getCameraInfo(cameraId,camera_info);
+      Camera.getCameraInfo(cameraId, camera_info);
     } catch (RuntimeException e) {
       // Had reported RuntimeExceptions from Google Play
       // also see http://stackoverflow.com/questions/22383708/java-lang-runtimeexception-fail-to-get-camera-info
 
-      Log.e(TAG,"failed to get camera info");
+      Log.e(TAG, "failed to get camera info");
       e.printStackTrace();
       this.release();
       throw new CameraControllerException();
     }
     /*{
-			// TEST cam_mode workaround from http://stackoverflow.com/questions/7225571/camcorderprofile-quality-high-resolution-produces-green-flickering-video
+      // TEST cam_mode workaround from http://stackoverflow.com/questions/7225571/camcorderprofile-quality-high-resolution-produces-green-flickering-video
 			if( MyDebug.LOG )
 				Logger.d(TAG, "setting cam_mode workaround");
 	    	Camera.Parameters parameters = this.getParameters();
@@ -71,139 +74,148 @@ import java.util.Vector;
     camera.setErrorCallback(new CameraErrorCallback());
   }
 
+
   private static class CameraErrorCallback implements Camera.ErrorCallback {
-    @Override public void onError(int error,Camera camera) {
+    @Override public void onError(int error, Camera camera) {
       // n.b., as this is potentially serious error, we always log even if MyDebug.LOG is false
-      Log.e(TAG,"camera onError: " + error);
+      Log.e(TAG, "camera onError: " + error);
       if (error == Camera.CAMERA_ERROR_SERVER_DIED) {
-        Log.e(TAG,"    CAMERA_ERROR_SERVER_DIED");
+        Log.e(TAG, "    CAMERA_ERROR_SERVER_DIED");
       } else if (error == Camera.CAMERA_ERROR_UNKNOWN) {
-        Log.e(TAG,"    CAMERA_ERROR_UNKNOWN ");
+        Log.e(TAG, "    CAMERA_ERROR_UNKNOWN ");
       }
     }
   }
+
 
   public void release() {
     camera.release();
     camera = null;
   }
 
+
   public Camera getCamera() {
     return camera;
   }
+
 
   private Camera.Parameters getParameters() {
     return camera.getParameters();
   }
 
+
   private void setCameraParameters(Camera.Parameters parameters) {
 
-    Log.d(TAG,"setCameraParameters");
+    Log.d(TAG, "setCameraParameters");
     try {
       camera.setParameters(parameters);
 
-      Log.d(TAG,"done");
+      Log.d(TAG, "done");
     } catch (RuntimeException e) {
       // just in case something has gone wrong
 
-      Log.d(TAG,"failed to set parameters");
+      Log.d(TAG, "failed to set parameters");
       e.printStackTrace();
       count_camera_parameters_exception++;
     }
   }
 
+
   private List<String> convertFlashModesToValues(List<String> supported_flash_modes) {
 
-    Log.d(TAG,"convertFlashModesToValues()");
+    Log.d(TAG, "convertFlashModesToValues()");
     List<String> output_modes = new Vector<String>();
     if (supported_flash_modes != null) {
       // also resort as well as converting
       if (supported_flash_modes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
         output_modes.add("flash_off");
 
-        Log.d(TAG," supports flash_off");
+        Log.d(TAG, " supports flash_off");
       }
       if (supported_flash_modes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
         output_modes.add("flash_auto");
 
-        Log.d(TAG," supports flash_auto");
+        Log.d(TAG, " supports flash_auto");
       }
       if (supported_flash_modes.contains(Camera.Parameters.FLASH_MODE_ON)) {
         output_modes.add("flash_on");
 
-        Log.d(TAG," supports flash_on");
+        Log.d(TAG, " supports flash_on");
       }
       if (supported_flash_modes.contains(Camera.Parameters.FLASH_MODE_TORCH)) {
         output_modes.add("flash_torch");
 
-        Log.d(TAG," supports flash_torch");
+        Log.d(TAG, " supports flash_torch");
       }
       if (supported_flash_modes.contains(Camera.Parameters.FLASH_MODE_RED_EYE)) {
         output_modes.add("flash_red_eye");
 
-        Log.d(TAG," supports flash_red_eye");
+        Log.d(TAG, " supports flash_red_eye");
       }
     }
     return output_modes;
   }
 
+
   private List<String> convertFocusModesToValues(List<String> supported_focus_modes) {
 
-    Log.d(TAG,"convertFocusModesToValues()");
+    Log.d(TAG, "convertFocusModesToValues()");
     List<String> output_modes = new Vector<String>();
     if (supported_focus_modes != null) {
       // also resort as well as converting
       if (supported_focus_modes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
         output_modes.add("focus_mode_auto");
 
-        Log.d(TAG," supports focus_mode_auto");
+        Log.d(TAG, " supports focus_mode_auto");
       }
       if (supported_focus_modes.contains(Camera.Parameters.FOCUS_MODE_INFINITY)) {
         output_modes.add("focus_mode_infinity");
 
-        Log.d(TAG," supports focus_mode_infinity");
+        Log.d(TAG, " supports focus_mode_infinity");
       }
       if (supported_focus_modes.contains(Camera.Parameters.FOCUS_MODE_MACRO)) {
         output_modes.add("focus_mode_macro");
 
-        Log.d(TAG," supports focus_mode_macro");
+        Log.d(TAG, " supports focus_mode_macro");
       }
       if (supported_focus_modes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
         output_modes.add("focus_mode_locked");
 
-        Log.d(TAG," supports focus_mode_locked");
+        Log.d(TAG, " supports focus_mode_locked");
       }
       if (supported_focus_modes.contains(Camera.Parameters.FOCUS_MODE_FIXED)) {
         output_modes.add("focus_mode_fixed");
 
-        Log.d(TAG," supports focus_mode_fixed");
+        Log.d(TAG, " supports focus_mode_fixed");
       }
       if (supported_focus_modes.contains(Camera.Parameters.FOCUS_MODE_EDOF)) {
         output_modes.add("focus_mode_edof");
 
-        Log.d(TAG," supports focus_mode_edof");
+        Log.d(TAG, " supports focus_mode_edof");
       }
       if (supported_focus_modes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
         output_modes.add("focus_mode_continuous_picture");
 
-        Log.d(TAG," supports focus_mode_continuous_picture");
+        Log.d(TAG, " supports focus_mode_continuous_picture");
       }
       if (supported_focus_modes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
         output_modes.add("focus_mode_continuous_video");
 
-        Log.d(TAG," supports focus_mode_continuous_video");
+        Log.d(TAG, " supports focus_mode_continuous_video");
       }
     }
     return output_modes;
   }
 
+
   public String getAPI() {
     return "Camera";
   }
 
+
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) public CameraFeatures getCameraFeatures() {
 
-    Log.d(TAG,"getCameraFeatures()");
+    Log.d(TAG, "getCameraFeatures()");
     Camera.Parameters parameters = this.getParameters();
     CameraFeatures camera_features = new CameraFeatures();
     camera_features.is_zoom_supported = parameters.isZoomSupported();
@@ -215,7 +227,7 @@ import java.util.Vector;
         // crash java.lang.NumberFormatException: Invalid int: " 500" reported in v1.4 on device "es209ra", Android 4.1, 3 Jan 2014
         // this is from java.lang.Integer.invalidInt(Integer.java:138) - unclear if this is a bug in Open Camera, all we can do for now is catch it
 
-        Log.e(TAG,"NumberFormatException in getZoomRatios()");
+        Log.e(TAG, "NumberFormatException in getZoomRatios()");
         e.printStackTrace();
         camera_features.is_zoom_supported = false;
         camera_features.max_zoom = 0;
@@ -231,7 +243,7 @@ import java.util.Vector;
     //camera_features.picture_sizes.add(new CameraController.Size(1920, 1080)); // test
     for (Camera.Size camera_size : camera_picture_sizes) {
       camera_features.picture_sizes.add(
-          new CameraController.Size(camera_size.width,camera_size.height));
+          new CameraController.Size(camera_size.width, camera_size.height));
     }
 
     //camera_features.supported_flash_modes = parameters.getSupportedFlashModes(); // Android format
@@ -255,7 +267,7 @@ import java.util.Vector;
     } catch (Exception e) {
       // received a NullPointerException from StringToReal.parseFloat() beneath getExposureCompensationStep() on Google Play!
 
-      Log.e(TAG,"exception from getExposureCompensationStep()");
+      Log.e(TAG, "exception from getExposureCompensationStep()");
       e.printStackTrace();
       camera_features.exposure_step = 1.0f / 3.0f; // make up a typical example
     }
@@ -264,24 +276,24 @@ import java.util.Vector;
     if (camera_video_sizes == null) {
       // if null, we should use the preview sizes - see http://stackoverflow.com/questions/14263521/android-getsupportedvideosizes-allways-returns-null
 
-      Log.d(TAG,"take video_sizes from preview sizes");
+      Log.d(TAG, "take video_sizes from preview sizes");
       camera_video_sizes = parameters.getSupportedPreviewSizes();
     }
     camera_features.video_sizes = new ArrayList<Size>();
     //camera_features.video_sizes.add(new CameraController.Size(1920, 1080)); // test
     for (Camera.Size camera_size : camera_video_sizes) {
       camera_features.video_sizes.add(
-          new CameraController.Size(camera_size.width,camera_size.height));
+          new CameraController.Size(camera_size.width, camera_size.height));
     }
 
     List<Camera.Size> camera_preview_sizes = parameters.getSupportedPreviewSizes();
     camera_features.preview_sizes = new ArrayList<Size>();
     for (Camera.Size camera_size : camera_preview_sizes) {
       camera_features.preview_sizes.add(
-          new CameraController.Size(camera_size.width,camera_size.height));
+          new CameraController.Size(camera_size.width, camera_size.height));
     }
 
-    Log.d(TAG,"camera parameters: " + parameters.flatten());
+    Log.d(TAG, "camera parameters: " + parameters.flatten());
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       // Camera.canDisableShutterSound requires JELLY_BEAN_MR1 or greater
@@ -293,10 +305,12 @@ import java.util.Vector;
     return camera_features;
   }
 
+
   public long getDefaultExposureTime() {
     // not supported for CameraController1
     return 0l;
   }
+
 
   // important, from docs:
   // "Changing scene mode may override other parameters (such as flash mode, focus mode, white balance).
@@ -312,7 +326,7 @@ import java.util.Vector;
 			values = new ArrayList<String>();
 			values.add("auto");
 		}*/
-    SupportedValues supported_values = checkModeIsSupported(values,value,default_value);
+    SupportedValues supported_values = checkModeIsSupported(values, value, default_value);
     if (supported_values != null) {
       if (!parameters.getSceneMode().equals(supported_values.selected_value)) {
         parameters.setSceneMode(supported_values.selected_value);
@@ -322,16 +336,18 @@ import java.util.Vector;
     return supported_values;
   }
 
+
   public String getSceneMode() {
     Camera.Parameters parameters = this.getParameters();
     return parameters.getSceneMode();
   }
 
+
   public SupportedValues setColorEffect(String value) {
     String default_value = getDefaultColorEffect();
     Camera.Parameters parameters = this.getParameters();
     List<String> values = parameters.getSupportedColorEffects();
-    SupportedValues supported_values = checkModeIsSupported(values,value,default_value);
+    SupportedValues supported_values = checkModeIsSupported(values, value, default_value);
     if (supported_values != null) {
       if (!parameters.getColorEffect().equals(supported_values.selected_value)) {
         parameters.setColorEffect(supported_values.selected_value);
@@ -341,16 +357,18 @@ import java.util.Vector;
     return supported_values;
   }
 
+
   public String getColorEffect() {
     Camera.Parameters parameters = this.getParameters();
     return parameters.getColorEffect();
   }
 
+
   public SupportedValues setWhiteBalance(String value) {
     String default_value = getDefaultWhiteBalance();
     Camera.Parameters parameters = this.getParameters();
     List<String> values = parameters.getSupportedWhiteBalance();
-    SupportedValues supported_values = checkModeIsSupported(values,value,default_value);
+    SupportedValues supported_values = checkModeIsSupported(values, value, default_value);
     if (supported_values != null) {
       if (!parameters.getWhiteBalance().equals(supported_values.selected_value)) {
         parameters.setWhiteBalance(supported_values.selected_value);
@@ -360,10 +378,12 @@ import java.util.Vector;
     return supported_values;
   }
 
+
   public String getWhiteBalance() {
     Camera.Parameters parameters = this.getParameters();
     return parameters.getWhiteBalance();
   }
+
 
   @Override public SupportedValues setISO(String value) {
     String default_value = getDefaultISO();
@@ -382,7 +402,7 @@ import java.util.Vector;
     List<String> values = null;
     if (iso_values != null && iso_values.length() > 0) {
 
-      Log.d(TAG,"iso_values: " + iso_values);
+      Log.d(TAG, "iso_values: " + iso_values);
       String[] isos_array = iso_values.split(",");
       // split shouldn't return null
       if (isos_array.length > 0) {
@@ -415,11 +435,11 @@ import java.util.Vector;
         values.add("800");
         values.add("1600");
       }
-      SupportedValues supported_values = checkModeIsSupported(values,value,default_value);
+      SupportedValues supported_values = checkModeIsSupported(values, value, default_value);
       if (supported_values != null) {
 
-        Log.d(TAG,"set: " + iso_key + " to: " + supported_values.selected_value);
-        parameters.set(iso_key,supported_values.selected_value);
+        Log.d(TAG, "set: " + iso_key + " to: " + supported_values.selected_value);
+        parameters.set(iso_key, supported_values.selected_value);
         setCameraParameters(parameters);
       }
       return supported_values;
@@ -427,74 +447,85 @@ import java.util.Vector;
     return null;
   }
 
+
   @Override public String getISOKey() {
 
-    Log.d(TAG,"getISOKey");
+    Log.d(TAG, "getISOKey");
     return this.iso_key;
   }
+
 
   @Override public int getISO() {
     // not supported for CameraController1
     return 0;
   }
 
+
   @Override public boolean setISO(int iso) {
     // not supported for CameraController1
     return false;
   }
+
 
   @Override public long getExposureTime() {
     // not supported for CameraController1
     return 0l;
   }
 
+
   @Override public boolean setExposureTime(long exposure_time) {
     // not supported for CameraController1
     return false;
   }
 
+
   @Override public CameraController.Size getPictureSize() {
     Camera.Parameters parameters = this.getParameters();
     Camera.Size camera_size = parameters.getPictureSize();
-    return new CameraController.Size(camera_size.width,camera_size.height);
+    return new CameraController.Size(camera_size.width, camera_size.height);
   }
 
-  @Override public void setPictureSize(int width,int height) {
-    Camera.Parameters parameters = this.getParameters();
-    parameters.setPictureSize(width,height);
 
-    Log.d(TAG,"set picture size: "
+  @Override public void setPictureSize(int width, int height) {
+    Camera.Parameters parameters = this.getParameters();
+    parameters.setPictureSize(width, height);
+
+    Log.d(TAG, "set picture size: "
         + parameters.getPictureSize().width
         + ", "
         + parameters.getPictureSize().height);
     setCameraParameters(parameters);
   }
 
+
   @Override public CameraController.Size getPreviewSize() {
     Camera.Parameters parameters = this.getParameters();
     Camera.Size camera_size = parameters.getPreviewSize();
-    return new CameraController.Size(camera_size.width,camera_size.height);
+    return new CameraController.Size(camera_size.width, camera_size.height);
   }
 
-  @Override public void setPreviewSize(int width,int height) {
+
+  @Override public void setPreviewSize(int width, int height) {
     Camera.Parameters parameters = this.getParameters();
 
-    Log.d(TAG,"current preview size: "
+    Log.d(TAG, "current preview size: "
         + parameters.getPreviewSize().width
         + ", "
         + parameters.getPreviewSize().height);
-    parameters.setPreviewSize(width,height);
+    parameters.setPreviewSize(width, height);
 
-    Log.d(TAG,"new preview size: "
+    Log.d(TAG, "new preview size: "
         + parameters.getPreviewSize().width
         + ", "
         + parameters.getPreviewSize().height);
     setCameraParameters(parameters);
   }
 
+
   @Override public void setRaw(boolean want_raw) {
     // not supported for CameraController1
   }
+
 
   @Override public void setVideoStabilization(boolean enabled) {
     Camera.Parameters parameters = this.getParameters();
@@ -502,15 +533,18 @@ import java.util.Vector;
     setCameraParameters(parameters);
   }
 
+
   public boolean getVideoStabilization() {
     Camera.Parameters parameters = this.getParameters();
     return parameters.getVideoStabilization();
   }
 
+
   public int getJpegQuality() {
     Camera.Parameters parameters = this.getParameters();
     return parameters.getJpegQuality();
   }
+
 
   public void setJpegQuality(int quality) {
     Camera.Parameters parameters = this.getParameters();
@@ -518,30 +552,34 @@ import java.util.Vector;
     setCameraParameters(parameters);
   }
 
+
   public int getZoom() {
     Camera.Parameters parameters = this.getParameters();
     return parameters.getZoom();
   }
 
+
   public void setZoom(int value) {
     Camera.Parameters parameters = this.getParameters();
 
-    Log.d(TAG,"zoom was: " + parameters.getZoom());
+    Log.d(TAG, "zoom was: " + parameters.getZoom());
     parameters.setZoom(value);
     setCameraParameters(parameters);
   }
+
 
   public int getExposureCompensation() {
     Camera.Parameters parameters = this.getParameters();
     return parameters.getExposureCompensation();
   }
 
+
   // Returns whether exposure was modified
   public boolean setExposureCompensation(int new_exposure) {
     Camera.Parameters parameters = this.getParameters();
     int current_exposure = parameters.getExposureCompensation();
     if (new_exposure != current_exposure) {
-      Log.d(TAG,"change exposure from " + current_exposure + " to " + new_exposure);
+      Log.d(TAG, "change exposure from " + current_exposure + " to " + new_exposure);
       parameters.setExposureCompensation(new_exposure);
       setCameraParameters(parameters);
       return true;
@@ -549,12 +587,14 @@ import java.util.Vector;
     return false;
   }
 
-  public void setPreviewFpsRange(int min,int max) {
-    Log.d(TAG,"setPreviewFpsRange: " + min + " to " + max);
+
+  public void setPreviewFpsRange(int min, int max) {
+    Log.d(TAG, "setPreviewFpsRange: " + min + " to " + max);
     Camera.Parameters parameters = this.getParameters();
-    parameters.setPreviewFpsRange(min,max);
+    parameters.setPreviewFpsRange(min, max);
     setCameraParameters(parameters);
   }
+
 
   public List<int[]> getSupportedPreviewFpsRange() {
     Camera.Parameters parameters = this.getParameters();
@@ -567,10 +607,11 @@ import java.util.Vector;
 				at android.hardware.Camera$Parameters.getSupportedPreviewFpsRange(Camera.java:2799)
 				*/
       e.printStackTrace();
-      Log.e(TAG,"getSupportedPreviewFpsRange() gave StringIndexOutOfBoundsException");
+      Log.e(TAG, "getSupportedPreviewFpsRange() gave StringIndexOutOfBoundsException");
     }
     return null;
   }
+
 
   @Override public void setFocusValue(String focus_value) {
     Camera.Parameters parameters = this.getParameters();
@@ -590,15 +631,16 @@ import java.util.Vector;
       parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
     } else {
 
-      Log.d(TAG,"setFocusValue() received unknown focus value " + focus_value);
+      Log.d(TAG, "setFocusValue() received unknown focus value " + focus_value);
     }
     setCameraParameters(parameters);
   }
 
+
   private String convertFocusModeToValue(String focus_mode) {
     // focus_mode may be null on some devices; we return ""
 
-    Log.d(TAG,"convertFocusModeToValue: " + focus_mode);
+    Log.d(TAG, "convertFocusModeToValue: " + focus_mode);
     String focus_value = "";
     if (focus_mode == null) {
       // ignore, leave focus_value at ""
@@ -620,6 +662,7 @@ import java.util.Vector;
     return focus_value;
   }
 
+
   @Override public String getFocusValue() {
     // returns "" if Parameters.getFocusMode() returns null
     Camera.Parameters parameters = this.getParameters();
@@ -628,15 +671,18 @@ import java.util.Vector;
     return convertFocusModeToValue(focus_mode);
   }
 
+
   @Override public float getFocusDistance() {
     // not supported for CameraController1!
     return 0.0f;
   }
 
+
   @Override public boolean setFocusDistance(float focus_distance) {
     // not supported for CameraController1!
     return false;
   }
+
 
   private String convertFlashValueToMode(String flash_value) {
     String flash_mode = "";
@@ -654,10 +700,11 @@ import java.util.Vector;
     return flash_mode;
   }
 
+
   public void setFlashValue(String flash_value) {
     Camera.Parameters parameters = this.getParameters();
 
-    Log.d(TAG,"setFlashValue: " + flash_value);
+    Log.d(TAG, "setFlashValue: " + flash_value);
     if (parameters.getFlashMode() == null) {
       return; // flash mode not supported
     }
@@ -667,7 +714,7 @@ import java.util.Vector;
           && !flash_mode.equals(Camera.Parameters.FLASH_MODE_OFF)) {
         // workaround for bug on Nexus 5 and Nexus 6 where torch doesn't switch off until we set FLASH_MODE_OFF
 
-        Log.d(TAG,"first turn torch off");
+        Log.d(TAG, "first turn torch off");
         parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
         setCameraParameters(parameters);
         // need to set the correct flash mode after a delay
@@ -675,15 +722,16 @@ import java.util.Vector;
         handler.postDelayed(new Runnable() {
           @Override public void run() {
 
-            Log.d(TAG,"now set actual flash mode after turning torch off");
+            Log.d(TAG, "now set actual flash mode after turning torch off");
             if (camera
-                != null) { // make sure camera wasn't released in the meantime (has a Google Play crash as a result of this)
+                !=
+                null) { // make sure camera wasn't released in the meantime (has a Google Play crash as a result of this)
               Camera.Parameters parameters = getParameters();
               parameters.setFlashMode(flash_mode);
               setCameraParameters(parameters);
             }
           }
-        },100);
+        }, 100);
       } else {
         parameters.setFlashMode(flash_mode);
         setCameraParameters(parameters);
@@ -691,10 +739,11 @@ import java.util.Vector;
     }
   }
 
+
   private String convertFlashModeToValue(String flash_mode) {
     // flash_mode may be null, meaning flash isn't supported; we return ""
 
-    Log.d(TAG,"convertFlashModeToValue: " + flash_mode);
+    Log.d(TAG, "convertFlashModeToValue: " + flash_mode);
     String flash_value = "";
     if (flash_mode == null) {
       // ignore, leave flash_value at null
@@ -712,6 +761,7 @@ import java.util.Vector;
     return flash_value;
   }
 
+
   public String getFlashValue() {
     // returns "" if flash isn't supported
     Camera.Parameters parameters = this.getParameters();
@@ -719,9 +769,10 @@ import java.util.Vector;
     return convertFlashModeToValue(flash_mode);
   }
 
+
   public void setRecordingHint(boolean hint) {
 
-    Log.d(TAG,"setRecordingHint: " + hint);
+    Log.d(TAG, "setRecordingHint: " + hint);
     Camera.Parameters parameters = this.getParameters();
     // Calling setParameters here with continuous video focus mode causes preview to not restart after taking a photo on Galaxy Nexus?! (fine on my Nexus 7).
     // The issue seems to specifically be with setParameters (i.e., the problem occurs even if we don't setRecordingHint).
@@ -740,11 +791,13 @@ import java.util.Vector;
     }
   }
 
+
   public void setAutoExposureLock(boolean enabled) {
     Camera.Parameters parameters = this.getParameters();
     parameters.setAutoExposureLock(enabled);
     setCameraParameters(parameters);
   }
+
 
   public boolean getAutoExposureLock() {
     Camera.Parameters parameters = this.getParameters();
@@ -754,11 +807,13 @@ import java.util.Vector;
     return parameters.getAutoExposureLock();
   }
 
+
   public void setRotation(int rotation) {
     Camera.Parameters parameters = this.getParameters();
     parameters.setRotation(rotation);
     setCameraParameters(parameters);
   }
+
 
   public void setLocationInfo(Location location) {
     Camera.Parameters parameters = this.getParameters();
@@ -782,11 +837,13 @@ import java.util.Vector;
     setCameraParameters(parameters);
   }
 
+
   public void removeLocationInfo() {
     Camera.Parameters parameters = this.getParameters();
     parameters.removeGpsData();
     setCameraParameters(parameters);
   }
+
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) public void enableShutterSound(boolean enabled) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -794,10 +851,11 @@ import java.util.Vector;
     }
   }
 
+
   public boolean setFocusAndMeteringArea(List<Area> areas) {
     List<Camera.Area> camera_areas = new ArrayList<Camera.Area>();
     for (CameraController.Area area : areas) {
-      camera_areas.add(new Camera.Area(area.rect,area.weight));
+      camera_areas.add(new Camera.Area(area.rect, area.weight));
     }
     Camera.Parameters parameters = this.getParameters();
     String focus_mode = parameters.getFocusMode();
@@ -812,7 +870,7 @@ import java.util.Vector;
       // also set metering areas
       if (parameters.getMaxNumMeteringAreas() == 0) {
 
-        Log.d(TAG,"metering areas not supported");
+        Log.d(TAG, "metering areas not supported");
       } else {
         parameters.setMeteringAreas(camera_areas);
       }
@@ -827,6 +885,7 @@ import java.util.Vector;
     }
     return false;
   }
+
 
   public void clearFocusAndMetering() {
     Camera.Parameters parameters = this.getParameters();
@@ -844,6 +903,7 @@ import java.util.Vector;
     }
   }
 
+
   public List<Area> getFocusAreas() {
     Camera.Parameters parameters = this.getParameters();
     List<Camera.Area> camera_areas = parameters.getFocusAreas();
@@ -852,10 +912,11 @@ import java.util.Vector;
     }
     List<Area> areas = new ArrayList<Area>();
     for (Camera.Area camera_area : camera_areas) {
-      areas.add(new CameraController.Area(camera_area.rect,camera_area.weight));
+      areas.add(new CameraController.Area(camera_area.rect, camera_area.weight));
     }
     return areas;
   }
+
 
   public List<Area> getMeteringAreas() {
     Camera.Parameters parameters = this.getParameters();
@@ -865,10 +926,11 @@ import java.util.Vector;
     }
     List<Area> areas = new ArrayList<Area>();
     for (Camera.Area camera_area : camera_areas) {
-      areas.add(new CameraController.Area(camera_area.rect,camera_area.weight));
+      areas.add(new CameraController.Area(camera_area.rect, camera_area.weight));
     }
     return areas;
   }
+
 
   @Override public boolean supportsAutoFocus() {
     Camera.Parameters parameters = this.getParameters();
@@ -882,6 +944,7 @@ import java.util.Vector;
     return false;
   }
 
+
   @Override public boolean focusIsContinuous() {
     Camera.Parameters parameters = this.getParameters();
     String focus_mode = parameters.getFocusMode();
@@ -894,6 +957,7 @@ import java.util.Vector;
     return false;
   }
 
+
   public boolean focusIsVideo() {
     Camera.Parameters parameters = this.getParameters();
     String current_focus_mode = parameters.getFocusMode();
@@ -901,28 +965,30 @@ import java.util.Vector;
     boolean focus_is_video = current_focus_mode != null && current_focus_mode.equals(
         Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
 
-    Log.d(TAG,"current_focus_mode: " + current_focus_mode);
-    Log.d(TAG,"focus_is_video: " + focus_is_video);
+    Log.d(TAG, "current_focus_mode: " + current_focus_mode);
+    Log.d(TAG, "focus_is_video: " + focus_is_video);
 
     return focus_is_video;
   }
 
+
   @Override public void reconnect() throws CameraControllerException {
 
-    Log.d(TAG,"reconnect");
+    Log.d(TAG, "reconnect");
     try {
       camera.reconnect();
     } catch (IOException e) {
 
-      Log.e(TAG,"reconnect threw IOException");
+      Log.e(TAG, "reconnect threw IOException");
       e.printStackTrace();
       throw new CameraControllerException();
     }
   }
 
+
   @Override public void setPreviewDisplay(SurfaceHolder holder) throws CameraControllerException {
 
-    Log.d(TAG,"setPreviewDisplay");
+    Log.d(TAG, "setPreviewDisplay");
 
     try {
       camera.setPreviewDisplay(holder);
@@ -932,9 +998,10 @@ import java.util.Vector;
     }
   }
 
+
   @Override public void setPreviewTexture(SurfaceTexture texture) throws CameraControllerException {
 
-    Log.d(TAG,"setPreviewTexture");
+    Log.d(TAG, "setPreviewTexture");
     try {
       camera.setPreviewTexture(texture);
     } catch (IOException e) {
@@ -943,22 +1010,25 @@ import java.util.Vector;
     }
   }
 
+
   @Override public void startPreview() throws CameraControllerException {
 
-    Log.d(TAG,"startPreview");
+    Log.d(TAG, "startPreview");
     try {
       camera.startPreview();
     } catch (RuntimeException e) {
 
-      Log.e(TAG,"failed to start preview");
+      Log.e(TAG, "failed to start preview");
       e.printStackTrace();
       throw new CameraControllerException();
     }
   }
 
+
   @Override public void stopPreview() {
     camera.stopPreview();
   }
+
 
   // returns false if RuntimeException thrown (may include if face-detection already started)
   public boolean startFaceDetection() {
@@ -966,18 +1036,19 @@ import java.util.Vector;
       camera.startFaceDetection();
     } catch (RuntimeException e) {
 
-      Log.d(TAG,"face detection failed or already started");
+      Log.d(TAG, "face detection failed or already started");
       return false;
     }
     return true;
   }
 
+
   public void setFaceDetectionListener(final CameraController.FaceDetectionListener listener) {
     class CameraFaceDetectionListener implements Camera.FaceDetectionListener {
-      @Override public void onFaceDetection(Camera.Face[] camera_faces,Camera camera) {
+      @Override public void onFaceDetection(Camera.Face[] camera_faces, Camera camera) {
         Face[] faces = new Face[camera_faces.length];
         for (int i = 0; i < camera_faces.length; i++) {
-          faces[i] = new Face(camera_faces[i].score,camera_faces[i].rect);
+          faces[i] = new Face(camera_faces[i].score, camera_faces[i].rect);
         }
         listener.onFaceDetection(faces);
       }
@@ -985,15 +1056,17 @@ import java.util.Vector;
     camera.setFaceDetectionListener(new CameraFaceDetectionListener());
   }
 
+
   public void autoFocus(final CameraController.AutoFocusCallback cb) {
 
-    Log.d(TAG,"autoFocus");
+    Log.d(TAG, "autoFocus");
     Camera.AutoFocusCallback camera_cb = new Camera.AutoFocusCallback() {
       boolean done_autofocus = false;
 
-      @Override public void onAutoFocus(boolean success,Camera camera) {
 
-        Log.d(TAG,"autoFocus.onAutoFocus");
+      @Override public void onAutoFocus(boolean success, Camera camera) {
+
+        Log.d(TAG, "autoFocus.onAutoFocus");
         // in theory we should only ever get one call to onAutoFocus(), but some Samsung phones at least can call the callback multiple times
         // see http://stackoverflow.com/questions/36316195/take-picture-fails-on-samsung-phones
         // needed to fix problem on Samsung S7 with flash auto/on and continuous picture focus where it would claim failed to take picture even though it'd succeeded,
@@ -1003,7 +1076,7 @@ import java.util.Vector;
           cb.onAutoFocus(success);
         } else {
 
-          Log.e(TAG,"ignore repeated autofocus");
+          Log.e(TAG, "ignore repeated autofocus");
         }
       }
     };
@@ -1013,12 +1086,13 @@ import java.util.Vector;
       // just in case? We got a RuntimeException report here from 1 user on Google Play:
       // 21 Dec 2013, Xperia Go, Android 4.1
 
-      Log.e(TAG,"runtime exception from autoFocus");
+      Log.e(TAG, "runtime exception from autoFocus");
       e.printStackTrace();
       // should call the callback, so the application isn't left waiting (e.g., when we autofocus before trying to take a photo)
       cb.onAutoFocus(false);
     }
   }
+
 
   public void cancelAutoFocus() {
     try {
@@ -1026,23 +1100,24 @@ import java.util.Vector;
     } catch (RuntimeException e) {
       // had a report of crash on some devices, see comment at https://sourceforge.net/p/opencamera/tickets/4/ made on 20140520
 
-      Log.d(TAG,"cancelAutoFocus() failed");
+      Log.d(TAG, "cancelAutoFocus() failed");
       e.printStackTrace();
     }
   }
 
+
   @Override @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   public void setContinuousFocusMoveCallback(final ContinuousFocusMoveCallback cb) {
 
-    Log.d(TAG,"setContinuousFocusMoveCallback");
+    Log.d(TAG, "setContinuousFocusMoveCallback");
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       // setAutoFocusMoveCallback() requires JELLY_BEAN
       try {
         if (cb != null) {
           camera.setAutoFocusMoveCallback(new AutoFocusMoveCallback() {
-            @Override public void onAutoFocusMoving(boolean start,Camera camera) {
+            @Override public void onAutoFocusMoving(boolean start, Camera camera) {
 
-              Log.d(TAG,"onAutoFocusMoving: " + start);
+              Log.d(TAG, "onAutoFocusMoving: " + start);
               cb.onContinuousFocusMove(start);
             }
           });
@@ -1052,30 +1127,32 @@ import java.util.Vector;
       } catch (RuntimeException e) {
         // received RuntimeException reports from some users on Google Play - seems to be older devices, but still important to catch!
 
-        Log.e(TAG,"runtime exception from setAutoFocusMoveCallback");
+        Log.e(TAG, "runtime exception from setAutoFocusMoveCallback");
         e.printStackTrace();
       }
     } else {
 
-      Log.d(TAG,"setContinuousFocusMoveCallback requires Android JELLY_BEAN or higher");
+      Log.d(TAG, "setContinuousFocusMoveCallback requires Android JELLY_BEAN or higher");
     }
   }
+
 
   private static class TakePictureShutterCallback implements Camera.ShutterCallback {
     // don't do anything here, but we need to implement the callback to get the shutter sound (at least on Galaxy Nexus and Nexus 7)
     @Override public void onShutter() {
 
-      Log.d(TAG,"shutterCallback.onShutter()");
+      Log.d(TAG, "shutterCallback.onShutter()");
     }
   }
 
-  public void takePicture(final CameraController.PictureCallback picture,
-      final ErrorCallback error) {
 
-    Log.d(TAG,"takePicture");
+  public void takePicture(final CameraController.PictureCallback picture,
+                          final ErrorCallback error) {
+
+    Log.d(TAG, "takePicture");
     Camera.ShutterCallback shutter = new TakePictureShutterCallback();
     Camera.PictureCallback camera_jpeg = picture == null ? null : new Camera.PictureCallback() {
-      public void onPictureTaken(byte[] data,Camera cam) {
+      public void onPictureTaken(byte[] data, Camera cam) {
         // n.b., this is automatically run in a different thread
         picture.onPictureTaken(data);
         picture.onCompleted();
@@ -1083,15 +1160,16 @@ import java.util.Vector;
     };
 
     try {
-      camera.takePicture(shutter,null,camera_jpeg);
+      camera.takePicture(shutter, null, camera_jpeg);
     } catch (RuntimeException e) {
       // just in case? We got a RuntimeException report here from 1 user on Google Play; I also encountered it myself once of Galaxy Nexus when starting up
 
-      Log.e(TAG,"runtime exception from takePicture");
+      Log.e(TAG, "runtime exception from takePicture");
       e.printStackTrace();
       error.onError();
     }
   }
+
 
   public void setDisplayOrientation(int degrees) {
     int result = 0;
@@ -1102,38 +1180,45 @@ import java.util.Vector;
       result = (camera_info.orientation - degrees + 360) % 360;
     }
 
-    Log.d(TAG,"    info orientation is " + camera_info.orientation);
-    Log.d(TAG,"    setDisplayOrientation to " + result);
+    Log.d(TAG, "    info orientation is " + camera_info.orientation);
+    Log.d(TAG, "    setDisplayOrientation to " + result);
 
     camera.setDisplayOrientation(result);
     this.display_orientation = result;
   }
 
+
   public int getDisplayOrientation() {
     return this.display_orientation;
   }
+
 
   public int getCameraOrientation() {
     return camera_info.orientation;
   }
 
+
   public boolean isFrontFacing() {
     return (camera_info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT);
   }
+
 
   public void unlock() {
     this.stopPreview(); // although not documented, we need to stop preview to prevent device freeze or video errors shortly after video recording starts on some devices (e.g., device freeze on Samsung Galaxy S2 - I could reproduce this on Samsung RTL; also video recording fails and preview becomes corrupted on Galaxy S3 variant "SGH-I747-US2"); also see http://stackoverflow.com/questions/4244999/problem-with-video-recording-after-auto-focus-in-android
     camera.unlock();
   }
 
+
   @Override public void initVideoRecorderPrePrepare(MediaRecorder video_recorder) {
     video_recorder.setCamera(camera);
   }
+
 
   @Override public void initVideoRecorderPostPrepare(MediaRecorder video_recorder)
       throws CameraControllerException {
     // no further actions necessary
   }
+
 
   @Override public String getParametersString() {
     String string = "";
@@ -1142,7 +1227,7 @@ import java.util.Vector;
     } catch (Exception e) {
       // received a StringIndexOutOfBoundsException from beneath getParameters().flatten() on Google Play!
 
-      Log.e(TAG,"exception from getParameters().flatten()");
+      Log.e(TAG, "exception from getParameters().flatten()");
       e.printStackTrace();
     }
     return string;
