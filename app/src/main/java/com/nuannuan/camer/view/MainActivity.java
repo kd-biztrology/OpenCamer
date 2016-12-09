@@ -84,6 +84,7 @@ import android.widget.ZoomControls;
 
 /**
  * The main Activity for Open Camera.
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -137,15 +138,16 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
   public float test_angle = 0.0f;
   public String test_last_saved_image = null;
 
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     long debug_time = 0;
 
-    Logger.d(TAG,"onCreate");
+    Logger.d(TAG, "onCreate");
     debug_time = System.currentTimeMillis();
 
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    PreferenceManager.setDefaultValues(this,R.xml.preferences,
+    PreferenceManager.setDefaultValues(this, R.xml.preferences,
         false); // initialise any unset preferences to their default values
 
     Logger.d(TAG,
@@ -155,13 +157,13 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       // whether called from testing
       is_test = getIntent().getExtras().getBoolean("test_project");
 
-      Logger.d(TAG,"is_test: " + is_test);
+      Logger.d(TAG, "is_test: " + is_test);
     }
     if (getIntent() != null && getIntent().getExtras() != null) {
       // whether called from Take Photo widget
       boolean take_photo = getIntent().getExtras().getBoolean(TakePhoto.TAKE_PHOTO);
 
-      Logger.d(TAG,"take_photo?: " + take_photo);
+      Logger.d(TAG, "take_photo?: " + take_photo);
     }
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -169,15 +171,15 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     // risk of running out of memory on lower end devices, due to manipulation of large bitmaps
     ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 
-    Logger.d(TAG,"standard max memory = " + activityManager.getMemoryClass() + "MB");
-    Logger.d(TAG,"large max memory = " + activityManager.getLargeMemoryClass() + "MB");
+    Logger.d(TAG, "standard max memory = " + activityManager.getMemoryClass() + "MB");
+    Logger.d(TAG, "large max memory = " + activityManager.getLargeMemoryClass() + "MB");
 
     //if( activityManager.getMemoryClass() >= 128 ) { // test
     if (activityManager.getLargeMemoryClass() >= 128) {
       supports_auto_stabilise = true;
     }
 
-    Logger.d(TAG,"supports_auto_stabilise? " + supports_auto_stabilise);
+    Logger.d(TAG, "supports_auto_stabilise? " + supports_auto_stabilise);
 
     // hack to rule out phones unlikely to have 4K video, so no point even offering the option!
     // both S5 and Note 3 have 128MB standard and 512MB large heap (tested via Samsung RTL), as does Galaxy K Zoom
@@ -186,11 +188,11 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       supports_force_video_4k = true;
     }
 
-    Logger.d(TAG,"supports_force_video_4k? " + supports_force_video_4k);
+    Logger.d(TAG, "supports_force_video_4k? " + supports_force_video_4k);
 
     // set up components
     mainUI = new MainUI(this);
-    applicationInterface = new MyApplicationInterface(this,savedInstanceState);
+    applicationInterface = new MyApplicationInterface(this, savedInstanceState);
 
     Logger.d(TAG,
         "onCreate: time after creating application interface: " + (System.currentTimeMillis()
@@ -207,15 +209,15 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
 
     // read save locations
     save_location_history.clear();
-    int save_location_history_size = sharedPreferences.getInt("save_location_history_size",0);
+    int save_location_history_size = sharedPreferences.getInt("save_location_history_size", 0);
 
-    Logger.d(TAG,"save_location_history_size: " + save_location_history_size);
+    Logger.d(TAG, "save_location_history_size: " + save_location_history_size);
 
     for (int i = 0; i < save_location_history_size; i++) {
-      String string = sharedPreferences.getString("save_location_history_" + i,null);
+      String string = sharedPreferences.getString("save_location_history_" + i, null);
       if (string != null) {
 
-        Logger.d(TAG,"save_location_history " + i + ": " + string);
+        Logger.d(TAG, "save_location_history " + i + ": " + string);
 
         save_location_history.add(string);
       }
@@ -225,7 +227,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         false); // update_icon can be false, as updateGalleryIcon() is called later in onResume()
     //updateFolderHistory("/sdcard/Pictures/OpenCameraTest");
 
-    Logger.d(TAG,"onCreate: time after updating folder history: " + (System.currentTimeMillis()
+    Logger.d(TAG, "onCreate: time after updating folder history: " + (System.currentTimeMillis()
         - debug_time));
 
     // set up sensors
@@ -234,12 +236,12 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     // accelerometer sensor (for device orientation)
     if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
 
-      Logger.d(TAG,"found accelerometer");
+      Logger.d(TAG, "found accelerometer");
 
       mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     } else {
 
-      Logger.d(TAG,"no support for accelerometer");
+      Logger.d(TAG, "no support for accelerometer");
     }
 
     Logger.d(TAG,
@@ -249,22 +251,22 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     // magnetic sensor (for compass direction)
     if (mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
 
-      Logger.d(TAG,"found magnetic sensor");
+      Logger.d(TAG, "found magnetic sensor");
 
       mSensorMagnetic = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
     } else {
 
-      Logger.d(TAG,"no support for magnetic sensor");
+      Logger.d(TAG, "no support for magnetic sensor");
     }
 
-    Logger.d(TAG,"onCreate: time after creating magnetic sensor: " + (System.currentTimeMillis()
+    Logger.d(TAG, "onCreate: time after creating magnetic sensor: " + (System.currentTimeMillis()
         - debug_time));
 
     // clear any seek bars (just in case??)
     mainUI.clearSeekBar();
 
     // set up the camera and its preview
-    preview = new Preview(applicationInterface,savedInstanceState,
+    preview = new Preview(applicationInterface, savedInstanceState,
         ((ViewGroup) this.findViewById(R.id.preview)));
 
     Logger.d(TAG,
@@ -274,11 +276,11 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     View switchCameraButton = findViewById(R.id.switch_camera);
     switchCameraButton.setVisibility(
         preview.getCameraControllerManager().getNumberOfCameras() > 1 ? View.VISIBLE : View.GONE);
-    View speechRecognizerButton =  findViewById(R.id.audio_control);
+    View speechRecognizerButton = findViewById(R.id.audio_control);
     speechRecognizerButton.setVisibility(
         View.GONE); // disabled by default, until the speech recognizer is created
 
-    Logger.d(TAG,"onCreate: time after setting button visibility: " + (System.currentTimeMillis()
+    Logger.d(TAG, "onCreate: time after setting button visibility: " + (System.currentTimeMillis()
         - debug_time));
 
     // listen for orientation event change
@@ -293,7 +295,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             - debug_time));
 
     // set up gallery button long click
-    View galleryButton =  findViewById(R.id.gallery);
+    View galleryButton = findViewById(R.id.gallery);
     galleryButton.setOnLongClickListener(v -> {
       //preview.showToast(null, "Long click");
       longClickedGallery();
@@ -305,9 +307,9 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             - debug_time));
 
     // listen for gestures
-    gestureDetector = new GestureDetector(this,new MyGestureDetector());
+    gestureDetector = new GestureDetector(this, new MyGestureDetector());
 
-    Logger.d(TAG,"onCreate: time after creating gesture detector: " + (System.currentTimeMillis()
+    Logger.d(TAG, "onCreate: time after creating gesture detector: " + (System.currentTimeMillis()
         - debug_time));
 
     // set up listener to handle immersive mode options
@@ -319,11 +321,11 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         return;
       }
 
-      Logger.d(TAG,"onSystemUiVisibilityChange: " + visibility);
+      Logger.d(TAG, "onSystemUiVisibilityChange: " + visibility);
 
       if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
 
-        Logger.d(TAG,"system bars now visible");
+        Logger.d(TAG, "system bars now visible");
 
         // The system bars are visible. Make any desired
         // adjustments to your UI, such as showing the action bar or
@@ -332,7 +334,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         setImmersiveTimer();
       } else {
 
-        Logger.d(TAG,"system bars now NOT visible");
+        Logger.d(TAG, "system bars now NOT visible");
 
         // The system bars are NOT visible. Make any desired
         // adjustments to your UI, such as hiding the action bar or
@@ -352,7 +354,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
       alertDialog.setTitle(R.string.app_name);
       alertDialog.setMessage(R.string.intro_text);
-      alertDialog.setPositiveButton(R.string.intro_ok,null);
+      alertDialog.setPositiveButton(R.string.intro_ok, null);
       alertDialog.show();
 
       setFirstTimeFlag();
@@ -372,15 +374,15 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       public void run() {
         textToSpeech = new TextToSpeech(MainActivity.this, status -> {
 
-          Logger.d(TAG,"TextToSpeech initialised");
+          Logger.d(TAG, "TextToSpeech initialised");
 
           if (status == TextToSpeech.SUCCESS) {
             textToSpeechSuccess = true;
 
-            Logger.d(TAG,"TextToSpeech succeeded");
+            Logger.d(TAG, "TextToSpeech succeeded");
           } else {
 
-            Logger.d(TAG,"TextToSpeech failed");
+            Logger.d(TAG, "TextToSpeech failed");
           }
         });
       }
@@ -390,12 +392,13 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         "onCreate: total time for Activity startup: " + (System.currentTimeMillis() - debug_time));
   }
 
+
   /**
    * Determine whether we support Camera2 API.
    */
   @TargetApi(Build.VERSION_CODES.LOLLIPOP) private void initCamera2Support() {
 
-    Logger.d(TAG,"initCamera2Support");
+    Logger.d(TAG, "initCamera2Support");
 
     supports_camera2 = false;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -403,61 +406,64 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       supports_camera2 = true;
       if (manager2.getNumberOfCameras() == 0) {
 
-        Logger.d(TAG,"Camera2 reports 0 cameras");
+        Logger.d(TAG, "Camera2 reports 0 cameras");
 
         supports_camera2 = false;
       }
       for (int i = 0; i < manager2.getNumberOfCameras() && supports_camera2; i++) {
         if (!manager2.allowCamera2Support(i)) {
 
-          Logger.d(TAG,"camera " + i + " doesn't have limited or full support for Camera2 API");
+          Logger.d(TAG, "camera " + i + " doesn't have limited or full support for Camera2 API");
 
           supports_camera2 = false;
         }
       }
     }
 
-    Logger.d(TAG,"supports_camera2? " + supports_camera2);
+    Logger.d(TAG, "supports_camera2? " + supports_camera2);
   }
+
 
   private void preloadIcons(int icons_id) {
     long debug_time = 0;
 
-    Logger.d(TAG,"preloadIcons: " + icons_id);
+    Logger.d(TAG, "preloadIcons: " + icons_id);
     debug_time = System.currentTimeMillis();
 
     String[] icons = getResources().getStringArray(icons_id);
     for (int i = 0; i < icons.length; i++) {
       int resource =
-          getResources().getIdentifier(icons[i],null,this.getApplicationContext().getPackageName());
+          getResources().getIdentifier(icons[i], null,
+              this.getApplicationContext().getPackageName());
 
-      Logger.d(TAG,"load resource: " + resource);
+      Logger.d(TAG, "load resource: " + resource);
 
-      Bitmap bm = BitmapFactory.decodeResource(getResources(),resource);
-      this.preloaded_bitmap_resources.put(resource,bm);
+      Bitmap bm = BitmapFactory.decodeResource(getResources(), resource);
+      this.preloaded_bitmap_resources.put(resource, bm);
     }
 
     Logger.d(TAG,
         "preloadIcons: total time for preloadIcons: " + (System.currentTimeMillis() - debug_time));
-    Logger.d(TAG,"size of preloaded_bitmap_resources: " + preloaded_bitmap_resources.size());
+    Logger.d(TAG, "size of preloaded_bitmap_resources: " + preloaded_bitmap_resources.size());
   }
+
 
   @Override protected void onDestroy() {
 
-    Logger.d(TAG,"onDestroy");
-    Logger.d(TAG,"size of preloaded_bitmap_resources: " + preloaded_bitmap_resources.size());
+    Logger.d(TAG, "onDestroy");
+    Logger.d(TAG, "size of preloaded_bitmap_resources: " + preloaded_bitmap_resources.size());
 
     // Need to recycle to avoid out of memory when running tests - probably good practice to do anyway
     for (Map.Entry<Integer, Bitmap> entry : preloaded_bitmap_resources.entrySet()) {
 
-      Logger.d(TAG,"recycle: " + entry.getKey());
+      Logger.d(TAG, "recycle: " + entry.getKey());
 
       entry.getValue().recycle();
     }
     preloaded_bitmap_resources.clear();
     if (textToSpeech != null) {
       // http://stackoverflow.com/questions/4242401/tts-error-leaked-serviceconnection-android-speech-tts-texttospeech-solved
-      Logger.d(TAG,"free textToSpeech");
+      Logger.d(TAG, "free textToSpeech");
       textToSpeech.stop();
       textToSpeech.shutdown();
       textToSpeech = null;
@@ -465,23 +471,27 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     super.onDestroy();
   }
 
+
   @Override public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.main,menu);
+    getMenuInflater().inflate(R.menu.main, menu);
     return true;
   }
+
 
   private void setFirstTimeFlag() {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.putBoolean(PreferenceKeys.getFirstTimePreferenceKey(),true);
+    editor.putBoolean(PreferenceKeys.getFirstTimePreferenceKey(), true);
     editor.apply();
   }
+
 
   // for audio "noise" trigger option
   private int last_level = -1;
   private long time_quiet_loud = -1;
   private long time_last_audio_trigger_photo = -1;
+
 
   /**
    * Listens to audio noise and decides when there's been a "loud" noise to trigger taking a photo.
@@ -495,25 +505,25 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
     int diff = level - last_level;
 
-    Logger.d(TAG,"noise_sensitivity: " + audio_noise_sensitivity);
+    Logger.d(TAG, "noise_sensitivity: " + audio_noise_sensitivity);
 
     if (diff > audio_noise_sensitivity) {
 
-      Logger.d(TAG,"got louder!: " + last_level + " to " + level + " , diff: " + diff);
+      Logger.d(TAG, "got louder!: " + last_level + " to " + level + " , diff: " + diff);
 
       time_quiet_loud = System.currentTimeMillis();
 
-      Logger.d(TAG,"    time: " + time_quiet_loud);
+      Logger.d(TAG, "    time: " + time_quiet_loud);
     } else if (diff < -audio_noise_sensitivity && time_quiet_loud != -1) {
 
-      Logger.d(TAG,"got quieter!: " + last_level + " to " + level + " , diff: " + diff);
+      Logger.d(TAG, "got quieter!: " + last_level + " to " + level + " , diff: " + diff);
 
       long time_now = System.currentTimeMillis();
       long duration = time_now - time_quiet_loud;
 
-      Logger.d(TAG,"stopped being loud - was loud since :" + time_quiet_loud);
-      Logger.d(TAG,"    time_now: " + time_now);
-      Logger.d(TAG,"    duration: " + duration);
+      Logger.d(TAG, "stopped being loud - was loud since :" + time_quiet_loud);
+      Logger.d(TAG, "    time_now: " + time_now);
+      Logger.d(TAG, "    duration: " + duration);
       if (duration < 1500) {
         audio_trigger = true;
       }
@@ -521,35 +531,35 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       time_quiet_loud = -1;
     } else {
 
-      Logger.d(TAG,"audio level: " + last_level + " to " + level + " , diff: " + diff);
+      Logger.d(TAG, "audio level: " + last_level + " to " + level + " , diff: " + diff);
     }
 
     last_level = level;
 
     if (audio_trigger) {
 
-      Logger.d(TAG,"audio trigger");
+      Logger.d(TAG, "audio trigger");
 
       // need to run on UI thread so that this function returns quickly (otherwise we'll have lag in processing the audio)
       // but also need to check we're not currently taking a photo or on timer, so we don't repeatedly queue up takePicture() calls, or cancel a timer
       long time_now = System.currentTimeMillis();
       SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
       boolean want_audio_listener =
-          sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(),"none")
+          sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(), "none")
               .equals("noise");
       if (time_last_audio_trigger_photo != -1 && time_now - time_last_audio_trigger_photo < 5000) {
         // avoid risk of repeatedly being triggered - as well as problem of being triggered again by the camera's own "beep"!
 
-        Logger.d(TAG,"ignore loud noise due to too soon since last audio triggerred photo:" + (
+        Logger.d(TAG, "ignore loud noise due to too soon since last audio triggerred photo:" + (
             time_now
                 - time_last_audio_trigger_photo));
       } else if (!want_audio_listener) {
         // just in case this is a callback from an AudioListener before it's been freed (e.g., if there's a loud noise when exiting settings after turning the option off
 
-        Logger.d(TAG,"ignore loud noise due to audio listener option turned off");
+        Logger.d(TAG, "ignore loud noise due to audio listener option turned off");
       } else {
 
-        Logger.d(TAG,"audio trigger from loud noise");
+        Logger.d(TAG, "audio trigger from loud noise");
 
         time_last_audio_trigger_photo = time_now;
         audioTrigger();
@@ -557,31 +567,32 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   /* Audio trigger - either loud sound, or speech recognition.
    * This performs some additional checks before taking a photo.
 	 */
   private void audioTrigger() {
 
-    Logger.d(TAG,"ignore audio trigger due to popup open");
+    Logger.d(TAG, "ignore audio trigger due to popup open");
 
     if (popupIsOpen()) {
 
-      Logger.d(TAG,"ignore audio trigger due to popup open");
+      Logger.d(TAG, "ignore audio trigger due to popup open");
     } else if (camera_in_background) {
 
-      Logger.d(TAG,"ignore audio trigger due to camera in background");
+      Logger.d(TAG, "ignore audio trigger due to camera in background");
     } else if (preview.isTakingPhotoOrOnTimer()) {
 
-      Logger.d(TAG,"ignore audio trigger due to already taking photo or on timer");
+      Logger.d(TAG, "ignore audio trigger due to already taking photo or on timer");
     } else {
 
-      Logger.d(TAG,"schedule take picture due to loud noise");
+      Logger.d(TAG, "schedule take picture due to loud noise");
 
       //takePicture();
       this.runOnUiThread(new Runnable() {
         public void run() {
 
-          Logger.d(TAG,"taking picture due to audio trigger");
+          Logger.d(TAG, "taking picture due to audio trigger");
 
           takePicture();
         }
@@ -589,9 +600,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
-  @SuppressWarnings("deprecation") public boolean onKeyDown(int keyCode,KeyEvent event) {
 
-    Logger.d(TAG,"onKeyDown: " + keyCode);
+  @SuppressWarnings("deprecation") public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+    Logger.d(TAG, "onKeyDown: " + keyCode);
 
     switch (keyCode) {
       case KeyEvent.KEYCODE_VOLUME_UP:
@@ -632,7 +644,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             // important not to repeatedly request focus, even though preview.requestAutoFocus() will cancel, as causes problem if key is held down (e.g., flash gets stuck on)
             if (!preview.isFocusWaiting()) {
 
-              Logger.d(TAG,"request focus due to volume key");
+              Logger.d(TAG, "request focus due to volume key");
 
               preview.requestAutoFocus();
             }
@@ -672,17 +684,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         } else if (volume_keys.equals("volume_auto_stabilise")) {
           if (this.supports_auto_stabilise) {
             boolean auto_stabilise =
-                sharedPreferences.getBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(),false);
+                sharedPreferences.getBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(), false);
             auto_stabilise = !auto_stabilise;
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(),auto_stabilise);
+            editor.putBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(), auto_stabilise);
             editor.apply();
             String message =
                 getResources().getString(R.string.preference_auto_stabilise) + ": " + getResources()
                     .getString(auto_stabilise ? R.string.on : R.string.off);
-            preview.showToast(changed_auto_stabilise_toast,message);
+            preview.showToast(changed_auto_stabilise_toast, message);
           } else {
-            preview.showToast(changed_auto_stabilise_toast,R.string.auto_stabilise_not_supported);
+            preview.showToast(changed_auto_stabilise_toast, R.string.auto_stabilise_not_supported);
           }
           return true;
         } else if (volume_keys.equals("volume_really_nothing")) {
@@ -710,7 +722,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         // important not to repeatedly request focus, even though preview.requestAutoFocus() will cancel - causes problem with hardware camera key where a half-press means to focus
         if (!preview.isFocusWaiting()) {
 
-          Logger.d(TAG,"request focus due to focus key");
+          Logger.d(TAG, "request focus due to focus key");
 
           preview.requestAutoFocus();
         }
@@ -725,32 +737,39 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         return true;
       }
     }
-    return super.onKeyDown(keyCode,event);
+    return super.onKeyDown(keyCode, event);
   }
+
 
   public void zoomIn() {
-    mainUI.changeSeekbar(R.id.zoom_seekbar,-1);
+    mainUI.changeSeekbar(R.id.zoom_seekbar, -1);
   }
+
 
   public void zoomOut() {
-    mainUI.changeSeekbar(R.id.zoom_seekbar,1);
+    mainUI.changeSeekbar(R.id.zoom_seekbar, 1);
   }
+
 
   public void changeExposure(int change) {
-    mainUI.changeSeekbar(R.id.exposure_seekbar,change);
+    mainUI.changeSeekbar(R.id.exposure_seekbar, change);
   }
+
 
   public void changeISO(int change) {
-    mainUI.changeSeekbar(R.id.iso_seekbar,change);
+    mainUI.changeSeekbar(R.id.iso_seekbar, change);
   }
+
 
   void changeFocusDistance(int change) {
-    mainUI.changeSeekbar(R.id.focus_seekbar,change);
+    mainUI.changeSeekbar(R.id.focus_seekbar, change);
   }
 
+
   private SensorEventListener accelerometerListener = new SensorEventListener() {
-    @Override public void onAccuracyChanged(Sensor sensor,int accuracy) {
+    @Override public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
+
 
     @Override public void onSensorChanged(SensorEvent event) {
       preview.onAccelerometerSensorChanged(event);
@@ -758,18 +777,20 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
   };
 
   private SensorEventListener magneticListener = new SensorEventListener() {
-    @Override public void onAccuracyChanged(Sensor sensor,int accuracy) {
+    @Override public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
+
 
     @Override public void onSensorChanged(SensorEvent event) {
       preview.onMagneticSensorChanged(event);
     }
   };
 
+
   @Override protected void onResume() {
     long debug_time = 0;
 
-    Logger.d(TAG,"onResume");
+    Logger.d(TAG, "onResume");
     debug_time = System.currentTimeMillis();
 
     super.onResume();
@@ -778,9 +799,9 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     // Note that we do it here rather than customising the theme's android:windowBackground, so this doesn't affect other views - in particular, the MyPreferenceFragment settings
     getWindow().getDecorView().getRootView().setBackgroundColor(Color.BLACK);
 
-    mSensorManager.registerListener(accelerometerListener,mSensorAccelerometer,
+    mSensorManager.registerListener(accelerometerListener, mSensorAccelerometer,
         SensorManager.SENSOR_DELAY_NORMAL);
-    mSensorManager.registerListener(magneticListener,mSensorMagnetic,
+    mSensorManager.registerListener(magneticListener, mSensorMagnetic,
         SensorManager.SENSOR_DELAY_NORMAL);
     orientationEventListener.enable();
 
@@ -796,12 +817,13 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
 
     preview.onResume();
 
-    Logger.d(TAG,"onResume: total time to resume: " + (System.currentTimeMillis() - debug_time));
+    Logger.d(TAG, "onResume: total time to resume: " + (System.currentTimeMillis() - debug_time));
   }
+
 
   @Override public void onWindowFocusChanged(boolean hasFocus) {
 
-    Logger.d(TAG,"onWindowFocusChanged: " + hasFocus);
+    Logger.d(TAG, "onWindowFocusChanged: " + hasFocus);
 
     super.onWindowFocusChanged(hasFocus);
     if (!this.camera_in_background && hasFocus) {
@@ -812,10 +834,11 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   @Override protected void onPause() {
     long debug_time = 0;
 
-    Logger.d(TAG,"onPause");
+    Logger.d(TAG, "onPause");
     debug_time = System.currentTimeMillis();
 
     waitUntilImageQueueEmpty(); // so we don't risk losing any images
@@ -830,12 +853,13 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     releaseSound();
     preview.onPause();
 
-    Logger.d(TAG,"onPause: total time to pause: " + (System.currentTimeMillis() - debug_time));
+    Logger.d(TAG, "onPause: total time to pause: " + (System.currentTimeMillis() - debug_time));
   }
+
 
   @Override public void onConfigurationChanged(Configuration newConfig) {
 
-    Logger.d(TAG,"onConfigurationChanged()");
+    Logger.d(TAG, "onConfigurationChanged()");
 
     // configuration change can include screen orientation (landscape/portrait) when not locked (when settings is open)
     // needed if app is paused/resumed when settings is open and device is in portrait mode
@@ -843,41 +867,44 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     super.onConfigurationChanged(newConfig);
   }
 
+
   public void waitUntilImageQueueEmpty() {
 
-    Logger.d(TAG,"waitUntilImageQueueEmpty");
+    Logger.d(TAG, "waitUntilImageQueueEmpty");
 
     applicationInterface.getImageSaver().waitUntilDone();
   }
 
+
   public void clickedTakePhoto(View view) {
 
-    Logger.d(TAG,"clickedTakePhoto");
+    Logger.d(TAG, "clickedTakePhoto");
 
     this.takePicture();
   }
 
+
   public void clickedAudioControl(View view) {
 
-    Logger.d(TAG,"clickedAudioControl");
+    Logger.d(TAG, "clickedAudioControl");
 
     // check hasAudioControl just in case!
     if (!hasAudioControl()) {
 
-      Logger.e(TAG,"clickedAudioControl, but hasAudioControl returns false!");
+      Logger.e(TAG, "clickedAudioControl, but hasAudioControl returns false!");
 
       return;
     }
     this.closePopup();
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     String audio_control =
-        sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(),"none");
+        sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(), "none");
     if (audio_control.equals("voice") && speechRecognizer != null) {
       if (speechRecognizerIsStarted) {
         speechRecognizer.stopListening();
         speechRecognizerStopped();
       } else {
-        preview.showToast(audio_control_toast,R.string.speech_recognizer_started);
+        preview.showToast(audio_control_toast, R.string.speech_recognizer_started);
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,
             "en_US"); // since we listen for "cheese", ensure this works even for devices with different language settings
@@ -888,51 +915,55 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       if (audio_listener != null) {
         freeAudioListener(false);
       } else {
-        preview.showToast(audio_control_toast,R.string.audio_listener_started);
+        preview.showToast(audio_control_toast, R.string.audio_listener_started);
         startAudioListener();
       }
     }
   }
 
+
   private void speechRecognizerStarted() {
 
-    Logger.d(TAG,"speechRecognizerStarted");
+    Logger.d(TAG, "speechRecognizerStarted");
 
     mainUI.audioControlStarted();
     speechRecognizerIsStarted = true;
   }
 
+
   private void speechRecognizerStopped() {
 
-    Logger.d(TAG,"speechRecognizerStopped");
+    Logger.d(TAG, "speechRecognizerStopped");
 
     mainUI.audioControlStopped();
     speechRecognizerIsStarted = false;
   }
 
+
   /* Returns the cameraId that the "Switch camera" button will switch to.
      */
   public int getNextCameraId() {
 
-    Logger.d(TAG,"getNextCameraId");
+    Logger.d(TAG, "getNextCameraId");
 
     int cameraId = preview.getCameraId();
 
-    Logger.d(TAG,"current cameraId: " + cameraId);
+    Logger.d(TAG, "current cameraId: " + cameraId);
 
     if (this.preview.canSwitchCamera()) {
       int n_cameras = preview.getCameraControllerManager().getNumberOfCameras();
       cameraId = (cameraId + 1) % n_cameras;
     }
 
-    Logger.d(TAG,"next cameraId: " + cameraId);
+    Logger.d(TAG, "next cameraId: " + cameraId);
 
     return cameraId;
   }
 
+
   public void clickedSwitchCamera(View view) {
 
-    Logger.d(TAG,"clickedSwitchCamera");
+    Logger.d(TAG, "clickedSwitchCamera");
 
     this.closePopup();
     if (this.preview.canSwitchCamera()) {
@@ -945,9 +976,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   public void clickedSwitchVideo(View view) {
 
-    Logger.d(TAG,"clickedSwitchVideo");
+    Logger.d(TAG, "clickedSwitchVideo");
 
     this.closePopup();
     View switchVideoButton = (View) findViewById(R.id.switch_video);
@@ -961,26 +993,30 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   @TargetApi(Build.VERSION_CODES.LOLLIPOP) public void clickedExposure(View view) {
 
-    Logger.d(TAG,"clickedExposure");
+    Logger.d(TAG, "clickedExposure");
 
     mainUI.toggleExposureUI();
   }
 
+
   private static double seekbarScaling(double frac) {
     // For various seekbars, we want to use a non-linear scaling, so user has more control over smaller values
-    double scaling = (Math.pow(100.0,frac) - 1.0) / 99.0;
+    double scaling = (Math.pow(100.0, frac) - 1.0) / 99.0;
     return scaling;
   }
+
 
   private static double seekbarScalingInverse(double scaling) {
     double frac = Math.log(99.0 * scaling + 1.0) / Math.log(100.0);
     return frac;
   }
 
-  private void setProgressSeekbarScaled(SeekBar seekBar,double min_value,double max_value,
-      double value) {
+
+  private void setProgressSeekbarScaled(SeekBar seekBar, double min_value, double max_value,
+                                        double value) {
     seekBar.setMax(100);
     double scaling = (value - min_value) / (max_value - min_value);
     double frac = MainActivity.seekbarScalingInverse(scaling);
@@ -993,9 +1029,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     seekBar.setProgress(percent);
   }
 
+
   public void clickedExposureLock(View view) {
 
-    Logger.d(TAG,"clickedExposureLock");
+    Logger.d(TAG, "clickedExposureLock");
 
     this.preview.toggleExposureLock();
     ImageButton exposureLockButton = (ImageButton) findViewById(R.id.exposure_lock);
@@ -1005,41 +1042,48 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         preview.isExposureLocked() ? R.string.exposure_locked : R.string.exposure_unlocked);
   }
 
+
   public void clickedSettings(View view) {
 
-    Logger.d(TAG,"clickedSettings");
+    Logger.d(TAG, "clickedSettings");
 
     openSettings();
   }
 
+
   public boolean popupIsOpen() {
     return mainUI.popupIsOpen();
   }
+
 
   // for testing
   public View getPopupButton(String key) {
     return mainUI.getPopupButton(key);
   }
 
+
   public void closePopup() {
     mainUI.closePopup();
   }
+
 
   public Bitmap getPreloadedBitmap(int resource) {
     Bitmap bm = this.preloaded_bitmap_resources.get(resource);
     return bm;
   }
 
+
   public void clickedPopupSettings(View view) {
 
-    Logger.d(TAG,"clickedPopupSettings");
+    Logger.d(TAG, "clickedPopupSettings");
 
     mainUI.togglePopupSettings();
   }
 
+
   private void openSettings() {
 
-    Logger.d(TAG,"openSettings");
+    Logger.d(TAG, "openSettings");
 
     waitUntilImageQueueEmpty(); // in theory not needed as we could continue running in the background, but best to be safe
     closePopup();
@@ -1049,24 +1093,24 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     stopAudioListeners();
 
     Bundle bundle = new Bundle();
-    bundle.putInt("cameraId",this.preview.getCameraId());
-    bundle.putString("camera_api",this.preview.getCameraAPI());
-    bundle.putBoolean("using_android_l",this.preview.usingCamera2API());
-    bundle.putBoolean("supports_auto_stabilise",this.supports_auto_stabilise);
-    bundle.putBoolean("supports_force_video_4k",this.supports_force_video_4k);
-    bundle.putBoolean("supports_camera2",this.supports_camera2);
-    bundle.putBoolean("supports_face_detection",this.preview.supportsFaceDetection());
-    bundle.putBoolean("supports_raw",this.preview.supportsRaw());
-    bundle.putBoolean("supports_video_stabilization",this.preview.supportsVideoStabilization());
-    bundle.putBoolean("can_disable_shutter_sound",this.preview.canDisableShutterSound());
+    bundle.putInt("cameraId", this.preview.getCameraId());
+    bundle.putString("camera_api", this.preview.getCameraAPI());
+    bundle.putBoolean("using_android_l", this.preview.usingCamera2API());
+    bundle.putBoolean("supports_auto_stabilise", this.supports_auto_stabilise);
+    bundle.putBoolean("supports_force_video_4k", this.supports_force_video_4k);
+    bundle.putBoolean("supports_camera2", this.supports_camera2);
+    bundle.putBoolean("supports_face_detection", this.preview.supportsFaceDetection());
+    bundle.putBoolean("supports_raw", this.preview.supportsRaw());
+    bundle.putBoolean("supports_video_stabilization", this.preview.supportsVideoStabilization());
+    bundle.putBoolean("can_disable_shutter_sound", this.preview.canDisableShutterSound());
 
-    putBundleExtra(bundle,"color_effects",this.preview.getSupportedColorEffects());
-    putBundleExtra(bundle,"scene_modes",this.preview.getSupportedSceneModes());
-    putBundleExtra(bundle,"white_balances",this.preview.getSupportedWhiteBalances());
-    putBundleExtra(bundle,"isos",this.preview.getSupportedISOs());
-    bundle.putString("iso_key",this.preview.getISOKey());
+    putBundleExtra(bundle, "color_effects", this.preview.getSupportedColorEffects());
+    putBundleExtra(bundle, "scene_modes", this.preview.getSupportedSceneModes());
+    putBundleExtra(bundle, "white_balances", this.preview.getSupportedWhiteBalances());
+    putBundleExtra(bundle, "isos", this.preview.getSupportedISOs());
+    bundle.putString("iso_key", this.preview.getISOKey());
     if (this.preview.getCameraController() != null) {
-      bundle.putString("parameters_string",preview.getCameraController().getParametersString());
+      bundle.putString("parameters_string", preview.getCameraController().getParametersString());
     }
 
     List<CameraController.Size> preview_sizes = this.preview.getSupportedPreviewSizes();
@@ -1079,11 +1123,11 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         heights[i] = size.height;
         i++;
       }
-      bundle.putIntArray("preview_widths",widths);
-      bundle.putIntArray("preview_heights",heights);
+      bundle.putIntArray("preview_widths", widths);
+      bundle.putIntArray("preview_heights", heights);
     }
-    bundle.putInt("preview_width",preview.getCurrentPreviewSize().width);
-    bundle.putInt("preview_height",preview.getCurrentPreviewSize().height);
+    bundle.putInt("preview_width", preview.getCurrentPreviewSize().width);
+    bundle.putInt("preview_height", preview.getCurrentPreviewSize().height);
 
     List<CameraController.Size> sizes = this.preview.getSupportedPictureSizes();
     if (sizes != null) {
@@ -1095,12 +1139,12 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         heights[i] = size.height;
         i++;
       }
-      bundle.putIntArray("resolution_widths",widths);
-      bundle.putIntArray("resolution_heights",heights);
+      bundle.putIntArray("resolution_widths", widths);
+      bundle.putIntArray("resolution_heights", heights);
     }
     if (preview.getCurrentPictureSize() != null) {
-      bundle.putInt("resolution_width",preview.getCurrentPictureSize().width);
-      bundle.putInt("resolution_height",preview.getCurrentPictureSize().height);
+      bundle.putInt("resolution_width", preview.getCurrentPictureSize().width);
+      bundle.putInt("resolution_height", preview.getCurrentPictureSize().height);
     }
 
     List<String> video_quality = this.preview.getSupportedVideoQuality();
@@ -1113,17 +1157,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         video_quality_string_arr[i] = this.preview.getCamcorderProfileDescription(value);
         i++;
       }
-      bundle.putStringArray("video_quality",video_quality_arr);
-      bundle.putStringArray("video_quality_string",video_quality_string_arr);
+      bundle.putStringArray("video_quality", video_quality_arr);
+      bundle.putStringArray("video_quality_string", video_quality_string_arr);
     }
     if (preview.getCurrentVideoQuality() != null) {
-      bundle.putString("current_video_quality",preview.getCurrentVideoQuality());
+      bundle.putString("current_video_quality", preview.getCurrentVideoQuality());
     }
     CamcorderProfile camcorder_profile = preview.getCamcorderProfile();
-    bundle.putInt("video_frame_width",camcorder_profile.videoFrameWidth);
-    bundle.putInt("video_frame_height",camcorder_profile.videoFrameHeight);
-    bundle.putInt("video_bit_rate",camcorder_profile.videoBitRate);
-    bundle.putInt("video_frame_rate",camcorder_profile.videoFrameRate);
+    bundle.putInt("video_frame_width", camcorder_profile.videoFrameWidth);
+    bundle.putInt("video_frame_height", camcorder_profile.videoFrameHeight);
+    bundle.putInt("video_bit_rate", camcorder_profile.videoBitRate);
+    bundle.putInt("video_frame_rate", camcorder_profile.videoFrameRate);
 
     List<CameraController.Size> video_sizes = this.preview.getSupportedVideoSizes();
     if (video_sizes != null) {
@@ -1135,12 +1179,12 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         heights[i] = size.height;
         i++;
       }
-      bundle.putIntArray("video_widths",widths);
-      bundle.putIntArray("video_heights",heights);
+      bundle.putIntArray("video_widths", widths);
+      bundle.putIntArray("video_heights", heights);
     }
 
-    putBundleExtra(bundle,"flash_values",this.preview.getSupportedFlashValues());
-    putBundleExtra(bundle,"focus_values",this.preview.getSupportedFocusValues());
+    putBundleExtra(bundle, "flash_values", this.preview.getSupportedFlashValues());
+    putBundleExtra(bundle, "focus_values", this.preview.getSupportedFocusValues());
 
     setWindowFlagsForSettings();
     MyPreferenceFragment fragment = new MyPreferenceFragment();
@@ -1148,20 +1192,22 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     // use commitAllowingStateLoss() instead of commit(), does to "java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState" crash seen on Google Play
     // see http://stackoverflow.com/questions/7575921/illegalstateexception-can-not-perform-this-action-after-onsaveinstancestate-wit
     getFragmentManager().beginTransaction()
-        .add(R.id.prefs_container,fragment,"PREFERENCE_FRAGMENT")
+        .add(R.id.prefs_container, fragment, "PREFERENCE_FRAGMENT")
         .addToBackStack(null)
         .commitAllowingStateLoss();
   }
+
 
   public void updateForSettings() {
     updateForSettings(null);
   }
 
+
   public void updateForSettings(String toast_message) {
 
-    Logger.d(TAG,"updateForSettings()");
+    Logger.d(TAG, "updateForSettings()");
     if (toast_message != null) {
-      Logger.d(TAG,"toast_message: " + toast_message);
+      Logger.d(TAG, "toast_message: " + toast_message);
     }
 
     String saved_focus_value = null;
@@ -1173,7 +1219,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       preview.updateFocusForVideo(false);
     }
 
-    Logger.d(TAG,"saved_focus_value: " + saved_focus_value);
+    Logger.d(TAG, "saved_focus_value: " + saved_focus_value);
 
     updateFolderHistory(true);
 
@@ -1183,15 +1229,15 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     if (preview.getCameraController() != null) {
       String scene_mode = preview.getCameraController().getSceneMode();
 
-      Logger.d(TAG,"scene mode was: " + scene_mode);
+      Logger.d(TAG, "scene mode was: " + scene_mode);
 
       String key = PreferenceKeys.getSceneModePreferenceKey();
       SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
       String value =
-          sharedPreferences.getString(key,preview.getCameraController().getDefaultSceneMode());
+          sharedPreferences.getString(key, preview.getCameraController().getDefaultSceneMode());
       if (!value.equals(scene_mode)) {
 
-        Logger.d(TAG,"scene mode changed to: " + value);
+        Logger.d(TAG, "scene mode changed to: " + value);
 
         need_reopen = true;
       }
@@ -1199,7 +1245,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
 
     mainUI.layoutUI(); // needed in case we've changed left/right handed UI
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    if (sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(),"none")
+    if (sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(), "none")
         .equals("none")) {
       // ensure icon is invisible if switching from audio control enabled to disabled
       // (if enabling it, we'll make the icon visible later on)
@@ -1223,16 +1269,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
     block_startup_toast = false;
     if (toast_message != null && toast_message.length() > 0) {
-      preview.showToast(null,toast_message);
+      preview.showToast(null, toast_message);
     }
 
     if (saved_focus_value != null) {
 
-      Logger.d(TAG,"switch focus back to: " + saved_focus_value);
+      Logger.d(TAG, "switch focus back to: " + saved_focus_value);
 
-      preview.updateFocus(saved_focus_value,true,false);
+      preview.updateFocus(saved_focus_value, true, false);
     }
   }
+
 
   MyPreferenceFragment getPreferenceFragment() {
     MyPreferenceFragment fragment =
@@ -1240,15 +1287,16 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     return fragment;
   }
 
+
   @Override public void onBackPressed() {
     final MyPreferenceFragment fragment = getPreferenceFragment();
     if (screen_is_locked) {
-      preview.showToast(screen_locked_toast,R.string.screen_is_locked);
+      preview.showToast(screen_locked_toast, R.string.screen_is_locked);
       return;
     }
     if (fragment != null) {
 
-      Logger.d(TAG,"close settings");
+      Logger.d(TAG, "close settings");
 
       setWindowFlagsForCamera();
       updateForSettings();
@@ -1260,6 +1308,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
     super.onBackPressed();
   }
+
 
   public boolean usingKitKatImmersiveMode() {
     // whether we are using a Kit Kat style immersive mode (either hiding GUI, or everything)
@@ -1276,8 +1325,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     return false;
   }
 
+
   private Handler immersive_timer_handler = null;
   private Runnable immersive_timer_runnable = null;
+
 
   private void setImmersiveTimer() {
     if (immersive_timer_handler != null && immersive_timer_runnable != null) {
@@ -1287,14 +1338,15 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     immersive_timer_handler.postDelayed(immersive_timer_runnable = new Runnable() {
       @Override public void run() {
 
-        Logger.d(TAG,"setImmersiveTimer: run");
+        Logger.d(TAG, "setImmersiveTimer: run");
 
         if (!camera_in_background && !popupIsOpen() && usingKitKatImmersiveMode()) {
           setImmersiveMode(true);
         }
       }
-    },5000);
+    }, 5000);
   }
+
 
   public void initImmersiveMode() {
     if (!usingKitKatImmersiveMode()) {
@@ -1305,9 +1357,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   @TargetApi(Build.VERSION_CODES.KITKAT) public void setImmersiveMode(boolean on) {
 
-    Logger.d(TAG,"setImmersiveMode: " + on);
+    Logger.d(TAG, "setImmersiveMode: " + on);
 
     // n.b., preview.setImmersiveMode() is called from onSystemUiVisibilityChange()
     if (on) {
@@ -1333,38 +1386,39 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   /**
    * Sets the window flags for normal operation (when camera preview is visible).
    */
   private void setWindowFlagsForCamera() {
 
-    Logger.d(TAG,"setWindowFlagsForCamera");
+    Logger.d(TAG, "setWindowFlagsForCamera");
 
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
     // force to landscape mode
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     // keep screen active - see http://stackoverflow.com/questions/2131948/force-screen-on
-    if (sharedPreferences.getBoolean(PreferenceKeys.getKeepDisplayOnPreferenceKey(),true)) {
+    if (sharedPreferences.getBoolean(PreferenceKeys.getKeepDisplayOnPreferenceKey(), true)) {
 
-      Logger.d(TAG,"do keep screen on");
+      Logger.d(TAG, "do keep screen on");
 
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     } else {
 
-      Logger.d(TAG,"don't keep screen on");
+      Logger.d(TAG, "don't keep screen on");
 
       getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
-    if (sharedPreferences.getBoolean(PreferenceKeys.getShowWhenLockedPreferenceKey(),true)) {
+    if (sharedPreferences.getBoolean(PreferenceKeys.getShowWhenLockedPreferenceKey(), true)) {
 
-      Logger.d(TAG,"do show when locked");
+      Logger.d(TAG, "do show when locked");
 
       // keep Open Camera on top of screen-lock (will still need to unlock when going to gallery or settings)
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     } else {
 
-      Logger.d(TAG,"don't show when locked");
+      Logger.d(TAG, "don't show when locked");
 
       getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
@@ -1373,7 +1427,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     // done here rather than onCreate, so that changing it in preferences takes effect without restarting app
     {
       WindowManager.LayoutParams layout = getWindow().getAttributes();
-      if (sharedPreferences.getBoolean(PreferenceKeys.getMaxBrightnessPreferenceKey(),true)) {
+      if (sharedPreferences.getBoolean(PreferenceKeys.getMaxBrightnessPreferenceKey(), true)) {
         layout.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
       } else {
         layout.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
@@ -1384,6 +1438,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     initImmersiveMode();
     camera_in_background = false;
   }
+
 
   /**
    * Sets the window flags for when the settings window is open.
@@ -1406,21 +1461,23 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     camera_in_background = true;
   }
 
+
   private void showPreview(boolean show) {
 
-    Logger.d(TAG,"showPreview: " + show);
+    Logger.d(TAG, "showPreview: " + show);
 
     final ViewGroup container = (ViewGroup) findViewById(R.id.hide_container);
     container.setBackgroundColor(Color.BLACK);
     container.setAlpha(show ? 0.0f : 1.0f);
   }
 
+
   /**
    * Shows the default "blank" gallery icon, when we don't have a thumbnail available.
    */
   public void updateGalleryIconToBlank() {
 
-    Logger.d(TAG,"updateGalleryIconToBlank");
+    Logger.d(TAG, "updateGalleryIconToBlank");
 
     ImageButton galleryButton = (ImageButton) this.findViewById(R.id.gallery);
     int bottom = galleryButton.getPaddingBottom();
@@ -1432,21 +1489,23 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     galleryButton.setImageBitmap(null);
     galleryButton.setImageResource(R.drawable.gallery);
     // workaround for setImageResource also resetting padding, Android bug
-    galleryButton.setPadding(left,top,right,bottom);
+    galleryButton.setPadding(left, top, right, bottom);
     gallery_bitmap = null;
   }
+
 
   /**
    * Shows a thumbnail for the gallery icon.
    */
   public void updateGalleryIcon(Bitmap thumbnail) {
 
-    Logger.d(TAG,"updateGalleryIcon: " + thumbnail);
+    Logger.d(TAG, "updateGalleryIcon: " + thumbnail);
 
     ImageButton galleryButton = (ImageButton) this.findViewById(R.id.gallery);
     galleryButton.setImageBitmap(thumbnail);
     gallery_bitmap = thumbnail;
   }
+
 
   /**
    * Updates the gallery icon by searching for the most recent photo.
@@ -1455,17 +1514,18 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
   public void updateGalleryIcon() {
     long debug_time = 0;
 
-    Logger.d(TAG,"updateGalleryIcon");
+    Logger.d(TAG, "updateGalleryIcon");
     debug_time = System.currentTimeMillis();
 
     new AsyncTask<Void, Void, Bitmap>() {
       private String TAG = "MainActivity/updateGalleryIcon()/AsyncTask";
 
+
       /** The system calls this to perform work in a worker thread and
        * delivers it the parameters given to AsyncTask.execute() */
       protected Bitmap doInBackground(Void... params) {
 
-        Logger.d(TAG,"doInBackground");
+        Logger.d(TAG, "doInBackground");
 
         Media media = applicationInterface.getStorageUtils().getLatestMedia();
         Bitmap thumbnail = null;
@@ -1474,16 +1534,16 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         boolean is_locked =
             keyguard_manager != null && keyguard_manager.inKeyguardRestrictedInputMode();
 
-        Logger.d(TAG,"is_locked?: " + is_locked);
+        Logger.d(TAG, "is_locked?: " + is_locked);
 
         if (media != null && getContentResolver() != null && !is_locked) {
           // check for getContentResolver() != null, as have had reported Google Play crashes
           if (media.video) {
-            thumbnail = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(),media.id,
-                MediaStore.Video.Thumbnails.MINI_KIND,null);
+            thumbnail = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), media.id,
+                MediaStore.Video.Thumbnails.MINI_KIND, null);
           } else {
-            thumbnail = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(),media.id,
-                MediaStore.Images.Thumbnails.MINI_KIND,null);
+            thumbnail = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(), media.id,
+                MediaStore.Images.Thumbnails.MINI_KIND, null);
           }
           if (thumbnail != null) {
             if (media.orientation != 0) {
@@ -1492,12 +1552,13 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
                   "thumbnail size is " + thumbnail.getWidth() + " x " + thumbnail.getHeight());
 
               Matrix matrix = new Matrix();
-              matrix.setRotate(media.orientation,thumbnail.getWidth() * 0.5f,
+              matrix.setRotate(media.orientation, thumbnail.getWidth() * 0.5f,
                   thumbnail.getHeight() * 0.5f);
               try {
                 Bitmap rotated_thumbnail =
-                    Bitmap.createBitmap(thumbnail,0,0,thumbnail.getWidth(),thumbnail.getHeight(),
-                        matrix,true);
+                    Bitmap.createBitmap(thumbnail, 0, 0, thumbnail.getWidth(),
+                        thumbnail.getHeight(),
+                        matrix, true);
                 // careful, as rotated_thumbnail is sometimes not a copy!
                 if (rotated_thumbnail != thumbnail) {
                   thumbnail.recycle();
@@ -1505,7 +1566,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
                 }
               } catch (Throwable t) {
 
-                Logger.d(TAG,"failed to rotate thumbnail");
+                Logger.d(TAG, "failed to rotate thumbnail");
               }
             }
           }
@@ -1513,22 +1574,23 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         return thumbnail;
       }
 
+
       /** The system calls this to perform work in the UI thread and delivers
        * the result from doInBackground() */
       protected void onPostExecute(Bitmap thumbnail) {
 
-        Logger.d(TAG,"onPostExecute");
+        Logger.d(TAG, "onPostExecute");
 
         // since we're now setting the thumbnail to the latest media on disk, we need to make sure clicking the Gallery goes to this
         applicationInterface.getStorageUtils().clearLastMediaScanned();
         if (thumbnail != null) {
 
-          Logger.d(TAG,"set gallery button to thumbnail");
+          Logger.d(TAG, "set gallery button to thumbnail");
 
           updateGalleryIcon(thumbnail);
         } else {
 
-          Logger.d(TAG,"set gallery button to blank");
+          Logger.d(TAG, "set gallery button to blank");
 
           updateGalleryIconToBlank();
         }
@@ -1540,9 +1602,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             - debug_time));
   }
 
+
   public void savingImage(final boolean started) {
 
-    Logger.d(TAG,"savingImage: " + started);
+    Logger.d(TAG, "savingImage: " + started);
 
     this.runOnUiThread(new Runnable() {
       public void run() {
@@ -1551,7 +1614,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
 
           if (gallery_save_anim == null) {
             gallery_save_anim =
-                ValueAnimator.ofInt(Color.argb(200,255,255,255),Color.argb(63,255,255,255));
+                ValueAnimator.ofInt(Color.argb(200, 255, 255, 255), Color.argb(63, 255, 255, 255));
             gallery_save_anim.setEvaluator(new ArgbEvaluator());
             gallery_save_anim.setRepeatCount(ValueAnimator.INFINITE);
             gallery_save_anim.setRepeatMode(ValueAnimator.REVERSE);
@@ -1572,14 +1635,15 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     });
   }
 
+
   public void clickedGallery(View view) {
 
-    Logger.d(TAG,"clickedGallery");
+    Logger.d(TAG, "clickedGallery");
 
     Uri uri = applicationInterface.getStorageUtils().getLastMediaScanned();
     if (uri == null) {
 
-      Logger.d(TAG,"go to latest media");
+      Logger.d(TAG, "go to latest media");
 
       Media media = applicationInterface.getStorageUtils().getLatestMedia();
       if (media != null) {
@@ -1590,14 +1654,14 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     if (uri != null) {
       // check uri exists
 
-      Logger.d(TAG,"found most recent uri: " + uri);
+      Logger.d(TAG, "found most recent uri: " + uri);
 
       try {
         ContentResolver cr = getContentResolver();
-        ParcelFileDescriptor pfd = cr.openFileDescriptor(uri,"r");
+        ParcelFileDescriptor pfd = cr.openFileDescriptor(uri, "r");
         if (pfd == null) {
 
-          Logger.d(TAG,"uri no longer exists (1): " + uri);
+          Logger.d(TAG, "uri no longer exists (1): " + uri);
 
           uri = null;
         } else {
@@ -1605,7 +1669,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         }
       } catch (IOException e) {
 
-        Logger.d(TAG,"uri no longer exists (2): " + uri);
+        Logger.d(TAG, "uri no longer exists (2): " + uri);
 
         uri = null;
       }
@@ -1616,28 +1680,29 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     if (!is_test) {
       // don't do if testing, as unclear how to exit activity to finish test (for testGallery())
 
-      Logger.d(TAG,"launch uri:" + uri);
+      Logger.d(TAG, "launch uri:" + uri);
 
       final String REVIEW_ACTION = "com.android.camera.action.REVIEW";
       try {
         // REVIEW_ACTION means we can view video files without autoplaying
-        Intent intent = new Intent(REVIEW_ACTION,uri);
+        Intent intent = new Intent(REVIEW_ACTION, uri);
         this.startActivity(intent);
       } catch (ActivityNotFoundException e) {
 
-        Logger.d(TAG,"REVIEW_ACTION intent didn't work, try ACTION_VIEW");
+        Logger.d(TAG, "REVIEW_ACTION intent didn't work, try ACTION_VIEW");
 
-        Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         // from http://stackoverflow.com/questions/11073832/no-activity-found-to-handle-intent - needed to fix crash if no gallery app installed
         //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("blah")); // test
         if (intent.resolveActivity(getPackageManager()) != null) {
           this.startActivity(intent);
         } else {
-          preview.showToast(null,R.string.no_gallery_app);
+          preview.showToast(null, R.string.no_gallery_app);
         }
       }
     }
   }
+
 
   /* update_icon should be true, unless it's known we'll call updateGalleryIcon afterwards anyway.
      */
@@ -1649,16 +1714,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   private void updateFolderHistory(String folder_name) {
 
-    Logger.d(TAG,"updateFolderHistory: " + folder_name);
-    Logger.d(TAG,"save_location_history size: " + save_location_history.size());
+    Logger.d(TAG, "updateFolderHistory: " + folder_name);
+    Logger.d(TAG, "save_location_history size: " + save_location_history.size());
     for (int i = 0; i < save_location_history.size(); i++) {
-      Logger.d(TAG,save_location_history.get(i));
+      Logger.d(TAG, save_location_history.get(i));
     }
 
     while (save_location_history.remove(folder_name)) {
-      Logger.d(TAG,"" + folder_name);
+      Logger.d(TAG, "" + folder_name);
     }
     save_location_history.add(folder_name);
     while (save_location_history.size() > 6) {
@@ -1666,72 +1732,76 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
     writeSaveLocations();
 
-    Logger.d(TAG,"updateFolderHistory exit:");
-    Logger.d(TAG,"save_location_history size: " + save_location_history.size());
+    Logger.d(TAG, "updateFolderHistory exit:");
+    Logger.d(TAG, "save_location_history size: " + save_location_history.size());
     for (int i = 0; i < save_location_history.size(); i++) {
-      Logger.d(TAG,save_location_history.get(i));
+      Logger.d(TAG, save_location_history.get(i));
     }
   }
 
+
   private void clearFolderHistory() {
 
-    Logger.d(TAG,"clearFolderHistory");
+    Logger.d(TAG, "clearFolderHistory");
 
     save_location_history.clear();
     updateFolderHistory(true); // to re-add the current choice, and save
   }
 
+
   private void writeSaveLocations() {
 
-    Logger.d(TAG,"writeSaveLocations");
+    Logger.d(TAG, "writeSaveLocations");
 
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.putInt("save_location_history_size",save_location_history.size());
+    editor.putInt("save_location_history_size", save_location_history.size());
 
-    Logger.d(TAG,"save_location_history_size = " + save_location_history.size());
+    Logger.d(TAG, "save_location_history_size = " + save_location_history.size());
 
     for (int i = 0; i < save_location_history.size(); i++) {
       String string = save_location_history.get(i);
-      editor.putString("save_location_history_" + i,string);
+      editor.putString("save_location_history_" + i, string);
     }
     editor.apply();
   }
+
 
   /**
    * Opens the Storage Access Framework dialog to select a folder.
    */
   @TargetApi(Build.VERSION_CODES.LOLLIPOP) public void openFolderChooserDialogSAF() {
 
-    Logger.d(TAG,"openFolderChooserDialogSAF");
+    Logger.d(TAG, "openFolderChooserDialogSAF");
 
     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
 
-    startActivityForResult(intent,42);
+    startActivityForResult(intent, 42);
   }
+
 
   /**
    * Listens for the response from the Storage Access Framework dialog to select a folder
    * (as opened with openFolderChooserDialogSAF()).
    */
   @TargetApi(Build.VERSION_CODES.LOLLIPOP) public void onActivityResult(int requestCode,
-      int resultCode,Intent resultData) {
+                                                                        int resultCode, Intent resultData) {
 
-    Logger.d(TAG,"onActivityResult: " + requestCode);
+    Logger.d(TAG, "onActivityResult: " + requestCode);
 
     if (requestCode == 42 && resultCode == RESULT_OK && resultData != null) {
       Uri treeUri = resultData.getData();
 
-      Logger.d(TAG,"returned treeUri: " + treeUri);
+      Logger.d(TAG, "returned treeUri: " + treeUri);
 
       // from https://developer.android.com/guide/topics/providers/document-provider.html#permissions :
       final int takeFlags = resultData.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION
           | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
       // Check for the freshest data.
-      getContentResolver().takePersistableUriPermission(treeUri,takeFlags);
+      getContentResolver().takePersistableUriPermission(treeUri, takeFlags);
       SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
       SharedPreferences.Editor editor = sharedPreferences.edit();
-      editor.putString(PreferenceKeys.getSaveLocationSAFPreferenceKey(),treeUri.toString());
+      editor.putString(PreferenceKeys.getSaveLocationSAFPreferenceKey(), treeUri.toString());
       editor.apply();
       String filename = applicationInterface.getStorageUtils().getImageFolderNameSAF();
       if (filename != null) {
@@ -1740,29 +1810,31 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       }
     } else if (requestCode == 42) {
 
-      Logger.d(TAG,"SAF dialog cancelled");
+      Logger.d(TAG, "SAF dialog cancelled");
 
       // cancelled - if the user had yet to set a save location, make sure we switch SAF back off
       SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-      String uri = sharedPreferences.getString(PreferenceKeys.getSaveLocationSAFPreferenceKey(),"");
+      String uri = sharedPreferences.getString(PreferenceKeys.getSaveLocationSAFPreferenceKey(),
+          "");
       if (uri.length() == 0) {
 
-        Logger.d(TAG,"no SAF save location was set");
+        Logger.d(TAG, "no SAF save location was set");
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(PreferenceKeys.getUsingSAFPreferenceKey(),false);
+        editor.putBoolean(PreferenceKeys.getUsingSAFPreferenceKey(), false);
         editor.apply();
-        preview.showToast(null,R.string.saf_cancelled);
+        preview.showToast(null, R.string.saf_cancelled);
       }
     }
   }
+
 
   /**
    * Opens Open Camera's own (non-Storage Access Framework) dialog to select a folder.
    */
   private void openFolderChooserDialog() {
 
-    Logger.d(TAG,"openFolderChooserDialog");
+    Logger.d(TAG, "openFolderChooserDialog");
 
     showPreview(false);
     setWindowFlagsForSettings();
@@ -1771,14 +1843,14 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     FolderChooserDialog fragment = new FolderChooserDialog() {
       @Override public void onDismiss(DialogInterface dialog) {
 
-        Logger.d(TAG,"FolderChooserDialog dismissed");
+        Logger.d(TAG, "FolderChooserDialog dismissed");
 
         setWindowFlagsForCamera();
         showPreview(true);
         final String new_save_location = applicationInterface.getStorageUtils().getSaveLocation();
         if (!orig_save_location.equals(new_save_location)) {
 
-          Logger.d(TAG,"changed save_folder to: " + applicationInterface.getStorageUtils()
+          Logger.d(TAG, "changed save_folder to: " + applicationInterface.getStorageUtils()
               .getSaveLocation());
 
           updateFolderHistory(true);
@@ -1790,8 +1862,9 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         super.onDismiss(dialog);
       }
     };
-    fragment.show(getFragmentManager(),"FOLDER_FRAGMENT");
+    fragment.show(getFragmentManager(), "FOLDER_FRAGMENT");
   }
+
 
   /**
    * User can long-click on gallery to select a recent save location from the history, of if not
@@ -1800,7 +1873,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
    */
   private void longClickedGallery() {
 
-    Logger.d(TAG,"longClickedGallery");
+    Logger.d(TAG, "longClickedGallery");
 
     if (applicationInterface.getStorageUtils().isUsingSAF()) {
       // SAF doesn't support history yet, so go straight to dialog
@@ -1829,14 +1902,14 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     alertDialog.setItems(items, (dialog, which) -> {
       if (which == clear_index) {
 
-        Logger.d(TAG,"selected clear save history");
+        Logger.d(TAG, "selected clear save history");
 
         new AlertDialog.Builder(MainActivity.this).setIcon(android.R.drawable.ic_dialog_alert)
             .setTitle(R.string.clear_folder_history)
             .setMessage(R.string.clear_folder_history_question)
             .setPositiveButton(R.string.answer_yes, (dialog1, which1) -> {
 
-              Logger.d(TAG,"confirmed clear save history");
+              Logger.d(TAG, "confirmed clear save history");
 
               clearFolderHistory();
               setWindowFlagsForCamera();
@@ -1844,14 +1917,14 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             })
             .setNegativeButton(R.string.answer_no, (dialog12, which12) -> {
 
-              Logger.d(TAG,"don't clear save history");
+              Logger.d(TAG, "don't clear save history");
 
               setWindowFlagsForCamera();
               showPreview(true);
             })
             .setOnCancelListener(arg0 -> {
 
-              Logger.d(TAG,"cancelled clear save history");
+              Logger.d(TAG, "cancelled clear save history");
 
               setWindowFlagsForCamera();
               showPreview(true);
@@ -1859,25 +1932,25 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             .show();
       } else if (which == new_index) {
 
-        Logger.d(TAG,"selected choose new folder");
+        Logger.d(TAG, "selected choose new folder");
 
         openFolderChooserDialog();
       } else {
 
-        Logger.d(TAG,"selected: " + which);
+        Logger.d(TAG, "selected: " + which);
 
         if (which >= 0 && which < save_location_history.size()) {
           String save_folder =
               save_location_history.get(save_location_history.size() - 1 - which);
 
-          Logger.d(TAG,"changed save_folder from history to: " + save_folder);
+          Logger.d(TAG, "changed save_folder from history to: " + save_folder);
 
           preview.showToast(null,
               getResources().getString(R.string.changed_save_location) + "\n" + save_folder);
           SharedPreferences sharedPreferences =
               PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
           SharedPreferences.Editor editor = sharedPreferences.edit();
-          editor.putString(PreferenceKeys.getSaveLocationPreferenceKey(),save_folder);
+          editor.putString(PreferenceKeys.getSaveLocationPreferenceKey(), save_folder);
           editor.apply();
           updateFolderHistory(true); // to move new selection to most recent
         }
@@ -1894,7 +1967,8 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     setWindowFlagsForSettings();
   }
 
-  static private void putBundleExtra(Bundle bundle,String key,List<String> values) {
+
+  static private void putBundleExtra(Bundle bundle, String key, List<String> values) {
     if (values != null) {
       String[] values_arr = new String[values.size()];
       int i = 0;
@@ -1902,31 +1976,35 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         values_arr[i] = value;
         i++;
       }
-      bundle.putStringArray(key,values_arr);
+      bundle.putStringArray(key, values_arr);
     }
   }
 
+
   public void clickedShare(View view) {
 
-    Logger.d(TAG,"clickedShare");
+    Logger.d(TAG, "clickedShare");
 
     applicationInterface.shareLastImage();
   }
 
+
   public void clickedTrash(View view) {
 
-    Logger.d(TAG,"clickedTrash");
+    Logger.d(TAG, "clickedTrash");
 
     applicationInterface.trashLastImage();
   }
 
+
   private void takePicture() {
 
-    Logger.d(TAG,"takePicture");
+    Logger.d(TAG, "takePicture");
 
     closePopup();
     this.preview.takePicturePressed();
   }
+
 
   /**
    * Lock the screen - this is Open Camera's own lock to guard against accidental presses,
@@ -1940,6 +2018,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     screen_is_locked = true;
   }
 
+
   /**
    * Unlock the screen (see lockScreen()).
    */
@@ -1948,6 +2027,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     screen_is_locked = false;
   }
 
+
   /**
    * Whether the screen is locked (see lockScreen()).
    */
@@ -1955,13 +2035,14 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     return screen_is_locked;
   }
 
+
   /**
    * Listen for gestures.
    * Doing a swipe will unlock the screen (see lockScreen()).
    */
   private class MyGestureDetector extends SimpleOnGestureListener {
     @Override
-    public boolean onFling(MotionEvent e1,MotionEvent e2,float velocityX,float velocityY) {
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
       try {
 
         Logger.d(TAG,
@@ -1975,7 +2056,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
 
         Logger.d(TAG,
             "from " + e1.getX() + " , " + e1.getY() + " to " + e2.getX() + " , " + e2.getY());
-        Logger.d(TAG,"swipeMinDistance: " + swipeMinDistance);
+        Logger.d(TAG, "swipeMinDistance: " + swipeMinDistance);
 
         float xdist = e1.getX() - e2.getX();
         float ydist = e1.getY() - e2.getY();
@@ -1983,7 +2064,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         float vel2 = velocityX * velocityX + velocityY * velocityY;
         if (dist2 > swipeMinDistance * swipeMinDistance
             && vel2 > swipeThresholdVelocity * swipeThresholdVelocity) {
-          preview.showToast(screen_locked_toast,R.string.unlocked);
+          preview.showToast(screen_locked_toast, R.string.unlocked);
           unlockScreen();
         }
       } catch (Exception e) {
@@ -1992,15 +2073,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       return false;
     }
 
+
     @Override public boolean onDown(MotionEvent e) {
-      preview.showToast(screen_locked_toast,R.string.screen_is_locked);
+      preview.showToast(screen_locked_toast, R.string.screen_is_locked);
       return true;
     }
   }
 
+
   @Override protected void onSaveInstanceState(Bundle state) {
 
-    Logger.d(TAG,"onSaveInstanceState");
+    Logger.d(TAG, "onSaveInstanceState");
 
     super.onSaveInstanceState(state);
     if (this.preview != null) {
@@ -2010,6 +2093,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       applicationInterface.onSaveInstanceState(state);
     }
   }
+
 
   public boolean supportsExposureButton() {
     if (preview.getCameraController() == null) {
@@ -2024,15 +2108,16 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     return supports_exposure;
   }
 
+
   public void cameraSetup() {
     long debug_time = 0;
 
-    Logger.d(TAG,"cameraSetup");
+    Logger.d(TAG, "cameraSetup");
     debug_time = System.currentTimeMillis();
 
     if (this.supportsForceVideo4K() && preview.usingCamera2API()) {
 
-      Logger.d(TAG,"using Camera2 API, so can disable the force 4K option");
+      Logger.d(TAG, "using Camera2 API, so can disable the force 4K option");
 
       this.disableForceVideo4K();
     }
@@ -2040,28 +2125,29 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       for (CameraController.Size size : preview.getSupportedVideoSizes()) {
         if (size.width >= 3840 && size.height >= 2160) {
 
-          Logger.d(TAG,"camera natively supports 4K, so can disable the force option");
+          Logger.d(TAG, "camera natively supports 4K, so can disable the force option");
 
           this.disableForceVideo4K();
         }
       }
     }
 
-    Logger.d(TAG,"cameraSetup: time after handling Force 4K option: " + (System.currentTimeMillis()
+    Logger.d(TAG, "cameraSetup: time after handling Force 4K option: " + (System.currentTimeMillis()
         - debug_time));
 
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     {
 
-      Logger.d(TAG,"set up zoom");
+      Logger.d(TAG, "set up zoom");
 
-      Logger.d(TAG,"has_zoom? " + preview.supportsZoom());
+      Logger.d(TAG, "has_zoom? " + preview.supportsZoom());
 
       ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
       SeekBar zoomSeekBar = (SeekBar) findViewById(R.id.zoom_seekbar);
 
       if (preview.supportsZoom()) {
-        if (sharedPreferences.getBoolean(PreferenceKeys.getShowZoomControlsPreferenceKey(),false)) {
+        if (sharedPreferences.getBoolean(PreferenceKeys.getShowZoomControlsPreferenceKey(),
+            false)) {
           zoomControls.setIsZoomInEnabled(true);
           zoomControls.setIsZoomOutEnabled(true);
           zoomControls.setZoomSpeed(20);
@@ -2089,15 +2175,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         zoomSeekBar.setMax(preview.getMaxZoom());
         zoomSeekBar.setProgress(preview.getMaxZoom() - preview.getCameraController().getZoom());
         zoomSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-          @Override public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+          @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-            Logger.d(TAG,"zoom onProgressChanged: " + progress);
+            Logger.d(TAG, "zoom onProgressChanged: " + progress);
 
             preview.zoomTo(preview.getMaxZoom() - progress);
           }
 
+
           @Override public void onStartTrackingTouch(SeekBar seekBar) {
           }
+
 
           @Override public void onStopTrackingTouch(SeekBar seekBar) {
           }
@@ -2121,23 +2209,25 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
     {
 
-      Logger.d(TAG,"set up manual focus");
+      Logger.d(TAG, "set up manual focus");
 
       SeekBar focusSeekBar = (SeekBar) findViewById(R.id.focus_seekbar);
       focusSeekBar.setOnSeekBarChangeListener(
           null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-      setProgressSeekbarScaled(focusSeekBar,0.0,preview.getMinimumFocusDistance(),
+      setProgressSeekbarScaled(focusSeekBar, 0.0, preview.getMinimumFocusDistance(),
           preview.getCameraController().getFocusDistance());
       focusSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-        @Override public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+        @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
           double frac = progress / (double) 100.0;
           double scaling = MainActivity.seekbarScaling(frac);
           float focus_distance = (float) (scaling * preview.getMinimumFocusDistance());
           preview.setFocusDistance(focus_distance);
         }
 
+
         @Override public void onStartTrackingTouch(SeekBar seekBar) {
         }
+
 
         @Override public void onStopTrackingTouch(SeekBar seekBar) {
         }
@@ -2148,31 +2238,31 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       focusSeekBar.setVisibility(visibility);
     }
 
-    Logger.d(TAG,"cameraSetup: time after setting up manual focus: " + (System.currentTimeMillis()
+    Logger.d(TAG, "cameraSetup: time after setting up manual focus: " + (System.currentTimeMillis()
         - debug_time));
 
     {
       if (preview.supportsISORange()) {
 
-        Logger.d(TAG,"set up iso");
+        Logger.d(TAG, "set up iso");
 
         SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
         iso_seek_bar.setOnSeekBarChangeListener(
             null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-        setProgressSeekbarScaled(iso_seek_bar,preview.getMinimumISO(),preview.getMaximumISO(),
+        setProgressSeekbarScaled(iso_seek_bar, preview.getMinimumISO(), preview.getMaximumISO(),
             preview.getCameraController().getISO());
         iso_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-          @Override public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+          @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-            Logger.d(TAG,"iso seekbar onProgressChanged: " + progress);
+            Logger.d(TAG, "iso seekbar onProgressChanged: " + progress);
 
             double frac = progress / (double) 100.0;
 
-            Logger.d(TAG,"exposure_time frac: " + frac);
+            Logger.d(TAG, "exposure_time frac: " + frac);
 
             double scaling = MainActivity.seekbarScaling(frac);
 
-            Logger.d(TAG,"exposure_time scaling: " + scaling);
+            Logger.d(TAG, "exposure_time scaling: " + scaling);
 
             int min_iso = preview.getMinimumISO();
             int max_iso = preview.getMaximumISO();
@@ -2180,33 +2270,36 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             preview.setISO(iso);
           }
 
+
           @Override public void onStartTrackingTouch(SeekBar seekBar) {
           }
+
 
           @Override public void onStopTrackingTouch(SeekBar seekBar) {
           }
         });
         if (preview.supportsExposureTime()) {
 
-          Logger.d(TAG,"set up exposure time");
+          Logger.d(TAG, "set up exposure time");
 
           SeekBar exposure_time_seek_bar = ((SeekBar) findViewById(R.id.exposure_time_seekbar));
           exposure_time_seek_bar.setOnSeekBarChangeListener(
               null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-          setProgressSeekbarScaled(exposure_time_seek_bar,preview.getMinimumExposureTime(),
-              preview.getMaximumExposureTime(),preview.getCameraController().getExposureTime());
+          setProgressSeekbarScaled(exposure_time_seek_bar, preview.getMinimumExposureTime(),
+              preview.getMaximumExposureTime(), preview.getCameraController().getExposureTime());
           exposure_time_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-              Logger.d(TAG,"exposure_time seekbar onProgressChanged: " + progress);
+              Logger.d(TAG, "exposure_time seekbar onProgressChanged: " + progress);
 
               double frac = progress / (double) 100.0;
 
-              Logger.d(TAG,"exposure_time frac: " + frac);
+              Logger.d(TAG, "exposure_time frac: " + frac);
 
               double scaling = MainActivity.seekbarScaling(frac);
 
-              Logger.d(TAG,"exposure_time scaling: " + scaling);
+              Logger.d(TAG, "exposure_time scaling: " + scaling);
 
               long min_exposure_time = preview.getMinimumExposureTime();
               long max_exposure_time = preview.getMaximumExposureTime();
@@ -2215,8 +2308,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
               preview.setExposureTime(exposure_time);
             }
 
+
             @Override public void onStartTrackingTouch(SeekBar seekBar) {
             }
+
 
             @Override public void onStopTrackingTouch(SeekBar seekBar) {
             }
@@ -2231,7 +2326,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     {
       if (preview.supportsExposures()) {
 
-        Logger.d(TAG,"set up exposure compensation");
+        Logger.d(TAG, "set up exposure compensation");
 
         final int min_exposure = preview.getMinimumExposure();
         SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
@@ -2240,15 +2335,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         exposure_seek_bar.setMax(preview.getMaximumExposure() - min_exposure);
         exposure_seek_bar.setProgress(preview.getCurrentExposure() - min_exposure);
         exposure_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-          @Override public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+          @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-            Logger.d(TAG,"exposure seekbar onProgressChanged: " + progress);
+            Logger.d(TAG, "exposure seekbar onProgressChanged: " + progress);
 
             preview.setExposure(min_exposure + progress);
           }
 
+
           @Override public void onStartTrackingTouch(SeekBar seekBar) {
           }
+
 
           @Override public void onStopTrackingTouch(SeekBar seekBar) {
           }
@@ -2260,7 +2357,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       }
     }
 
-    Logger.d(TAG,"cameraSetup: time after setting up exposure: " + (System.currentTimeMillis()
+    Logger.d(TAG, "cameraSetup: time after setting up exposure: " + (System.currentTimeMillis()
         - debug_time));
 
     View exposureButton = (View) findViewById(R.id.exposure);
@@ -2287,7 +2384,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     mainUI.setTakePhotoIcon();
     mainUI.setSwitchCameraContentDescription();
 
-    Logger.d(TAG,"cameraSetup: time after setting take photo icon: " + (System.currentTimeMillis()
+    Logger.d(TAG, "cameraSetup: time after setting take photo icon: " + (System.currentTimeMillis()
         - debug_time));
 
     if (!block_startup_toast) {
@@ -2298,21 +2395,26 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         "cameraSetup: total time for cameraSetup: " + (System.currentTimeMillis() - debug_time));
   }
 
+
   public boolean supportsAutoStabilise() {
     return this.supports_auto_stabilise;
   }
+
 
   public boolean supportsForceVideo4K() {
     return this.supports_force_video_4k;
   }
 
+
   public boolean supportsCamera2() {
     return this.supports_camera2;
   }
 
+
   private void disableForceVideo4K() {
     this.supports_force_video_4k = false;
   }
+
 
   @SuppressWarnings("deprecation") public long freeMemory() { // return free memory in MB
     try {
@@ -2351,37 +2453,46 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     return -1;
   }
 
+
   public static String getDonateLink() {
     return ""; //// TODO: 16/7/8  url with donlow 
   }
+
 
   public Preview getPreview() {
     return this.preview;
   }
 
+
   public MainUI getMainUI() {
     return this.mainUI;
   }
+
 
   public MyApplicationInterface getApplicationInterface() {
     return this.applicationInterface;
   }
 
+
   public LocationSupplier getLocationSupplier() {
     return this.applicationInterface.getLocationSupplier();
   }
+
 
   public StorageUtils getStorageUtils() {
     return this.applicationInterface.getStorageUtils();
   }
 
+
   public File getImageFolder() {
     return this.applicationInterface.getStorageUtils().getImageFolder();
   }
 
+
   public ToastBoxer getChangedAutoStabiliseToastBoxer() {
     return changed_auto_stabilise_toast;
   }
+
 
   /**
    * Displays a toast with information about the current preferences.
@@ -2392,13 +2503,13 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
    */
   private void showPhotoVideoToast(boolean always_show) {
 
-    Logger.d(TAG,"showPhotoVideoToast");
-    Logger.d(TAG,"always_show? " + always_show);
+    Logger.d(TAG, "showPhotoVideoToast");
+    Logger.d(TAG, "always_show? " + always_show);
 
     CameraController camera_controller = preview.getCameraController();
     if (camera_controller == null || this.camera_in_background) {
 
-      Logger.d(TAG,"camera not open or in background");
+      Logger.d(TAG, "camera not open or in background");
 
       return;
     }
@@ -2426,13 +2537,13 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
           + "fps, "
           + bitrate_string;
       boolean record_audio =
-          sharedPreferences.getBoolean(PreferenceKeys.getRecordAudioPreferenceKey(),true);
+          sharedPreferences.getBoolean(PreferenceKeys.getRecordAudioPreferenceKey(), true);
       if (!record_audio) {
         toast_string += "\n" + getResources().getString(R.string.audio_disabled);
         simple = false;
       }
       String max_duration_value =
-          sharedPreferences.getString(PreferenceKeys.getVideoMaxDurationPreferenceKey(),"0");
+          sharedPreferences.getString(PreferenceKeys.getVideoMaxDurationPreferenceKey(), "0");
       if (max_duration_value.length() > 0 && !max_duration_value.equals("0")) {
         String[] entries_array =
             getResources().getStringArray(R.array.preference_video_max_duration_entries);
@@ -2455,8 +2566,9 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             + getResources().getString(R.string.mb_abbreviation);
         simple = false;
       }
-      if (sharedPreferences.getBoolean(PreferenceKeys.getVideoFlashPreferenceKey(),false) && preview
-          .supportsFlash()) {
+      if (sharedPreferences.getBoolean(PreferenceKeys.getVideoFlashPreferenceKey(), false) &&
+          preview
+              .supportsFlash()) {
         toast_string += "\n" + getResources().getString(R.string.preference_video_flash);
         simple = false;
       }
@@ -2474,7 +2586,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
           }
         }
       }
-      if (sharedPreferences.getBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(),false)) {
+      if (sharedPreferences.getBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(), false)) {
         // important as users are sometimes confused at the behaviour if they don't realise the option is on
         toast_string += "\n" + getResources().getString(R.string.preference_auto_stabilise);
         simple = false;
@@ -2520,7 +2632,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       simple = false;
     }
     String lock_orientation =
-        sharedPreferences.getString(PreferenceKeys.getLockOrientationPreferenceKey(),"none");
+        sharedPreferences.getString(PreferenceKeys.getLockOrientationPreferenceKey(), "none");
     if (!lock_orientation.equals("none")) {
       String[] entries_array =
           getResources().getStringArray(R.array.preference_lock_orientation_entries);
@@ -2533,7 +2645,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         simple = false;
       }
     }
-    String timer = sharedPreferences.getString(PreferenceKeys.getTimerPreferenceKey(),"0");
+    String timer = sharedPreferences.getString(PreferenceKeys.getTimerPreferenceKey(), "0");
     if (!timer.equals("0")) {
       String[] entries_array = getResources().getStringArray(R.array.preference_timer_entries);
       String[] values_array = getResources().getStringArray(R.array.preference_timer_values);
@@ -2557,23 +2669,24 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       }
     }
 
-    Logger.d(TAG,"toast_string: " + toast_string);
-    Logger.d(TAG,"simple?: " + simple);
+    Logger.d(TAG, "toast_string: " + toast_string);
+    Logger.d(TAG, "simple?: " + simple);
 
     if (!simple || always_show) {
-      preview.showToast(switch_video_toast,toast_string);
+      preview.showToast(switch_video_toast, toast_string);
     }
   }
 
+
   private void freeAudioListener(boolean wait_until_done) {
 
-    Logger.d(TAG,"freeAudioListener");
+    Logger.d(TAG, "freeAudioListener");
 
     if (audio_listener != null) {
       audio_listener.release();
       if (wait_until_done) {
 
-        Logger.d(TAG,"wait until audio listener is freed");
+        Logger.d(TAG, "wait until audio listener is freed");
 
         while (audio_listener.hasAudioRecorder()) {
         }
@@ -2583,9 +2696,10 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     mainUI.audioControlStopped();
   }
 
+
   private void startAudioListener() {
 
-    Logger.d(TAG,"startAudioListener");
+    Logger.d(TAG, "startAudioListener");
 
     audio_listener = new AudioListener(this);
     audio_listener.start();
@@ -2610,18 +2724,19 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     mainUI.audioControlStarted();
   }
 
+
   private void initSpeechRecognizer() {
 
-    Logger.d(TAG,"initSpeechRecognizer");
+    Logger.d(TAG, "initSpeechRecognizer");
 
     // in theory we could create the speech recognizer always (hopefully it shouldn't use battery when not listening?), though to be safe, we only do this when the option is enabled (e.g., just in case this doesn't work on some devices!)
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     boolean want_speech_recognizer =
-        sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(),"none")
+        sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(), "none")
             .equals("voice");
     if (speechRecognizer == null && want_speech_recognizer) {
 
-      Logger.d(TAG,"create new speechRecognizer");
+      Logger.d(TAG, "create new speechRecognizer");
 
       speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
       if (speechRecognizer != null) {
@@ -2629,24 +2744,27 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
           @Override public void onBeginningOfSpeech() {
 
-            Logger.d(TAG,"RecognitionListener: onBeginningOfSpeech");
+            Logger.d(TAG, "RecognitionListener: onBeginningOfSpeech");
           }
+
 
           @Override public void onBufferReceived(byte[] buffer) {
 
-            Logger.d(TAG,"RecognitionListener: onBufferReceived");
+            Logger.d(TAG, "RecognitionListener: onBufferReceived");
           }
+
 
           @Override public void onEndOfSpeech() {
 
-            Logger.d(TAG,"RecognitionListener: onEndOfSpeech");
+            Logger.d(TAG, "RecognitionListener: onEndOfSpeech");
 
             speechRecognizerStopped();
           }
 
+
           @Override public void onError(int error) {
 
-            Logger.d(TAG,"RecognitionListener: onError: " + error);
+            Logger.d(TAG, "RecognitionListener: onError: " + error);
 
             if (error != SpeechRecognizer.ERROR_NO_MATCH) {
               // we sometime receive ERROR_NO_MATCH straight after listening starts
@@ -2655,24 +2773,28 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             }
           }
 
-          @Override public void onEvent(int eventType,Bundle params) {
 
-            Logger.d(TAG,"RecognitionListener: onEvent");
+          @Override public void onEvent(int eventType, Bundle params) {
+
+            Logger.d(TAG, "RecognitionListener: onEvent");
           }
+
 
           @Override public void onPartialResults(Bundle partialResults) {
 
-            Logger.d(TAG,"RecognitionListener: onPartialResults");
+            Logger.d(TAG, "RecognitionListener: onPartialResults");
           }
+
 
           @Override public void onReadyForSpeech(Bundle params) {
 
-            Logger.d(TAG,"RecognitionListener: onReadyForSpeech");
+            Logger.d(TAG, "RecognitionListener: onReadyForSpeech");
           }
+
 
           public void onResults(Bundle results) {
 
-            Logger.d(TAG,"RecognitionListener: onResults");
+            Logger.d(TAG, "RecognitionListener: onResults");
 
             speechRecognizerStopped();
             ArrayList<String> list =
@@ -2684,7 +2806,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             for (int i = 0; i < list.size(); i++) {
               String text = list.get(i);
 
-              Logger.d(TAG,"text: " + text + " score: " + scores[i]);
+              Logger.d(TAG, "text: " + text + " score: " + scores[i]);
 
               if (text.toLowerCase(Locale.US).contains(trigger)) {
                 found = true;
@@ -2693,17 +2815,18 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
             //preview.showToast(null, debug_toast); // debug only!
             if (found) {
 
-              Logger.d(TAG,"audio trigger from speech recognition");
+              Logger.d(TAG, "audio trigger from speech recognition");
 
               audioTrigger();
             } else if (list.size() > 0) {
               String toast = list.get(0) + "?";
 
-              Logger.d(TAG,"unrecognised: " + toast);
+              Logger.d(TAG, "unrecognised: " + toast);
 
-              preview.showToast(audio_control_toast,toast);
+              preview.showToast(audio_control_toast, toast);
             }
           }
+
 
           @Override public void onRmsChanged(float rmsdB) {
           }
@@ -2715,15 +2838,16 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
       }
     } else if (speechRecognizer != null && !want_speech_recognizer) {
 
-      Logger.d(TAG,"free existing SpeechRecognizer");
+      Logger.d(TAG, "free existing SpeechRecognizer");
 
       freeSpeechRecognizer();
     }
   }
 
+
   private void freeSpeechRecognizer() {
 
-    Logger.d(TAG,"freeSpeechRecognizer");
+    Logger.d(TAG, "freeSpeechRecognizer");
 
     if (speechRecognizer != null) {
       speechRecognizerStopped();
@@ -2734,10 +2858,11 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   public boolean hasAudioControl() {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     String audio_control =
-        sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(),"none");
+        sharedPreferences.getString(PreferenceKeys.getAudioControlPreferenceKey(), "none");
     if (audio_control.equals("voice")) {
       return speechRecognizer != null;
     } else if (audio_control.equals("noise")) {
@@ -2745,6 +2870,7 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
     return false;
   }
+
 
   public void stopAudioListeners() {
     freeAudioListener(true);
@@ -2755,28 +2881,30 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   private void initLocation() {
 
-    Logger.d(TAG,"initLocation");
+    Logger.d(TAG, "initLocation");
 
     if (!applicationInterface.getLocationSupplier().setupLocationListener()) {
 
-      Logger.d(TAG,"location permission not available, so switch location off");
+      Logger.d(TAG, "location permission not available, so switch location off");
 
-      preview.showToast(null,R.string.permission_location_not_available);
+      preview.showToast(null, R.string.permission_location_not_available);
       // now switch off so we don't keep showing this message
       SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
       SharedPreferences.Editor editor = settings.edit();
-      editor.putBoolean(PreferenceKeys.getLocationPreferenceKey(),false);
+      editor.putBoolean(PreferenceKeys.getLocationPreferenceKey(), false);
       editor.apply();
     }
   }
+
 
   @SuppressWarnings("deprecation") @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void initSound() {
     if (sound_pool == null) {
 
-      Logger.d(TAG,"create new sound_pool");
+      Logger.d(TAG, "create new sound_pool");
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         AudioAttributes audio_attributes =
@@ -2786,16 +2914,17 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
         sound_pool =
             new SoundPool.Builder().setMaxStreams(1).setAudioAttributes(audio_attributes).build();
       } else {
-        sound_pool = new SoundPool(1,AudioManager.STREAM_SYSTEM,0);
+        sound_pool = new SoundPool(1, AudioManager.STREAM_SYSTEM, 0);
       }
       sound_ids = new SparseIntArray();
     }
   }
 
+
   private void releaseSound() {
     if (sound_pool != null) {
 
-      Logger.d(TAG,"release sound_pool");
+      Logger.d(TAG, "release sound_pool");
 
       sound_pool.release();
       sound_pool = null;
@@ -2803,50 +2932,56 @@ public class MainActivity extends Activity implements AudioListener.AudioListene
     }
   }
 
+
   // must be called before playSound (allowing enough time to load the sound)
   void loadSound(int resource_id) {
     if (sound_pool != null) {
 
-      Logger.d(TAG,"loading sound resource: " + resource_id);
+      Logger.d(TAG, "loading sound resource: " + resource_id);
 
-      int sound_id = sound_pool.load(this,resource_id,1);
+      int sound_id = sound_pool.load(this, resource_id, 1);
 
-      Logger.d(TAG,"    loaded sound: " + sound_id);
+      Logger.d(TAG, "    loaded sound: " + sound_id);
 
-      sound_ids.put(resource_id,sound_id);
+      sound_ids.put(resource_id, sound_id);
     }
   }
+
 
   // must call loadSound first (allowing enough time to load the sound)
   public void playSound(int resource_id) {
     if (sound_pool != null) {
       if (sound_ids.indexOfKey(resource_id) < 0) {
 
-        Logger.d(TAG,"resource not loaded: " + resource_id);
+        Logger.d(TAG, "resource not loaded: " + resource_id);
       } else {
         int sound_id = sound_ids.get(resource_id);
 
-        Logger.d(TAG,"play sound: " + sound_id);
+        Logger.d(TAG, "play sound: " + sound_id);
 
-        sound_pool.play(sound_id,1.0f,1.0f,0,0,1);
+        sound_pool.play(sound_id, 1.0f, 1.0f, 0, 0, 1);
       }
     }
   }
 
+
   @SuppressWarnings("deprecation") public void speak(String text) {
     if (textToSpeech != null && textToSpeechSuccess) {
-      textToSpeech.speak(text,TextToSpeech.QUEUE_FLUSH,null);
+      textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
   }
+
 
   // for testing:
   public ArrayList<String> getSaveLocationHistory() {
     return this.save_location_history;
   }
 
+
   public void usedFolderPicker() {
     updateFolderHistory(true);
   }
+
 
   public boolean hasThumbnailAnimation() {
     return this.applicationInterface.hasThumbnailAnimation();

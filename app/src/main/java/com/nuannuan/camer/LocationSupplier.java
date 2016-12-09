@@ -1,5 +1,7 @@
 package com.nuannuan.camer;
 
+import com.nuannuan.camer.log.Logger;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,10 +14,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
-import com.nuannuan.camer.log.Logger;
 
 /**
  * Handles listening for GPS location (both coarse and fine).
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -26,10 +28,12 @@ public class LocationSupplier {
   private LocationManager locationManager = null;
   private MyLocationListener[] locationListeners = null;
 
+
   LocationSupplier(Context context) {
     this.context = context;
     locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
   }
+
 
   public Location getLocation() {
     // returns null if not available
@@ -46,23 +50,26 @@ public class LocationSupplier {
     return null;
   }
 
+
   private static class MyLocationListener implements LocationListener {
     private Location location = null;
     public boolean test_has_received_location = false;
+
 
     Location getLocation() {
       return location;
     }
 
+
     public void onLocationChanged(Location location) {
 
-      Logger.d(TAG,"onLocationChanged");
+      Logger.d(TAG, "onLocationChanged");
       this.test_has_received_location = true;
       // Android camera source claims we need to check lat/long != 0.0d
       if (location.getLatitude() != 0.0d || location.getLongitude() != 0.0d) {
 
-        Logger.d(TAG,"received location:");
-        Logger.d(TAG,"lat "
+        Logger.d(TAG, "received location:");
+        Logger.d(TAG, "lat "
             + location.getLatitude()
             + " long "
             + location.getLongitude()
@@ -73,14 +80,15 @@ public class LocationSupplier {
       }
     }
 
-    public void onStatusChanged(String provider,int status,Bundle extras) {
+
+    public void onStatusChanged(String provider, int status, Bundle extras) {
       switch (status) {
         case LocationProvider.OUT_OF_SERVICE:
         case LocationProvider.TEMPORARILY_UNAVAILABLE: {
           if (status == LocationProvider.OUT_OF_SERVICE) {
-            Logger.d(TAG,"location provider out of service");
+            Logger.d(TAG, "location provider out of service");
           } else if (status == LocationProvider.TEMPORARILY_UNAVAILABLE) {
-            Logger.d(TAG,"location provider temporarily unavailable");
+            Logger.d(TAG, "location provider temporarily unavailable");
           }
           this.location = null;
           this.test_has_received_location = false;
@@ -91,28 +99,31 @@ public class LocationSupplier {
       }
     }
 
+
     public void onProviderEnabled(String provider) {
     }
 
+
     public void onProviderDisabled(String provider) {
 
-      Logger.d(TAG,"onProviderDisabled");
+      Logger.d(TAG, "onProviderDisabled");
 
       this.location = null;
       this.test_has_received_location = false;
     }
   }
 
+
   // returns false if location permission not available for either coarse or fine
   public boolean setupLocationListener() {
 
-    Logger.d(TAG,"setupLocationListener");
+    Logger.d(TAG, "setupLocationListener");
 
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     // Define a listener that responds to location updates
     // we only set it up if store_location is true, to avoid unnecessarily wasting battery
     boolean store_location =
-        sharedPreferences.getBoolean(PreferenceKeys.getLocationPreferenceKey(),false);
+        sharedPreferences.getBoolean(PreferenceKeys.getLocationPreferenceKey(), false);
     if (store_location && locationListeners == null) {
       // Needed for Android 6, in case users deny location permission, otherwise we get java.lang.SecurityException from locationManager.requestLocationUpdates()
       // see https://developer.android.com/training/permissions/requesting.html .
@@ -123,20 +134,20 @@ public class LocationSupplier {
       // PERMISSION_DENIED! So we keep the checks to Android Marshmallow or later (where we need them), and avoid
       // checking behaviour for earlier devices.
       boolean has_coarse_location_permission = Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-          || ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_COARSE_LOCATION)
+          || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
           == PackageManager.PERMISSION_GRANTED;
       boolean has_fine_location_permission = Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-          || ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)
+          || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
           == PackageManager.PERMISSION_GRANTED;
 
-      Logger.d(TAG,"has_coarse_location_permission? " + has_coarse_location_permission);
-      Logger.d(TAG,"has_fine_location_permission? " + has_fine_location_permission);
+      Logger.d(TAG, "has_coarse_location_permission? " + has_coarse_location_permission);
+      Logger.d(TAG, "has_fine_location_permission? " + has_fine_location_permission);
 
       if (!has_coarse_location_permission && !has_fine_location_permission) {
-        Logger.e(TAG,"don't have ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION permissions");
-        Logger.e(TAG,"ACCESS_COARSE_LOCATION returns " + ContextCompat.checkSelfPermission(context,
+        Logger.e(TAG, "don't have ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION permissions");
+        Logger.e(TAG, "ACCESS_COARSE_LOCATION returns " + ContextCompat.checkSelfPermission(context,
             Manifest.permission.ACCESS_COARSE_LOCATION));
-        Logger.e(TAG,"ACCESS_FINE_LOCATION returns " + ContextCompat.checkSelfPermission(context,
+        Logger.e(TAG, "ACCESS_FINE_LOCATION returns " + ContextCompat.checkSelfPermission(context,
             Manifest.permission.ACCESS_FINE_LOCATION));
 
         return false;
@@ -150,35 +161,36 @@ public class LocationSupplier {
       // now also need to check for permissions - need to support devices that might have one but not both of fine and coarse permissions supplied
       if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER)) {
         if (has_coarse_location_permission) {
-          locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000,0,
+          locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0,
               locationListeners[1]);
 
-          Logger.d(TAG,"created coarse (network) location listener");
+          Logger.d(TAG, "created coarse (network) location listener");
         } else {
 
-          Logger.e(TAG,"don't have ACCESS_COARSE_LOCATION permission");
-          Logger.e(TAG,"ACCESS_COARSE_LOCATION returns " + ContextCompat.checkSelfPermission(context,
-              Manifest.permission.ACCESS_COARSE_LOCATION));
+          Logger.e(TAG, "don't have ACCESS_COARSE_LOCATION permission");
+          Logger.e(TAG,
+              "ACCESS_COARSE_LOCATION returns " + ContextCompat.checkSelfPermission(context,
+                  Manifest.permission.ACCESS_COARSE_LOCATION));
         }
       } else {
 
-        Logger.e(TAG,"don't have a NETWORK_PROVIDER");
+        Logger.e(TAG, "don't have a NETWORK_PROVIDER");
       }
       if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER)) {
         if (has_fine_location_permission) {
-          locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,0,
+          locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0,
               locationListeners[0]);
 
-          Logger.d(TAG,"created fine (gps) location listener");
+          Logger.d(TAG, "created fine (gps) location listener");
         } else {
 
-          Logger.e(TAG,"don't have ACCESS_FINE_LOCATION permission");
-          Logger.e(TAG,"ACCESS_FINE_LOCATION returns " + ContextCompat.checkSelfPermission(context,
+          Logger.e(TAG, "don't have ACCESS_FINE_LOCATION permission");
+          Logger.e(TAG, "ACCESS_FINE_LOCATION returns " + ContextCompat.checkSelfPermission(context,
               Manifest.permission.ACCESS_FINE_LOCATION));
         }
       } else {
 
-        Logger.e(TAG,"don't have a GPS_PROVIDER");
+        Logger.e(TAG, "don't have a GPS_PROVIDER");
       }
     } else if (!store_location) {
       freeLocationListeners();
@@ -186,9 +198,10 @@ public class LocationSupplier {
     return true;
   }
 
+
   public void freeLocationListeners() {
 
-    Logger.d(TAG,"freeLocationListeners");
+    Logger.d(TAG, "freeLocationListeners");
 
     if (locationListeners != null) {
       for (int i = 0; i < locationListeners.length; i++) {
@@ -201,6 +214,7 @@ public class LocationSupplier {
 
   // for testing:
 
+
   public boolean testHasReceivedLocation() {
     if (locationListeners == null) {
       return false;
@@ -212,6 +226,7 @@ public class LocationSupplier {
     }
     return false;
   }
+
 
   public boolean hasLocationListeners() {
     if (this.locationListeners == null) {
@@ -227,6 +242,7 @@ public class LocationSupplier {
     }
     return true;
   }
+
 
   public static String locationToDMS(double coord) {
     String sign = (coord < 0.0) ? "-" : "";

@@ -69,7 +69,7 @@ public class AudioListener {
 
         while (is_running) {
           /*try{
-						Thread.sleep(sample_delay);
+            Thread.sleep(sample_delay);
 					}
 					catch(InterruptedException e) {
 						e.printStackTrace();

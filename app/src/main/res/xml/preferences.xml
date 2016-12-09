@@ -430,15 +430,15 @@
 	        android:key="preference_screen_photo_settings"
 	        android:title="@string/preference_screen_photo_settings"
 	        android:persistent="false">
-	
+
             <!--  if we move this to another PreferenceGroup, we should update code to remove this Preference -->
-	        <ListPreference 
+	        <ListPreference
 		        android:key="preference_resolution"
 		        android:title="@string/preference_resolution"
 		        android:summary="@string/preference_resolution_summary"
 		        />
-		
-		    <ListPreference 
+
+		    <ListPreference
 		        android:key="preference_quality"
 		        android:title="@string/preference_quality"
 		        android:summary="@string/preference_quality_summary"
@@ -446,7 +446,7 @@
 		        />
 
             <!--  if we move this to another PreferenceGroup, we should update code to remove this Preference -->
-	        <ListPreference 
+	        <ListPreference
 	            android:key="preference_raw"
 	            android:title="@string/preference_raw"
 	            android:summary="@string/preference_raw_summary"
@@ -455,7 +455,7 @@
 	            android:defaultValue="preference_raw_no"
 	            />
 
-	        <ListPreference 
+	        <ListPreference
 	            android:key="preference_stamp"
 	            android:title="@string/preference_stamp"
 	            android:summary="@string/preference_stamp_summary"
@@ -464,7 +464,7 @@
 	            android:defaultValue="preference_stamp_no"
 	            />
 
-	        <ListPreference 
+	        <ListPreference
 	            android:key="preference_stamp_dateformat"
 	            android:title="@string/preference_stamp_dateformat"
 	            android:summary="@string/preference_stamp_dateformat_summary"
@@ -473,7 +473,7 @@
 	            android:defaultValue="preference_stamp_dateformat_default"
 	            />
 
-	      	<ListPreference 
+	      	<ListPreference
 	            android:key="preference_stamp_timeformat"
 	            android:title="@string/preference_stamp_timeformat"
 	            android:summary="@string/preference_stamp_timeformat_summary"
@@ -482,7 +482,7 @@
 	            android:defaultValue="preference_stamp_timeformat_default"
 	            />
 
-	      	<ListPreference 
+	      	<ListPreference
 	            android:key="preference_stamp_gpsformat"
 	            android:title="@string/preference_stamp_gpsformat"
 	            android:summary="@string/preference_stamp_gpsformat_summary"
@@ -501,7 +501,7 @@
 	            android:defaultValue=""
 		        />
 
-	        <ListPreference 
+	        <ListPreference
 	            android:key="preference_stamp_fontsize"
 	            android:title="@string/preference_stamp_fontsize"
 	            android:summary="@string/preference_stamp_fontsize_summary"
@@ -510,7 +510,7 @@
 	            android:defaultValue="12"
 	            />
 
-            <ListPreference 
+            <ListPreference
                 android:key="preference_stamp_font_color"
                 android:title="@string/preference_stamp_font_color"
                 android:summary="@string/preference_stamp_font_color_summary"
@@ -519,7 +519,7 @@
                 android:defaultValue="#ffffff"
                 />
 
-	        <ListPreference 
+	        <ListPreference
 	            android:key="preference_stamp_style"
 	            android:title="@string/preference_stamp_style"
 	            android:summary="@string/preference_stamp_style_summary"
@@ -543,7 +543,7 @@
 	        android:persistent="false">
 
 	        <!--  if we move this to another PreferenceGroup, we should update code to remove this Preference -->
-	        <ListPreference 
+	        <ListPreference
 	            android:key="preference_video_quality"
 	            android:title="@string/video_quality"
 	            android:summary="@string/video_quality_summary"
@@ -565,7 +565,7 @@
                 android:defaultValue="false"
                 />
 
-	        <ListPreference 
+	        <ListPreference
                 android:key="preference_video_bitrate"
                 android:title="@string/preference_video_bitrate"
                 android:summary="@string/preference_video_bitrate_summary"
@@ -574,7 +574,7 @@
                 android:defaultValue="default"
                 />
 
-            <ListPreference 
+            <ListPreference
                 android:key="preference_video_fps"
                 android:title="@string/preference_video_fps"
                 android:summary="@string/preference_video_fps_summary"
@@ -583,7 +583,7 @@
                 android:defaultValue="default"
                 />
 
-            <ListPreference 
+            <ListPreference
                 android:key="preference_video_max_duration"
                 android:title="@string/preference_video_max_duration"
                 android:summary="@string/preference_video_max_duration_summary"
@@ -592,7 +592,7 @@
                 android:defaultValue="0"
                 />
 
-            <ListPreference 
+            <ListPreference
                 android:key="preference_video_restart"
                 android:title="@string/preference_video_restart"
                 android:summary="@string/preference_video_restart_summary"
@@ -601,7 +601,7 @@
                 android:defaultValue="0"
                 />
 
-            <ListPreference 
+            <ListPreference
                 android:key="preference_video_max_filesize"
                 android:title="@string/preference_video_max_filesize"
                 android:summary="@string/preference_video_max_filesize_summary"
@@ -624,7 +624,7 @@
 	            android:defaultValue="true"
 	            />
 
-	        <ListPreference 
+	        <ListPreference
                 android:key="preference_record_audio_src"
                 android:title="@string/preference_record_audio_src"
                 android:summary="@string/preference_record_audio_src_summary"
@@ -633,7 +633,7 @@
                 android:defaultValue="audio_src_camcorder"
                 />
 
-            <ListPreference 
+            <ListPreference
                 android:key="preference_record_audio_channels"
                 android:title="@string/preference_record_audio_channels"
                 android:summary="@string/preference_record_audio_channels_summary"
@@ -669,23 +669,23 @@
 	            android:summary="@string/preference_location_summary"
 	            android:defaultValue="false"
 	            />
-		    
+
 	        <CheckBoxPreference
 	            android:key="preference_gps_direction"
 	            android:title="@string/preference_gps_direction"
 	            android:summary="@string/preference_gps_direction_summary"
 	            android:defaultValue="false"
 	            />
-		    
+
 	      	<CheckBoxPreference
 	            android:key="preference_require_location"
 	            android:title="@string/preference_require_location"
 	            android:summary="@string/preference_require_location_summary"
 	            android:defaultValue="false"
 	            />
-		    
+
 	    </PreferenceScreen>
-	        
+
 	</PreferenceCategory>
 
     <PreferenceCategory
@@ -726,5 +726,5 @@
             />
         
         </PreferenceCategory>
-        
+
 </PreferenceScreen>

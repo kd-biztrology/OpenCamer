@@ -1,5 +1,10 @@
 package com.nuannuan.camer;
 
+import com.nuannuan.camer.preview.Preview;
+import com.nuannuan.camer.ui.FolderChooserDialog;
+import com.nuannuan.camer.view.MainActivity;
+import java.util.Locale;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -27,10 +32,6 @@ import android.preference.TwoStatePreference;
 import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
-import com.nuannuan.camer.preview.Preview;
-import com.nuannuan.camer.ui.FolderChooserDialog;
-import com.nuannuan.camer.view.MainActivity;
-import java.util.Locale;
 
 /**
  * Fragment to handle the Settings UI. Note that originally this was a
@@ -39,6 +40,7 @@ import java.util.Locale;
  * meaning we couldn't access data from that class. This no longer applies due
  * to now using a PreferenceFragment, but I've still kept with transferring
  * information via the bundle (for the most part, at least).
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -46,9 +48,10 @@ public class MyPreferenceFragment extends PreferenceFragment
     implements OnSharedPreferenceChangeListener {
   private static final String TAG = MyPreferenceFragment.class.getSimpleName();
 
+
   @Override public void onCreate(Bundle savedInstanceState) {
 
-    Log.d(TAG,"onCreate");
+    Log.d(TAG, "onCreate");
 
     super.onCreate(savedInstanceState);
     addPreferencesFromResource(R.xml.preferences);
@@ -56,7 +59,7 @@ public class MyPreferenceFragment extends PreferenceFragment
     final Bundle bundle = getArguments();
     final int cameraId = bundle.getInt("cameraId");
 
-    Log.d(TAG,"cameraId: " + cameraId);
+    Log.d(TAG, "cameraId: " + cameraId);
 
     final String camera_api = bundle.getString("camera_api");
 
@@ -65,11 +68,11 @@ public class MyPreferenceFragment extends PreferenceFragment
 
     final boolean supports_auto_stabilise = bundle.getBoolean("supports_auto_stabilise");
 
-    Log.d(TAG,"supports_auto_stabilise: " + supports_auto_stabilise);
+    Log.d(TAG, "supports_auto_stabilise: " + supports_auto_stabilise);
 
     final boolean supports_face_detection = bundle.getBoolean("supports_face_detection");
 
-    Log.d(TAG,"supports_face_detection: " + supports_face_detection);
+    Log.d(TAG, "supports_face_detection: " + supports_face_detection);
 
     if (!supports_face_detection) {
       Preference pref = findPreference("preference_face_detection");
@@ -102,9 +105,9 @@ public class MyPreferenceFragment extends PreferenceFragment
       lp.setEntries(entries);
       lp.setEntryValues(values);
       String resolution_preference_key = PreferenceKeys.getResolutionPreferenceKey(cameraId);
-      String resolution_value = sharedPreferences.getString(resolution_preference_key,"");
+      String resolution_value = sharedPreferences.getString(resolution_preference_key, "");
 
-      Log.d(TAG,"resolution_value: " + resolution_value);
+      Log.d(TAG, "resolution_value: " + resolution_value);
 
       lp.setValue(resolution_value);
       // now set the key, so we save for the correct cameraId
@@ -131,7 +134,7 @@ public class MyPreferenceFragment extends PreferenceFragment
 
     final boolean supports_raw = bundle.getBoolean("supports_raw");
 
-    Log.d(TAG,"supports_raw: " + supports_raw);
+    Log.d(TAG, "supports_raw: " + supports_raw);
 
     if (!supports_raw) {
       Preference pref = findPreference("preference_raw");
@@ -153,9 +156,9 @@ public class MyPreferenceFragment extends PreferenceFragment
       lp.setEntries(entries);
       lp.setEntryValues(values);
       String video_quality_preference_key = PreferenceKeys.getVideoQualityPreferenceKey(cameraId);
-      String video_quality_value = sharedPreferences.getString(video_quality_preference_key,"");
+      String video_quality_value = sharedPreferences.getString(video_quality_preference_key, "");
 
-      Log.d(TAG,"video_quality_value: " + video_quality_value);
+      Log.d(TAG, "video_quality_value: " + video_quality_value);
 
       lp.setValue(video_quality_value);
       // now set the key, so we save for the correct cameraId
@@ -174,7 +177,7 @@ public class MyPreferenceFragment extends PreferenceFragment
 
     final boolean supports_force_video_4k = bundle.getBoolean("supports_force_video_4k");
 
-    Log.d(TAG,"supports_force_video_4k: " + supports_force_video_4k);
+    Log.d(TAG, "supports_force_video_4k: " + supports_force_video_4k);
 
     if (!supports_force_video_4k || video_quality == null || video_quality_string == null) {
       Preference pref = findPreference("preference_force_video_4k");
@@ -185,7 +188,7 @@ public class MyPreferenceFragment extends PreferenceFragment
 
     final boolean supports_video_stabilization = bundle.getBoolean("supports_video_stabilization");
 
-    Log.d(TAG,"supports_video_stabilization: " + supports_video_stabilization);
+    Log.d(TAG, "supports_video_stabilization: " + supports_video_stabilization);
 
     if (!supports_video_stabilization) {
       Preference pref = findPreference("preference_video_stabilization");
@@ -196,7 +199,7 @@ public class MyPreferenceFragment extends PreferenceFragment
 
     final boolean can_disable_shutter_sound = bundle.getBoolean("can_disable_shutter_sound");
 
-    Log.d(TAG,"can_disable_shutter_sound: " + can_disable_shutter_sound);
+    Log.d(TAG, "can_disable_shutter_sound: " + can_disable_shutter_sound);
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || !can_disable_shutter_sound) {
       // Camera.enableShutterSound requires JELLY_BEAN_MR1 or greater
@@ -222,7 +225,7 @@ public class MyPreferenceFragment extends PreferenceFragment
 
     final boolean supports_camera2 = bundle.getBoolean("supports_camera2");
 
-    Log.d(TAG,"supports_camera2: " + supports_camera2);
+    Log.d(TAG, "supports_camera2: " + supports_camera2);
 
     if (supports_camera2) {
       final Preference pref = findPreference("preference_use_camera2");
@@ -230,7 +233,7 @@ public class MyPreferenceFragment extends PreferenceFragment
         @Override public boolean onPreferenceClick(Preference arg0) {
           if (pref.getKey().equals("preference_use_camera2")) {
 
-            Log.d(TAG,"user clicked camera2 API - need to restart");
+            Log.d(TAG, "user clicked camera2 API - need to restart");
 
             // see http://stackoverflow.com/questions/2470870/force-application-to-restart-on-first-activity
             Intent i = getActivity().getBaseContext()
@@ -255,10 +258,10 @@ public class MyPreferenceFragment extends PreferenceFragment
         @Override public boolean onPreferenceClick(Preference arg0) {
           if (pref.getKey().equals("preference_online_help")) {
 
-            Log.d(TAG,"user clicked online help");
+            Log.d(TAG, "user clicked online help");
 
             Intent browserIntent =
-                new Intent(Intent.ACTION_VIEW,Uri.parse("http://opencamera.sourceforge.net/"));
+                new Intent(Intent.ACTION_VIEW, Uri.parse("http://opencamera.sourceforge.net/"));
             startActivity(browserIntent);
             return false;
           }
@@ -272,7 +275,7 @@ public class MyPreferenceFragment extends PreferenceFragment
       pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
         @Override public boolean onPreferenceClick(Preference arg0) {
 
-          Log.d(TAG,"clicked save location");
+          Log.d(TAG, "clicked save location");
 
           MainActivity main_activity = (MainActivity) MyPreferenceFragment.this.getActivity();
           if (main_activity.getStorageUtils().isUsingSAF()) {
@@ -280,7 +283,7 @@ public class MyPreferenceFragment extends PreferenceFragment
             return true;
           } else {
             FolderChooserDialog fragment = new FolderChooserDialog();
-            fragment.show(getFragmentManager(),"FOLDER_FRAGMENT");
+            fragment.show(getFragmentManager(), "FOLDER_FRAGMENT");
             return true;
           }
         }
@@ -298,22 +301,22 @@ public class MyPreferenceFragment extends PreferenceFragment
         @Override public boolean onPreferenceClick(Preference arg0) {
           if (pref.getKey().equals("preference_using_saf")) {
 
-            Log.d(TAG,"user clicked saf");
+            Log.d(TAG, "user clicked saf");
 
-            if (sharedPreferences.getBoolean(PreferenceKeys.getUsingSAFPreferenceKey(),false)) {
+            if (sharedPreferences.getBoolean(PreferenceKeys.getUsingSAFPreferenceKey(), false)) {
 
-              Log.d(TAG,"saf is now enabled");
+              Log.d(TAG, "saf is now enabled");
 
               // seems better to alway re-show the dialog when the user selects, to make it clear where files will be saved (as the SAF location in general will be different to the non-SAF one)
               {
                 MainActivity main_activity = (MainActivity) MyPreferenceFragment.this.getActivity();
-                Toast.makeText(main_activity,R.string.saf_select_save_location,Toast.LENGTH_SHORT)
+                Toast.makeText(main_activity, R.string.saf_select_save_location, Toast.LENGTH_SHORT)
                     .show();
                 main_activity.openFolderChooserDialogSAF();
               }
             } else {
 
-              Log.d(TAG,"saf is now disabled");
+              Log.d(TAG, "saf is now disabled");
             }
           }
           return false;
@@ -327,10 +330,10 @@ public class MyPreferenceFragment extends PreferenceFragment
         @Override public boolean onPreferenceClick(Preference arg0) {
           if (pref.getKey().equals("preference_donate")) {
 
-            Log.d(TAG,"user clicked to donate");
+            Log.d(TAG, "user clicked to donate");
 
             Intent browserIntent =
-                new Intent(Intent.ACTION_VIEW,Uri.parse(MainActivity.getDonateLink()));
+                new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.getDonateLink()));
             startActivity(browserIntent);
             return false;
           }
@@ -345,7 +348,7 @@ public class MyPreferenceFragment extends PreferenceFragment
         @Override public boolean onPreferenceClick(Preference arg0) {
           if (pref.getKey().equals("preference_about")) {
 
-            Log.d(TAG,"user clicked about");
+            Log.d(TAG, "user clicked about");
 
             AlertDialog.Builder alertDialog =
                 new AlertDialog.Builder(MyPreferenceFragment.this.getActivity());
@@ -356,12 +359,12 @@ public class MyPreferenceFragment extends PreferenceFragment
             try {
               PackageInfo pInfo = MyPreferenceFragment.this.getActivity()
                   .getPackageManager()
-                  .getPackageInfo(MyPreferenceFragment.this.getActivity().getPackageName(),0);
+                  .getPackageInfo(MyPreferenceFragment.this.getActivity().getPackageName(), 0);
               version = pInfo.versionName;
               version_code = pInfo.versionCode;
             } catch (NameNotFoundException e) {
 
-              Log.d(TAG,"NameNotFoundException exception trying to get version number");
+              Log.d(TAG, "NameNotFoundException exception trying to get version number");
 
               e.printStackTrace();
             }
@@ -408,7 +411,7 @@ public class MyPreferenceFragment extends PreferenceFragment
             about_string.append("\nCamera API: ");
             about_string.append(camera_api);
             {
-              String last_video_error = sharedPreferences.getString("last_video_error","");
+              String last_video_error = sharedPreferences.getString("last_video_error", "");
               if (last_video_error != null && last_video_error.length() > 0) {
                 about_string.append("\nLast video error: ");
                 about_string.append(last_video_error);
@@ -468,7 +471,7 @@ public class MyPreferenceFragment extends PreferenceFragment
             about_string.append(getString(
                 supports_auto_stabilise ? R.string.about_available : R.string.about_not_available));
             about_string.append("\nAuto-stabilise enabled?: " + sharedPreferences.getBoolean(
-                PreferenceKeys.getAutoStabilisePreferenceKey(),false));
+                PreferenceKeys.getAutoStabilisePreferenceKey(), false));
             about_string.append("\nFace detection?: ");
             about_string.append(getString(
                 supports_face_detection ? R.string.about_available : R.string.about_not_available));
@@ -477,7 +480,7 @@ public class MyPreferenceFragment extends PreferenceFragment
                 getString(supports_raw ? R.string.about_available : R.string.about_not_available));
             about_string.append("\nVideo stabilization?: ");
             about_string.append(getString(supports_video_stabilization ? R.string.about_available
-                : R.string.about_not_available));
+                                                                       : R.string.about_not_available));
             about_string.append("\nFlash modes: ");
             String[] flash_values = bundle.getStringArray("flash_values");
             if (flash_values != null && flash_values.length > 0) {
@@ -556,13 +559,13 @@ public class MyPreferenceFragment extends PreferenceFragment
             }
 
             about_string.append("\nUsing SAF?: " + sharedPreferences.getBoolean(
-                PreferenceKeys.getUsingSAFPreferenceKey(),false));
+                PreferenceKeys.getUsingSAFPreferenceKey(), false));
             String save_location =
                 sharedPreferences.getString(PreferenceKeys.getSaveLocationPreferenceKey(),
                     "OpenCamera");
             about_string.append("\nSave Location: " + save_location);
             String save_location_saf =
-                sharedPreferences.getString(PreferenceKeys.getSaveLocationSAFPreferenceKey(),"");
+                sharedPreferences.getString(PreferenceKeys.getSaveLocationSAFPreferenceKey(), "");
             about_string.append("\nSave Location SAF: " + save_location_saf);
 
             about_string.append("\nParameters: ");
@@ -574,16 +577,16 @@ public class MyPreferenceFragment extends PreferenceFragment
             }
 
             alertDialog.setMessage(about_string);
-            alertDialog.setPositiveButton(R.string.about_ok,null);
+            alertDialog.setPositiveButton(R.string.about_ok, null);
             alertDialog.setNegativeButton(R.string.about_copy_to_clipboard,
                 new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog,int id) {
+                  public void onClick(DialogInterface dialog, int id) {
 
-                    Log.d(TAG,"user clicked copy to clipboard");
+                    Log.d(TAG, "user clicked copy to clipboard");
 
                     ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(
                         Activity.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("OpenCamera About",about_string);
+                    ClipData clip = ClipData.newPlainText("OpenCamera About", about_string);
                     clipboard.setPrimaryClip(clip);
                   }
                 });
@@ -601,21 +604,21 @@ public class MyPreferenceFragment extends PreferenceFragment
         @Override public boolean onPreferenceClick(Preference arg0) {
           if (pref.getKey().equals("preference_reset")) {
 
-            Log.d(TAG,"user clicked reset");
+            Log.d(TAG, "user clicked reset");
             new AlertDialog.Builder(MyPreferenceFragment.this.getActivity()).setIcon(
                 android.R.drawable.ic_dialog_alert)
                 .setTitle(R.string.preference_reset)
                 .setMessage(R.string.preference_reset_question)
-                .setPositiveButton(R.string.answer_yes,new DialogInterface.OnClickListener() {
-                  @Override public void onClick(DialogInterface dialog,int which) {
+                .setPositiveButton(R.string.answer_yes, new DialogInterface.OnClickListener() {
+                  @Override public void onClick(DialogInterface dialog, int which) {
 
-                    Log.d(TAG,"user confirmed reset");
+                    Log.d(TAG, "user confirmed reset");
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.clear();
-                    editor.putBoolean(PreferenceKeys.getFirstTimePreferenceKey(),true);
+                    editor.putBoolean(PreferenceKeys.getFirstTimePreferenceKey(), true);
                     editor.apply();
 
-                    Log.d(TAG,"user clicked reset - need to restart");
+                    Log.d(TAG, "user clicked reset - need to restart");
                     // see http://stackoverflow.com/questions/2470870/force-application-to-restart-on-first-activity
                     Intent i = getActivity().getBaseContext()
                         .getPackageManager()
@@ -624,7 +627,7 @@ public class MyPreferenceFragment extends PreferenceFragment
                     startActivity(i);
                   }
                 })
-                .setNegativeButton(R.string.answer_no,null)
+                .setNegativeButton(R.string.answer_no, null)
                 .show();
           }
           return false;
@@ -632,6 +635,7 @@ public class MyPreferenceFragment extends PreferenceFragment
       });
     }
   }
+
 
   public void onResume() {
     super.onResume();
@@ -642,7 +646,7 @@ public class MyPreferenceFragment extends PreferenceFragment
     TypedArray array = getActivity().getTheme().obtainStyledAttributes(new int[] {
         android.R.attr.colorBackground
     });
-    int backgroundColor = array.getColor(0,Color.BLACK);
+    int backgroundColor = array.getColor(0, Color.BLACK);
 
     getView().setBackgroundColor(backgroundColor);
     array.recycle();
@@ -652,21 +656,23 @@ public class MyPreferenceFragment extends PreferenceFragment
     sharedPreferences.registerOnSharedPreferenceChangeListener(this);
   }
 
+
   public void onPause() {
     super.onPause();
   }
+
 
   /* So that manual changes to the checkbox/switch preferences, while the preferences are showing, show up;
    * in particular, needed for preference_using_saf, when the user cancels the SAF dialog (see
    * MainActivity.onActivityResult).
    */
-  public void onSharedPreferenceChanged(SharedPreferences prefs,String key) {
+  public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 
-    Log.d(TAG,"onSharedPreferenceChanged");
+    Log.d(TAG, "onSharedPreferenceChanged");
     Preference pref = findPreference(key);
     if (pref instanceof TwoStatePreference) {
       TwoStatePreference twoStatePref = (TwoStatePreference) pref;
-      twoStatePref.setChecked(prefs.getBoolean(key,true));
+      twoStatePref.setChecked(prefs.getBoolean(key, true));
     }
   }
 }
