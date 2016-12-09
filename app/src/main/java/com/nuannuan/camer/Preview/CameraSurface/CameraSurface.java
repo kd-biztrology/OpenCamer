@@ -1,13 +1,15 @@
 package com.nuannuan.camer.preview.CameraSurface;
 
+import com.nuannuan.camer.cameracontroller.CameraController;
+
 import android.graphics.Matrix;
 import android.media.MediaRecorder;
 import android.view.View;
-import com.nuannuan.camer.cameracontroller.CameraController;
 
 /**
  * Provides support for the surface used for the preview - this can either be
  * a SurfaceView or a TextureView.
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */

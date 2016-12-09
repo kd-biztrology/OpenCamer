@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.ZoomControls;
+
 import com.nuannuan.camer.view.MainActivity;
 import com.nuannuan.camer.PreferenceKeys;
 import com.nuannuan.camer.R;
@@ -23,6 +24,7 @@ import com.nuannuan.camer.log.Logger;
 
 /**
  * This contains functionality related to the main UI.
+ *
  * @author Mark Harman 18 June 2016
  * @author kevin
  */
@@ -41,27 +43,29 @@ public class MainUI {
   private boolean show_gui = true;
   // result of call to showGUI() - false means a "reduced" GUI is displayed, whilst taking photo or video
 
+
   public MainUI(MainActivity main_activity) {
 
-    Logger.d(TAG,"MainUI");
+    Logger.d(TAG, "MainUI");
     this.main_activity = main_activity;
   }
+
 
   public void layoutUI() {
     long debug_time = 0;
 
-    Logger.d(TAG,"layoutUI");
+    Logger.d(TAG, "layoutUI");
     debug_time = System.currentTimeMillis();
 
     //this.preview.updateUIPlacement();
     SharedPreferences sharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(main_activity);
     String ui_placement =
-        sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(),"ui_right");
+        sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(), "ui_right");
     // we cache the preference_ui_placement to save having to check it in the draw() method
     this.ui_placement_right = ui_placement.equals("ui_right");
 
-    Logger.d(TAG,"ui_placement: " + ui_placement);
+    Logger.d(TAG, "ui_placement: " + ui_placement);
     // new code for orientation fixed to landscape
     // the display orientation should be locked to landscape, but how many degrees is that?
     int rotation = main_activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -87,9 +91,9 @@ public class MainUI {
     //int relative_orientation = (current_orientation + 360 - degrees) % 360;
     int relative_orientation = (current_orientation + degrees) % 360;
 
-    Logger.d(TAG,"    current_orientation = " + current_orientation);
-    Logger.d(TAG,"    degrees = " + degrees);
-    Logger.d(TAG,"    relative_orientation = " + relative_orientation);
+    Logger.d(TAG, "    current_orientation = " + current_orientation);
+    Logger.d(TAG, "    degrees = " + degrees);
+    Logger.d(TAG, "    relative_orientation = " + relative_orientation);
 
     int ui_rotation = (360 - relative_orientation) % 360;
     main_activity.getPreview().setUIRotation(ui_rotation);
@@ -118,122 +122,122 @@ public class MainUI {
       View view = main_activity.findViewById(R.id.gui_anchor);
       RelativeLayout.LayoutParams layoutParams =
           (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_left,0);
-      layoutParams.addRule(align_parent_right,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,0);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_left, 0);
+      layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, 0);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.settings);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.gui_anchor);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.gui_anchor);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.gallery);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.settings);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.settings);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.popup);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.gallery);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.gallery);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.exposure_lock);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.popup);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.popup);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.exposure);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.exposure_lock);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.exposure_lock);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.switch_video);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.exposure);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.exposure);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.switch_camera);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_left,0);
-      layoutParams.addRule(align_parent_right,0);
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.switch_video);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_left, 0);
+      layoutParams.addRule(align_parent_right, 0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.switch_video);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.audio_control);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_left,0);
-      layoutParams.addRule(align_parent_right,0);
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.switch_camera);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_left, 0);
+      layoutParams.addRule(align_parent_right, 0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.switch_camera);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.trash);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.audio_control);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.audio_control);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.share);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_top,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_bottom,0);
-      layoutParams.addRule(left_of,R.id.trash);
-      layoutParams.addRule(right_of,0);
+      layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_bottom, 0);
+      layoutParams.addRule(left_of, R.id.trash);
+      layoutParams.addRule(right_of, 0);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.take_photo);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_left,0);
-      layoutParams.addRule(align_parent_right,RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_left, 0);
+      layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
       view.setLayoutParams(layoutParams);
       view.setRotation(ui_rotation);
 
       view = main_activity.findViewById(R.id.zoom);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_parent_left,0);
-      layoutParams.addRule(align_parent_right,RelativeLayout.TRUE);
-      layoutParams.addRule(align_parent_top,0);
-      layoutParams.addRule(align_parent_bottom,RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_left, 0);
+      layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
+      layoutParams.addRule(align_parent_top, 0);
+      layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
       view.setLayoutParams(layoutParams);
       view.setRotation(
           180.0f); // should always match the zoom_seekbar, so that zoom in and out are in the same directions
@@ -241,37 +245,37 @@ public class MainUI {
       view = main_activity.findViewById(R.id.zoom_seekbar);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
       // if we are showing the zoom control, the align next to that; otherwise have it aligned close to the edge of screen
-      if (sharedPreferences.getBoolean(PreferenceKeys.getShowZoomControlsPreferenceKey(),false)) {
-        layoutParams.addRule(align_left,0);
-        layoutParams.addRule(align_right,R.id.zoom);
-        layoutParams.addRule(above,R.id.zoom);
-        layoutParams.addRule(below,0);
+      if (sharedPreferences.getBoolean(PreferenceKeys.getShowZoomControlsPreferenceKey(), false)) {
+        layoutParams.addRule(align_left, 0);
+        layoutParams.addRule(align_right, R.id.zoom);
+        layoutParams.addRule(above, R.id.zoom);
+        layoutParams.addRule(below, 0);
         // need to clear the others, in case we turn zoom controls on/off
-        layoutParams.addRule(align_parent_left,0);
-        layoutParams.addRule(align_parent_right,0);
-        layoutParams.addRule(align_parent_top,0);
-        layoutParams.addRule(align_parent_bottom,0);
+        layoutParams.addRule(align_parent_left, 0);
+        layoutParams.addRule(align_parent_right, 0);
+        layoutParams.addRule(align_parent_top, 0);
+        layoutParams.addRule(align_parent_bottom, 0);
       } else {
-        layoutParams.addRule(align_parent_left,0);
-        layoutParams.addRule(align_parent_right,RelativeLayout.TRUE);
-        layoutParams.addRule(align_parent_top,0);
-        layoutParams.addRule(align_parent_bottom,RelativeLayout.TRUE);
+        layoutParams.addRule(align_parent_left, 0);
+        layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
+        layoutParams.addRule(align_parent_top, 0);
+        layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
         // need to clear the others, in case we turn zoom controls on/off
-        layoutParams.addRule(align_left,0);
-        layoutParams.addRule(align_right,0);
-        layoutParams.addRule(above,0);
-        layoutParams.addRule(below,0);
+        layoutParams.addRule(align_left, 0);
+        layoutParams.addRule(align_right, 0);
+        layoutParams.addRule(above, 0);
+        layoutParams.addRule(below, 0);
       }
       view.setLayoutParams(layoutParams);
 
       view = main_activity.findViewById(R.id.focus_seekbar);
       layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-      layoutParams.addRule(align_left,R.id.preview);
-      layoutParams.addRule(align_right,0);
-      layoutParams.addRule(left_of,R.id.zoom_seekbar);
-      layoutParams.addRule(right_of,0);
-      layoutParams.addRule(align_parent_top,0);
-      layoutParams.addRule(align_parent_bottom,RelativeLayout.TRUE);
+      layoutParams.addRule(align_left, R.id.preview);
+      layoutParams.addRule(align_right, 0);
+      layoutParams.addRule(left_of, R.id.zoom_seekbar);
+      layoutParams.addRule(right_of, 0);
+      layoutParams.addRule(align_parent_top, 0);
+      layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
       view.setLayoutParams(layoutParams);
     }
 
@@ -347,11 +351,11 @@ public class MainUI {
       RelativeLayout.LayoutParams layoutParams =
           (RelativeLayout.LayoutParams) view.getLayoutParams();
       //layoutParams.addRule(left_of, R.id.popup);
-      layoutParams.addRule(align_right,R.id.popup);
-      layoutParams.addRule(below,R.id.popup);
-      layoutParams.addRule(align_parent_bottom,RelativeLayout.TRUE);
-      layoutParams.addRule(above,0);
-      layoutParams.addRule(align_parent_top,0);
+      layoutParams.addRule(align_right, R.id.popup);
+      layoutParams.addRule(below, R.id.popup);
+      layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
+      layoutParams.addRule(above, 0);
+      layoutParams.addRule(align_parent_top, 0);
       view.setLayoutParams(layoutParams);
 
       view.setRotation(ui_rotation);
@@ -359,8 +363,8 @@ public class MainUI {
       view.setTranslationX(0.0f);
       view.setTranslationY(0.0f);
 
-      Logger.d(TAG,"popup view width: " + view.getWidth());
-      Logger.d(TAG,"popup view height: " + view.getHeight());
+      Logger.d(TAG, "popup view width: " + view.getWidth());
+      Logger.d(TAG, "popup view height: " + view.getHeight());
 
       if (ui_rotation == 0 || ui_rotation == 180) {
         view.setPivotX(view.getWidth() / 2.0f);
@@ -387,8 +391,9 @@ public class MainUI {
     setTakePhotoIcon();
     // no need to call setSwitchCameraContentDescription()
 
-    Logger.d(TAG,"layoutUI: total time: " + (System.currentTimeMillis() - debug_time));
+    Logger.d(TAG, "layoutUI: total time: " + (System.currentTimeMillis() - debug_time));
   }
+
 
   /**
    * Set icon for taking photos vs videos.
@@ -396,7 +401,7 @@ public class MainUI {
    */
   public void setTakePhotoIcon() {
 
-    Logger.d(TAG,"setTakePhotoIcon()");
+    Logger.d(TAG, "setTakePhotoIcon()");
     if (main_activity.getPreview() != null) {
       ImageButton view = (ImageButton) main_activity.findViewById(R.id.take_photo);
       int resource = 0;
@@ -404,15 +409,15 @@ public class MainUI {
       int switch_video_content_description = 0;
       if (main_activity.getPreview().isVideo()) {
 
-        Logger.d(TAG,"set icon to video");
+        Logger.d(TAG, "set icon to video");
         resource = main_activity.getPreview().isVideoRecording() ? R.drawable.take_video_recording
-            : R.drawable.take_video_selector;
+                                                                 : R.drawable.take_video_selector;
         content_description = main_activity.getPreview().isVideoRecording() ? R.string.stop_video
-            : R.string.start_video;
+                                                                            : R.string.start_video;
         switch_video_content_description = R.string.switch_to_photo;
       } else {
 
-        Logger.d(TAG,"set icon to photo");
+        Logger.d(TAG, "set icon to photo");
         resource = R.drawable.take_photo_selector;
         content_description = R.string.take_photo;
         switch_video_content_description = R.string.switch_to_video;
@@ -427,12 +432,13 @@ public class MainUI {
     }
   }
 
+
   /**
    * Set content description for switch camera button.
    */
   public void setSwitchCameraContentDescription() {
 
-    Logger.d(TAG,"setSwitchCameraContentDescription()");
+    Logger.d(TAG, "setSwitchCameraContentDescription()");
     if (main_activity.getPreview() != null && main_activity.getPreview().canSwitchCamera()) {
       ImageButton view = (ImageButton) main_activity.findViewById(R.id.switch_camera);
       int content_description = 0;
@@ -449,13 +455,15 @@ public class MainUI {
     }
   }
 
+
   public boolean getUIPlacementRight() {
     return this.ui_placement_right;
   }
 
+
   public void onOrientationChanged(int orientation) {
     /*if( MyDebug.LOG ) {
-			Logger.d(TAG, "onOrientationChanged()");
+      Logger.d(TAG, "onOrientationChanged()");
 			Logger.d(TAG, "orientation: " + orientation);
 			Logger.d(TAG, "current_orientation: " + current_orientation);
 		}*/
@@ -473,16 +481,17 @@ public class MainUI {
       if (orientation != current_orientation) {
         this.current_orientation = orientation;
 
-        Logger.d(TAG,"current_orientation is now: " + current_orientation);
+        Logger.d(TAG, "current_orientation is now: " + current_orientation);
 
         layoutUI();
       }
     }
   }
 
+
   public void setImmersiveMode(final boolean immersive_mode) {
 
-    Logger.d(TAG,"setImmersiveMode: " + immersive_mode);
+    Logger.d(TAG, "setImmersiveMode: " + immersive_mode);
     this.immersive_mode = immersive_mode;
     main_activity.runOnUiThread(new Runnable() {
       public void run() {
@@ -492,7 +501,7 @@ public class MainUI {
         //final int visibility_gone = immersive_mode ? View.GONE : View.VISIBLE;
         final int visibility = immersive_mode ? View.GONE : View.VISIBLE;
 
-        Logger.d(TAG,"setImmersiveMode: set visibility: " + visibility);
+        Logger.d(TAG, "setImmersiveMode: set visibility: " + visibility);
         // n.b., don't hide share and trash buttons, as they require immediate user input for us to continue
         View switchCameraButton = (View) main_activity.findViewById(R.id.switch_camera);
         View switchVideoButton = (View) main_activity.findViewById(R.id.switch_video);
@@ -521,14 +530,14 @@ public class MainUI {
         galleryButton.setVisibility(visibility);
         settingsButton.setVisibility(visibility);
 
-        Logger.d(TAG,"has_zoom: " + main_activity.getPreview().supportsZoom());
+        Logger.d(TAG, "has_zoom: " + main_activity.getPreview().supportsZoom());
 
         if (main_activity.getPreview().supportsZoom() && sharedPreferences.getBoolean(
-            PreferenceKeys.getShowZoomControlsPreferenceKey(),false)) {
+            PreferenceKeys.getShowZoomControlsPreferenceKey(), false)) {
           zoomControls.setVisibility(visibility);
         }
         if (main_activity.getPreview().supportsZoom() && sharedPreferences.getBoolean(
-            PreferenceKeys.getShowZoomSliderControlsPreferenceKey(),true)) {
+            PreferenceKeys.getShowZoomSliderControlsPreferenceKey(), true)) {
           zoomSeekBar.setVisibility(visibility);
         }
         String pref_immersive_mode =
@@ -546,13 +555,15 @@ public class MainUI {
     });
   }
 
+
   public boolean inImmersiveMode() {
     return immersive_mode;
   }
 
+
   public void showGUI(final boolean show) {
 
-    Logger.d(TAG,"showGUI: " + show);
+    Logger.d(TAG, "showGUI: " + show);
     this.show_gui = show;
     if (inImmersiveMode()) {
       return;
@@ -601,11 +612,13 @@ public class MainUI {
     });
   }
 
+
   public void audioControlStarted() {
     ImageButton view = (ImageButton) main_activity.findViewById(R.id.audio_control);
     view.setImageResource(R.drawable.ic_mic_red_48dp);
     view.setContentDescription(main_activity.getResources().getString(R.string.audio_control_stop));
   }
+
 
   public void audioControlStopped() {
     ImageButton view = (ImageButton) main_activity.findViewById(R.id.audio_control);
@@ -614,9 +627,10 @@ public class MainUI {
         main_activity.getResources().getString(R.string.audio_control_start));
   }
 
+
   public void toggleExposureUI() {
 
-    Logger.d(TAG,"toggleExposureUI");
+    Logger.d(TAG, "toggleExposureUI");
     closePopup();
     SeekBar exposure_seek_bar = ((SeekBar) main_activity.findViewById(R.id.exposure_seekbar));
     int exposure_visibility = exposure_seek_bar.getVisibility();
@@ -655,20 +669,22 @@ public class MainUI {
     }
   }
 
+
   public void setSeekbarZoom() {
 
-    Logger.d(TAG,"setSeekbarZoom");
+    Logger.d(TAG, "setSeekbarZoom");
     SeekBar zoomSeekBar = (SeekBar) main_activity.findViewById(R.id.zoom_seekbar);
     zoomSeekBar.setProgress(main_activity.getPreview().getMaxZoom() - main_activity.getPreview()
         .getCameraController()
         .getZoom());
 
-    Logger.d(TAG,"progress is now: " + zoomSeekBar.getProgress());
+    Logger.d(TAG, "progress is now: " + zoomSeekBar.getProgress());
   }
 
-  public void changeSeekbar(int seekBarId,int change) {
 
-    Logger.d(TAG,"changeSeekbar: " + change);
+  public void changeSeekbar(int seekBarId, int change) {
+
+    Logger.d(TAG, "changeSeekbar: " + change);
     SeekBar seekBar = (SeekBar) main_activity.findViewById(seekBarId);
     int value = seekBar.getProgress();
     int new_value = value + change;
@@ -678,14 +694,15 @@ public class MainUI {
       new_value = seekBar.getMax();
     }
 
-    Logger.d(TAG,"value: " + value);
-    Logger.d(TAG,"new_value: " + new_value);
-    Logger.d(TAG,"max: " + seekBar.getMax());
+    Logger.d(TAG, "value: " + value);
+    Logger.d(TAG, "new_value: " + new_value);
+    Logger.d(TAG, "max: " + seekBar.getMax());
 
     if (new_value != value) {
       seekBar.setProgress(new_value);
     }
   }
+
 
   public void clearSeekBar() {
     View view = main_activity.findViewById(R.id.exposure_seekbar);
@@ -698,13 +715,14 @@ public class MainUI {
     view.setVisibility(View.GONE);
   }
 
+
   public void setPopupIcon() {
 
-    Logger.d(TAG,"setPopupIcon");
+    Logger.d(TAG, "setPopupIcon");
     ImageButton popup = (ImageButton) main_activity.findViewById(R.id.popup);
     String flash_value = main_activity.getPreview().getCurrentFlashValue();
 
-    Logger.d(TAG,"flash_value: " + flash_value);
+    Logger.d(TAG, "flash_value: " + flash_value);
     if (flash_value != null && flash_value.equals("flash_off")) {
       popup.setImageResource(R.drawable.popup_flash_off);
     } else if (flash_value != null && flash_value.equals("flash_torch")) {
@@ -720,9 +738,10 @@ public class MainUI {
     }
   }
 
+
   public void closePopup() {
 
-    Logger.d(TAG,"close popup");
+    Logger.d(TAG, "close popup");
     if (popupIsOpen()) {
       ViewGroup popup_container = (ViewGroup) main_activity.findViewById(R.id.popup_container);
       popup_container.removeAllViews();
@@ -741,9 +760,11 @@ public class MainUI {
     }
   }
 
+
   public boolean popupIsOpen() {
     return popup_view_is_open;
   }
+
 
   public void destroyPopup() {
     if (popupIsOpen()) {
@@ -751,6 +772,7 @@ public class MainUI {
     }
     popup_view = null;
   }
+
 
   public void togglePopupSettings() {
     final ViewGroup popup_container = (ViewGroup) main_activity.findViewById(R.id.popup_container);
@@ -760,11 +782,11 @@ public class MainUI {
     }
     if (main_activity.getPreview().getCameraController() == null) {
 
-      Logger.d(TAG,"camera not opened!");
+      Logger.d(TAG, "camera not opened!");
       return;
     }
 
-    Logger.d(TAG,"open popup");
+    Logger.d(TAG, "open popup");
 
     clearSeekBar();
     main_activity.getPreview()
@@ -781,11 +803,11 @@ public class MainUI {
 
     if (popup_view == null) {
 
-      Logger.d(TAG,"create new popup_view");
+      Logger.d(TAG, "create new popup_view");
       popup_view = new PopupView(main_activity);
     } else {
 
-      Logger.d(TAG,"use cached popup_view");
+      Logger.d(TAG, "use cached popup_view");
     }
     popup_container.addView(popup_view);
     popup_view_is_open = true;
@@ -798,12 +820,12 @@ public class MainUI {
       @SuppressWarnings("deprecation") @TargetApi(Build.VERSION_CODES.JELLY_BEAN) @Override
       public void onGlobalLayout() {
 
-        Logger.d(TAG,"onGlobalLayout()");
+        Logger.d(TAG, "onGlobalLayout()");
 
-        Logger.d(TAG,"time after global layout: " + (System.currentTimeMillis() - time_s));
+        Logger.d(TAG, "time after global layout: " + (System.currentTimeMillis() - time_s));
         layoutUI();
 
-        Logger.d(TAG,"time after layoutUI: " + (System.currentTimeMillis() - time_s));
+        Logger.d(TAG, "time after layoutUI: " + (System.currentTimeMillis() - time_s));
         // stop listening - only want to call this once!
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
           popup_container.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -814,18 +836,19 @@ public class MainUI {
         SharedPreferences sharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(main_activity);
         String ui_placement =
-            sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(),"ui_right");
+            sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(), "ui_right");
         boolean ui_placement_right = ui_placement.equals("ui_right");
         ScaleAnimation animation =
-            new ScaleAnimation(0.0f,1.0f,0.0f,1.0f,Animation.RELATIVE_TO_SELF,1.0f,
-                Animation.RELATIVE_TO_SELF,ui_placement_right ? 0.0f : 1.0f);
+            new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 1.0f,
+                Animation.RELATIVE_TO_SELF, ui_placement_right ? 0.0f : 1.0f);
         animation.setDuration(100);
         popup_container.setAnimation(animation);
       }
     });
 
-    Logger.d(TAG,"time to create popup: " + (System.currentTimeMillis() - time_s));
+    Logger.d(TAG, "time to create popup: " + (System.currentTimeMillis() - time_s));
   }
+
 
   // for testing
   public View getPopupButton(String key) {

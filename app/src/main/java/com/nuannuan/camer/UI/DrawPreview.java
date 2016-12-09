@@ -1,5 +1,16 @@
 package com.nuannuan.camer.ui;
 
+import com.nuannuan.camer.MyApplicationInterface;
+import com.nuannuan.camer.PreferenceKeys;
+import com.nuannuan.camer.R;
+import com.nuannuan.camer.cameracontroller.CameraController;
+import com.nuannuan.camer.log.Logger;
+import com.nuannuan.camer.preview.Preview;
+import com.nuannuan.camer.view.MainActivity;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.util.Calendar;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,16 +29,6 @@ import android.util.Pair;
 import android.view.Surface;
 import android.view.View;
 import android.widget.ImageButton;
-import com.nuannuan.camer.cameracontroller.CameraController;
-import com.nuannuan.camer.view.MainActivity;
-import com.nuannuan.camer.MyApplicationInterface;
-import com.nuannuan.camer.PreferenceKeys;
-import com.nuannuan.camer.preview.Preview;
-import com.nuannuan.camer.R;
-import com.nuannuan.camer.log.Logger;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.Calendar;
 
 /**
  * @author Mark Harman 18 June 2016
@@ -71,7 +72,8 @@ public class DrawPreview {
   private boolean continuous_focus_moving = false;
   private long continuous_focus_moving_ms = 0;
 
-  public DrawPreview(MainActivity main_activity,MyApplicationInterface applicationInterface) {
+
+  public DrawPreview(MainActivity main_activity, MyApplicationInterface applicationInterface) {
     this.main_activity = main_activity;
     this.applicationInterface = applicationInterface;
 
@@ -81,21 +83,23 @@ public class DrawPreview {
     this.stroke_width = (float) (0.5f * scale + 0.5f); // convert dps to pixels
     p.setStrokeWidth(stroke_width);
 
-    location_bitmap = BitmapFactory.decodeResource(getContext().getResources(),R.drawable.earth);
+    location_bitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.earth);
     location_off_bitmap =
-        BitmapFactory.decodeResource(getContext().getResources(),R.drawable.earth_off);
+        BitmapFactory.decodeResource(getContext().getResources(), R.drawable.earth_off);
   }
+
 
   private Context getContext() {
     return main_activity;
   }
 
+
   public void updateThumbnail(Bitmap thumbnail) {
 
-    Logger.d(TAG,"updateThumbnail");
+    Logger.d(TAG, "updateThumbnail");
     if (applicationInterface.getThumbnailAnimationPref()) {
 
-      Logger.d(TAG,"thumbnail_anim started");
+      Logger.d(TAG, "thumbnail_anim started");
       thumbnail_anim = true;
       thumbnail_anim_start_ms = System.currentTimeMillis();
     }
@@ -107,9 +111,11 @@ public class DrawPreview {
     }
   }
 
+
   public boolean hasThumbnailAnimation() {
     return this.thumbnail_anim;
   }
+
 
   public void cameraInOperation(boolean in_operation) {
     if (in_operation && !main_activity.getPreview().isVideo()) {
@@ -119,9 +125,10 @@ public class DrawPreview {
     }
   }
 
+
   public void onContinuousFocusMove(boolean start) {
 
-    Logger.d(TAG,"onContinuousFocusMove: " + start);
+    Logger.d(TAG, "onContinuousFocusMove: " + start);
     if (start) {
       if (!continuous_focus_moving) { // don't restart the animation if already in motion
         continuous_focus_moving = true;
@@ -131,18 +138,21 @@ public class DrawPreview {
     // if we receive start==false, we don't stop the animation - let it continue
   }
 
+
   public void clearContinuousFocusMove() {
 
-    Logger.d(TAG,"clearContinuousFocusMove");
+    Logger.d(TAG, "clearContinuousFocusMove");
     continuous_focus_moving = false;
     continuous_focus_moving_ms = 0;
   }
 
+
   private boolean getTakePhotoBorderPref() {
     SharedPreferences sharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(getContext());
-    return sharedPreferences.getBoolean(PreferenceKeys.getTakePhotoBorderPreferenceKey(),true);
+    return sharedPreferences.getBoolean(PreferenceKeys.getTakePhotoBorderPreferenceKey(), true);
   }
+
 
   private int getAngleHighlightColor() {
     SharedPreferences sharedPreferences =
@@ -153,6 +163,7 @@ public class DrawPreview {
     return Color.parseColor(color);
   }
 
+
   private String getTimeStringFromSeconds(long time) {
     int secs = (int) (time % 60);
     time /= 60;
@@ -160,9 +171,10 @@ public class DrawPreview {
     time /= 60;
     long hours = time;
     //String time_s = hours + ":" + String.format("%02d", mins) + ":" + String.format("%02d", secs) + ":" + String.format("%03d", ms);
-    String time_s = hours + ":" + String.format("%02d",mins) + ":" + String.format("%02d",secs);
+    String time_s = hours + ":" + String.format("%02d", mins) + ":" + String.format("%02d", secs);
     return time_s;
   }
+
 
   public void onDrawPreview(Canvas canvas) {
     SharedPreferences sharedPreferences =
@@ -192,52 +204,53 @@ public class DrawPreview {
       p.setStyle(Paint.Style.STROKE);
       float this_stroke_width = (float) (5.0f * scale + 0.5f); // convert dps to pixels
       p.setStrokeWidth(this_stroke_width);
-      canvas.drawRect(0.0f,0.0f,canvas.getWidth(),canvas.getHeight(),p);
+      canvas.drawRect(0.0f, 0.0f, canvas.getWidth(), canvas.getHeight(), p);
       p.setStyle(Paint.Style.FILL); // reset
       p.setStrokeWidth(stroke_width); // reset
     }
     if (camera_controller != null && preference_grid.equals("preference_grid_3x3")) {
       p.setColor(Color.WHITE);
-      canvas.drawLine(canvas.getWidth() / 3.0f,0.0f,canvas.getWidth() / 3.0f,
-          canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(2.0f * canvas.getWidth() / 3.0f,0.0f,2.0f * canvas.getWidth() / 3.0f,
-          canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(0.0f,canvas.getHeight() / 3.0f,canvas.getWidth() - 1.0f,
-          canvas.getHeight() / 3.0f,p);
-      canvas.drawLine(0.0f,2.0f * canvas.getHeight() / 3.0f,canvas.getWidth() - 1.0f,
-          2.0f * canvas.getHeight() / 3.0f,p);
+      canvas.drawLine(canvas.getWidth() / 3.0f, 0.0f, canvas.getWidth() / 3.0f,
+          canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(2.0f * canvas.getWidth() / 3.0f, 0.0f, 2.0f * canvas.getWidth() / 3.0f,
+          canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(0.0f, canvas.getHeight() / 3.0f, canvas.getWidth() - 1.0f,
+          canvas.getHeight() / 3.0f, p);
+      canvas.drawLine(0.0f, 2.0f * canvas.getHeight() / 3.0f, canvas.getWidth() - 1.0f,
+          2.0f * canvas.getHeight() / 3.0f, p);
     } else if (camera_controller != null && preference_grid.equals("preference_grid_phi_3x3")) {
       p.setColor(Color.WHITE);
-      canvas.drawLine(canvas.getWidth() / 2.618f,0.0f,canvas.getWidth() / 2.618f,
-          canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(1.618f * canvas.getWidth() / 2.618f,0.0f,1.618f * canvas.getWidth() / 2.618f,
-          canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(0.0f,canvas.getHeight() / 2.618f,canvas.getWidth() - 1.0f,
-          canvas.getHeight() / 2.618f,p);
-      canvas.drawLine(0.0f,1.618f * canvas.getHeight() / 2.618f,canvas.getWidth() - 1.0f,
-          1.618f * canvas.getHeight() / 2.618f,p);
+      canvas.drawLine(canvas.getWidth() / 2.618f, 0.0f, canvas.getWidth() / 2.618f,
+          canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(1.618f * canvas.getWidth() / 2.618f, 0.0f,
+          1.618f * canvas.getWidth() / 2.618f,
+          canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(0.0f, canvas.getHeight() / 2.618f, canvas.getWidth() - 1.0f,
+          canvas.getHeight() / 2.618f, p);
+      canvas.drawLine(0.0f, 1.618f * canvas.getHeight() / 2.618f, canvas.getWidth() - 1.0f,
+          1.618f * canvas.getHeight() / 2.618f, p);
     } else if (camera_controller != null && preference_grid.equals("preference_grid_4x2")) {
       p.setColor(Color.GRAY);
-      canvas.drawLine(canvas.getWidth() / 4.0f,0.0f,canvas.getWidth() / 4.0f,
-          canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(canvas.getWidth() / 2.0f,0.0f,canvas.getWidth() / 2.0f,
-          canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(3.0f * canvas.getWidth() / 4.0f,0.0f,3.0f * canvas.getWidth() / 4.0f,
-          canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(0.0f,canvas.getHeight() / 2.0f,canvas.getWidth() - 1.0f,
-          canvas.getHeight() / 2.0f,p);
+      canvas.drawLine(canvas.getWidth() / 4.0f, 0.0f, canvas.getWidth() / 4.0f,
+          canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(canvas.getWidth() / 2.0f, 0.0f, canvas.getWidth() / 2.0f,
+          canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(3.0f * canvas.getWidth() / 4.0f, 0.0f, 3.0f * canvas.getWidth() / 4.0f,
+          canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(0.0f, canvas.getHeight() / 2.0f, canvas.getWidth() - 1.0f,
+          canvas.getHeight() / 2.0f, p);
       p.setColor(Color.WHITE);
       int crosshairs_radius = (int) (20 * scale + 0.5f); // convert dps to pixels
-      canvas.drawLine(canvas.getWidth() / 2.0f,canvas.getHeight() / 2.0f - crosshairs_radius,
-          canvas.getWidth() / 2.0f,canvas.getHeight() / 2.0f + crosshairs_radius,p);
-      canvas.drawLine(canvas.getWidth() / 2.0f - crosshairs_radius,canvas.getHeight() / 2.0f,
-          canvas.getWidth() / 2.0f + crosshairs_radius,canvas.getHeight() / 2.0f,p);
+      canvas.drawLine(canvas.getWidth() / 2.0f, canvas.getHeight() / 2.0f - crosshairs_radius,
+          canvas.getWidth() / 2.0f, canvas.getHeight() / 2.0f + crosshairs_radius, p);
+      canvas.drawLine(canvas.getWidth() / 2.0f - crosshairs_radius, canvas.getHeight() / 2.0f,
+          canvas.getWidth() / 2.0f + crosshairs_radius, canvas.getHeight() / 2.0f, p);
     } else if (camera_controller != null && preference_grid.equals("preference_grid_crosshair")) {
       p.setColor(Color.WHITE);
-      canvas.drawLine(canvas.getWidth() / 2.0f,0.0f,canvas.getWidth() / 2.0f,
-          canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(0.0f,canvas.getHeight() / 2.0f,canvas.getWidth() - 1.0f,
-          canvas.getHeight() / 2.0f,p);
+      canvas.drawLine(canvas.getWidth() / 2.0f, 0.0f, canvas.getWidth() / 2.0f,
+          canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(0.0f, canvas.getHeight() / 2.0f, canvas.getWidth() - 1.0f,
+          canvas.getHeight() / 2.0f, p);
     } else if (camera_controller != null && (preference_grid.equals(
         "preference_grid_golden_spiral_right") || preference_grid.equals(
         "preference_grid_golden_spiral_left") || preference_grid.equals(
@@ -245,13 +258,13 @@ public class DrawPreview {
         "preference_grid_golden_spiral_upside_down_left"))) {
       canvas.save();
       if (preference_grid.equals("preference_grid_golden_spiral_left")) {
-        canvas.scale(-1.0f,1.0f,canvas.getWidth() * 0.5f,canvas.getHeight() * 0.5f);
+        canvas.scale(-1.0f, 1.0f, canvas.getWidth() * 0.5f, canvas.getHeight() * 0.5f);
       } else if (preference_grid.equals("preference_grid_golden_spiral_right")) {
         // no transformation needed
       } else if (preference_grid.equals("preference_grid_golden_spiral_upside_down_left")) {
-        canvas.rotate(180.0f,canvas.getWidth() * 0.5f,canvas.getHeight() * 0.5f);
+        canvas.rotate(180.0f, canvas.getWidth() * 0.5f, canvas.getHeight() * 0.5f);
       } else if (preference_grid.equals("preference_grid_golden_spiral_upside_down_right")) {
-        canvas.scale(1.0f,-1.0f,canvas.getWidth() * 0.5f,canvas.getHeight() * 0.5f);
+        canvas.scale(1.0f, -1.0f, canvas.getWidth() * 0.5f, canvas.getHeight() * 0.5f);
       }
       p.setColor(Color.WHITE);
       p.setStyle(Paint.Style.STROKE);
@@ -265,11 +278,11 @@ public class DrawPreview {
 
       for (int count = 0; count < 2; count++) {
         canvas.save();
-        draw_rect.set(left,top,left + width,top + height);
+        draw_rect.set(left, top, left + width, top + height);
         canvas.clipRect(draw_rect);
-        canvas.drawRect(draw_rect,p);
-        draw_rect.set(left,top,left + 2 * width,top + 2 * height);
-        canvas.drawOval(draw_rect,p);
+        canvas.drawRect(draw_rect, p);
+        draw_rect.set(left, top, left + 2 * width, top + 2 * height);
+        canvas.drawOval(draw_rect, p);
         canvas.restore();
 
         int old_fibb = fibb;
@@ -282,11 +295,11 @@ public class DrawPreview {
         height = (int) (height * ((double) fibb_n) / (double) (fibb));
 
         canvas.save();
-        draw_rect.set(left,top,left + width,top + height);
+        draw_rect.set(left, top, left + width, top + height);
         canvas.clipRect(draw_rect);
-        canvas.drawRect(draw_rect,p);
-        draw_rect.set(left - width,top,left + width,top + 2 * height);
-        canvas.drawOval(draw_rect,p);
+        canvas.drawRect(draw_rect, p);
+        draw_rect.set(left - width, top, left + width, top + 2 * height);
+        canvas.drawOval(draw_rect, p);
         canvas.restore();
 
         old_fibb = fibb;
@@ -300,11 +313,11 @@ public class DrawPreview {
         left += full_width - width;
 
         canvas.save();
-        draw_rect.set(left,top,left + width,top + height);
+        draw_rect.set(left, top, left + width, top + height);
         canvas.clipRect(draw_rect);
-        canvas.drawRect(draw_rect,p);
-        draw_rect.set(left - width,top - height,left + width,top + height);
-        canvas.drawOval(draw_rect,p);
+        canvas.drawRect(draw_rect, p);
+        draw_rect.set(left - width, top - height, left + width, top + height);
+        canvas.drawOval(draw_rect, p);
         canvas.restore();
 
         old_fibb = fibb;
@@ -318,11 +331,11 @@ public class DrawPreview {
         top += full_height - height;
 
         canvas.save();
-        draw_rect.set(left,top,left + width,top + height);
+        draw_rect.set(left, top, left + width, top + height);
         canvas.clipRect(draw_rect);
-        canvas.drawRect(draw_rect,p);
-        draw_rect.set(left,top - height,left + 2 * width,top + height);
-        canvas.drawOval(draw_rect,p);
+        canvas.drawRect(draw_rect, p);
+        draw_rect.set(left, top - height, left + 2 * width, top + height);
+        canvas.drawOval(draw_rect, p);
         canvas.restore();
 
         old_fibb = fibb;
@@ -341,34 +354,34 @@ public class DrawPreview {
         "preference_grid_golden_triangle_1") || preference_grid.equals(
         "preference_grid_golden_triangle_2"))) {
       p.setColor(Color.WHITE);
-      double theta = Math.atan2(canvas.getWidth(),canvas.getHeight());
+      double theta = Math.atan2(canvas.getWidth(), canvas.getHeight());
       double dist = canvas.getHeight() * Math.cos(theta);
       float dist_x = (float) (dist * Math.sin(theta));
       float dist_y = (float) (dist * Math.cos(theta));
       if (preference_grid.equals("preference_grid_golden_triangle_1")) {
-        canvas.drawLine(0.0f,canvas.getHeight() - 1.0f,canvas.getWidth() - 1.0f,0.0f,p);
-        canvas.drawLine(0.0f,0.0f,dist_x,canvas.getHeight() - dist_y,p);
-        canvas.drawLine(canvas.getWidth() - 1.0f - dist_x,dist_y - 1.0f,canvas.getWidth() - 1.0f,
-            canvas.getHeight() - 1.0f,p);
+        canvas.drawLine(0.0f, canvas.getHeight() - 1.0f, canvas.getWidth() - 1.0f, 0.0f, p);
+        canvas.drawLine(0.0f, 0.0f, dist_x, canvas.getHeight() - dist_y, p);
+        canvas.drawLine(canvas.getWidth() - 1.0f - dist_x, dist_y - 1.0f, canvas.getWidth() - 1.0f,
+            canvas.getHeight() - 1.0f, p);
       } else {
-        canvas.drawLine(0.0f,0.0f,canvas.getWidth() - 1.0f,canvas.getHeight() - 1.0f,p);
-        canvas.drawLine(canvas.getWidth() - 1.0f,0.0f,canvas.getWidth() - 1.0f - dist_x,
-            canvas.getHeight() - dist_y,p);
-        canvas.drawLine(dist_x,dist_y - 1.0f,0.0f,canvas.getHeight() - 1.0f,p);
+        canvas.drawLine(0.0f, 0.0f, canvas.getWidth() - 1.0f, canvas.getHeight() - 1.0f, p);
+        canvas.drawLine(canvas.getWidth() - 1.0f, 0.0f, canvas.getWidth() - 1.0f - dist_x,
+            canvas.getHeight() - dist_y, p);
+        canvas.drawLine(dist_x, dist_y - 1.0f, 0.0f, canvas.getHeight() - 1.0f, p);
       }
     } else if (camera_controller != null && preference_grid.equals("preference_grid_diagonals")) {
       p.setColor(Color.WHITE);
-      canvas.drawLine(0.0f,0.0f,canvas.getHeight() - 1.0f,canvas.getHeight() - 1.0f,p);
-      canvas.drawLine(canvas.getHeight() - 1.0f,0.0f,0.0f,canvas.getHeight() - 1.0f,p);
+      canvas.drawLine(0.0f, 0.0f, canvas.getHeight() - 1.0f, canvas.getHeight() - 1.0f, p);
+      canvas.drawLine(canvas.getHeight() - 1.0f, 0.0f, 0.0f, canvas.getHeight() - 1.0f, p);
       int diff = canvas.getWidth() - canvas.getHeight();
       if (diff > 0) {
-        canvas.drawLine(diff,0.0f,diff + canvas.getHeight() - 1.0f,canvas.getHeight() - 1.0f,p);
-        canvas.drawLine(diff + canvas.getHeight() - 1.0f,0.0f,diff,canvas.getHeight() - 1.0f,p);
+        canvas.drawLine(diff, 0.0f, diff + canvas.getHeight() - 1.0f, canvas.getHeight() - 1.0f, p);
+        canvas.drawLine(diff + canvas.getHeight() - 1.0f, 0.0f, diff, canvas.getHeight() - 1.0f, p);
       }
     }
 
     if (preview.isVideo() || sharedPreferences.getString(
-        PreferenceKeys.getPreviewSizePreferenceKey(),"preference_preview_size_wysiwyg")
+        PreferenceKeys.getPreviewSizePreferenceKey(), "preference_preview_size_wysiwyg")
         .equals("preference_preview_size_wysiwyg")) {
       String preference_crop_guide =
           sharedPreferences.getString(PreferenceKeys.getShowCropGuidePreferenceKey(),
@@ -377,7 +390,7 @@ public class DrawPreview {
           && preview.getTargetRatio() > 0.0
           && !preference_crop_guide.equals("crop_guide_none")) {
         p.setStyle(Paint.Style.STROKE);
-        p.setColor(Color.rgb(255,235,59)); // Yellow 500
+        p.setColor(Color.rgb(255, 235, 59)); // Yellow 500
         double crop_ratio = -1.0;
         if (preference_crop_guide.equals("crop_guide_1")) {
           crop_ratio = 1.0;
@@ -414,7 +427,7 @@ public class DrawPreview {
             left = (int) (canvas.getWidth() / 2 - (int) new_hwidth);
             right = (int) (canvas.getWidth() / 2 + (int) new_hwidth);
           }
-          canvas.drawRect(left,top,right,bottom,p);
+          canvas.drawRect(left, top, right, bottom, p);
         }
         p.setStyle(Paint.Style.FILL); // reset
       }
@@ -426,7 +439,7 @@ public class DrawPreview {
       final long duration = 500;
       if (time > duration) {
 
-        Logger.d(TAG,"thumbnail_anim finished");
+        Logger.d(TAG, "thumbnail_anim finished");
         this.thumbnail_anim = false;
       } else {
         thumbnail_anim_src_rect.left = 0;
@@ -458,22 +471,22 @@ public class DrawPreview {
         thumbnail_anim_dst_rect.right = thumbnail_x + thumbnail_w / 2;
         thumbnail_anim_dst_rect.bottom = thumbnail_y + thumbnail_h / 2;
         //canvas.drawBitmap(this.thumbnail, thumbnail_anim_src_rect, thumbnail_anim_dst_rect, p);
-        thumbnail_anim_matrix.setRectToRect(thumbnail_anim_src_rect,thumbnail_anim_dst_rect,
+        thumbnail_anim_matrix.setRectToRect(thumbnail_anim_src_rect, thumbnail_anim_dst_rect,
             Matrix.ScaleToFit.FILL);
         //thumbnail_anim_matrix.reset();
         if (ui_rotation == 90 || ui_rotation == 270) {
           float ratio = ((float) last_thumbnail.getWidth()) / (float) last_thumbnail.getHeight();
-          thumbnail_anim_matrix.preScale(ratio,1.0f / ratio,last_thumbnail.getWidth() / 2.0f,
+          thumbnail_anim_matrix.preScale(ratio, 1.0f / ratio, last_thumbnail.getWidth() / 2.0f,
               last_thumbnail.getHeight() / 2.0f);
         }
-        thumbnail_anim_matrix.preRotate(ui_rotation,last_thumbnail.getWidth() / 2.0f,
+        thumbnail_anim_matrix.preRotate(ui_rotation, last_thumbnail.getWidth() / 2.0f,
             last_thumbnail.getHeight() / 2.0f);
-        canvas.drawBitmap(last_thumbnail,thumbnail_anim_matrix,p);
+        canvas.drawBitmap(last_thumbnail, thumbnail_anim_matrix, p);
       }
     }
 
     canvas.save();
-    canvas.rotate(ui_rotation,canvas.getWidth() / 2.0f,canvas.getHeight() / 2.0f);
+    canvas.rotate(ui_rotation, canvas.getWidth() / 2.0f, canvas.getHeight() / 2.0f);
 
     int text_y = (int) (20 * scale + 0.5f); // convert dps to pixels
     // fine tuning to adjust placement of text with respect to the GUI, depending on orientation
@@ -515,12 +528,12 @@ public class DrawPreview {
             .getString(R.string.angle) + getContext().getResources().getString(R.string.direction);
     final double close_angle = 1.0f;
     if (camera_controller != null && !preview.isPreviewPaused()) {
-			/*canvas.drawText("PREVIEW", canvas.getWidth() / 2,
-					canvas.getHeight() / 2, p);*/
+      /*canvas.drawText("PREVIEW", canvas.getWidth() / 2,
+          canvas.getHeight() / 2, p);*/
       boolean draw_angle = has_level_angle && sharedPreferences.getBoolean(
-          PreferenceKeys.getShowAnglePreferenceKey(),true);
+          PreferenceKeys.getShowAnglePreferenceKey(), true);
       boolean draw_geo_direction = has_geo_direction && sharedPreferences.getBoolean(
-          PreferenceKeys.getShowGeoDirectionPreferenceKey(),true);
+          PreferenceKeys.getShowGeoDirectionPreferenceKey(), true);
       if (draw_angle) {
         int color = Color.WHITE;
         p.setTextSize(14 * scale + 0.5f); // convert dps to pixels
@@ -542,8 +555,8 @@ public class DrawPreview {
             + ": "
             + number_string
             + (char) 0x00B0;
-        applicationInterface.drawTextWithBackground(canvas,p,string,color,Color.BLACK,
-            canvas.getWidth() / 2 + pixels_offset_x,text_base_y,false,ybounds_text,true);
+        applicationInterface.drawTextWithBackground(canvas, p, string, color, Color.BLACK,
+            canvas.getWidth() / 2 + pixels_offset_x, text_base_y, false, ybounds_text, true);
         p.setUnderlineText(false);
       }
       if (draw_geo_direction) {
@@ -561,13 +574,13 @@ public class DrawPreview {
         String string =
             " " + getContext().getResources().getString(R.string.direction) + ": " + Math.round(
                 geo_angle) + (char) 0x00B0;
-        applicationInterface.drawTextWithBackground(canvas,p,string,color,Color.BLACK,
-            canvas.getWidth() / 2,text_base_y,false,ybounds_text,true);
+        applicationInterface.drawTextWithBackground(canvas, p, string, color, Color.BLACK,
+            canvas.getWidth() / 2, text_base_y, false, ybounds_text, true);
       }
       if (preview.isOnTimer()) {
         long remaining_time = (preview.getTimerEndTime() - System.currentTimeMillis() + 999) / 1000;
 
-        Logger.d(TAG,"remaining_time: " + remaining_time);
+        Logger.d(TAG, "remaining_time: " + remaining_time);
         if (remaining_time > 0) {
           p.setTextSize(42 * scale + 0.5f); // convert dps to pixels
           p.setTextAlign(Paint.Align.CENTER);
@@ -578,8 +591,8 @@ public class DrawPreview {
           } else {
             time_s = getTimeStringFromSeconds(remaining_time);
           }
-          applicationInterface.drawTextWithBackground(canvas,p,time_s,Color.rgb(244,67,54),
-              Color.BLACK,canvas.getWidth() / 2,canvas.getHeight() / 2); // Red 500
+          applicationInterface.drawTextWithBackground(canvas, p, time_s, Color.rgb(244, 67, 54),
+              Color.BLACK, canvas.getWidth() / 2, canvas.getHeight() / 2); // Red 500
         }
       } else if (preview.isVideoRecording()) {
         long video_time = preview.getVideoTime();
@@ -590,20 +603,20 @@ public class DrawPreview {
         p.setTextAlign(Paint.Align.CENTER);
         int pixels_offset_y =
             3 * text_y; // avoid overwriting the zoom, and also allow a bit extra space
-        int color = Color.rgb(244,67,54); // Red 500
+        int color = Color.rgb(244, 67, 54); // Red 500
         if (main_activity.isScreenLocked()) {
           // writing in reverse order, bottom to top
-          applicationInterface.drawTextWithBackground(canvas,p,
-              getContext().getResources().getString(R.string.screen_lock_message_2),color,
-              Color.BLACK,canvas.getWidth() / 2,text_base_y - pixels_offset_y);
+          applicationInterface.drawTextWithBackground(canvas, p,
+              getContext().getResources().getString(R.string.screen_lock_message_2), color,
+              Color.BLACK, canvas.getWidth() / 2, text_base_y - pixels_offset_y);
           pixels_offset_y += text_y;
-          applicationInterface.drawTextWithBackground(canvas,p,
-              getContext().getResources().getString(R.string.screen_lock_message_1),color,
-              Color.BLACK,canvas.getWidth() / 2,text_base_y - pixels_offset_y);
+          applicationInterface.drawTextWithBackground(canvas, p,
+              getContext().getResources().getString(R.string.screen_lock_message_1), color,
+              Color.BLACK, canvas.getWidth() / 2, text_base_y - pixels_offset_y);
           pixels_offset_y += text_y;
         }
-        applicationInterface.drawTextWithBackground(canvas,p,time_s,color,Color.BLACK,
-            canvas.getWidth() / 2,text_base_y - pixels_offset_y);
+        applicationInterface.drawTextWithBackground(canvas, p, time_s, color, Color.BLACK,
+            canvas.getWidth() / 2, text_base_y - pixels_offset_y);
       }
     } else if (camera_controller == null) {
 			/*if( MyDebug.LOG ) {
@@ -615,17 +628,17 @@ public class DrawPreview {
       p.setTextAlign(Paint.Align.CENTER);
       int pixels_offset = (int) (20 * scale + 0.5f); // convert dps to pixels
       canvas.drawText(getContext().getResources().getString(R.string.failed_to_open_camera_1),
-          canvas.getWidth() / 2.0f,canvas.getHeight() / 2.0f,p);
+          canvas.getWidth() / 2.0f, canvas.getHeight() / 2.0f, p);
       canvas.drawText(getContext().getResources().getString(R.string.failed_to_open_camera_2),
-          canvas.getWidth() / 2.0f,canvas.getHeight() / 2.0f + pixels_offset,p);
+          canvas.getWidth() / 2.0f, canvas.getHeight() / 2.0f + pixels_offset, p);
       canvas.drawText(getContext().getResources().getString(R.string.failed_to_open_camera_3),
-          canvas.getWidth() / 2.0f,canvas.getHeight() / 2.0f + 2 * pixels_offset,p);
+          canvas.getWidth() / 2.0f, canvas.getHeight() / 2.0f + 2 * pixels_offset, p);
       //canvas.drawRect(0.0f, 0.0f, 100.0f, 100.0f, p);
       //canvas.drawRGB(255, 0, 0);
       //canvas.drawRect(0.0f, 0.0f, canvas.getWidth(), canvas.getHeight(), p);
     }
     if (camera_controller != null && sharedPreferences.getBoolean(
-        PreferenceKeys.getShowISOPreferenceKey(),true)) {
+        PreferenceKeys.getShowISOPreferenceKey(), true)) {
       p.setTextSize(14 * scale + 0.5f); // convert dps to pixels
       p.setTextAlign(Paint.Align.LEFT);
       int location_x = (int) (50 * scale + 0.5f); // convert dps to pixels
@@ -667,8 +680,8 @@ public class DrawPreview {
 				string += preview.getFrameDurationString(frame_duration);
 			}*/
       if (string.length() > 0) {
-        applicationInterface.drawTextWithBackground(canvas,p,string,Color.rgb(255,235,59),
-            Color.BLACK,location_x,location_y,true,ybounds_text,true); // Yellow 500
+        applicationInterface.drawTextWithBackground(canvas, p, string, Color.rgb(255, 235, 59),
+            Color.BLACK, location_x, location_y, true, ybounds_text, true); // Yellow 500
       }
 			/*if( camera_controller.captureResultHasFocusDistance() ) {
 				float dist_min = camera_controller.captureResultFocusDistanceMin();
@@ -678,7 +691,7 @@ public class DrawPreview {
 			}*/
     }
     if (preview.supportsZoom() && camera_controller != null && sharedPreferences.getBoolean(
-        PreferenceKeys.getShowZoomPreferenceKey(),true)) {
+        PreferenceKeys.getShowZoomPreferenceKey(), true)) {
       float zoom_ratio = preview.getZoomRatio();
       // only show when actually zoomed in
       if (zoom_ratio > 1.0f + 1.0e-5f) {
@@ -686,19 +699,19 @@ public class DrawPreview {
         int pixels_offset_y = text_y;
         p.setTextSize(14 * scale + 0.5f); // convert dps to pixels
         p.setTextAlign(Paint.Align.CENTER);
-        applicationInterface.drawTextWithBackground(canvas,p,
+        applicationInterface.drawTextWithBackground(canvas, p,
             getContext().getResources().getString(R.string.zoom) + ": " + zoom_ratio + "x",
-            Color.WHITE,Color.BLACK,canvas.getWidth() / 2,text_base_y - pixels_offset_y,false,
-            ybounds_text,true);
+            Color.WHITE, Color.BLACK, canvas.getWidth() / 2, text_base_y - pixels_offset_y, false,
+            ybounds_text, true);
       }
     }
 
-    if (sharedPreferences.getBoolean(PreferenceKeys.getShowBatteryPreferenceKey(),true)) {
+    if (sharedPreferences.getBoolean(PreferenceKeys.getShowBatteryPreferenceKey(), true)) {
       if (!this.has_battery_frac || System.currentTimeMillis() > this.last_battery_time + 60000) {
         // only check periodically - unclear if checking is costly in any way
-        Intent batteryStatus = main_activity.registerReceiver(null,battery_ifilter);
-        int battery_level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL,-1);
-        int battery_scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE,-1);
+        Intent batteryStatus = main_activity.registerReceiver(null, battery_ifilter);
+        int battery_level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int battery_scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         has_battery_frac = true;
         battery_frac = battery_level / (float) battery_scale;
         last_battery_time = System.currentTimeMillis();
@@ -724,16 +737,17 @@ public class DrawPreview {
       }
       p.setColor(Color.WHITE);
       p.setStyle(Paint.Style.STROKE);
-      canvas.drawRect(battery_x,battery_y,battery_x + battery_width,battery_y + battery_height,p);
-      p.setColor(battery_frac >= 0.3f ? Color.rgb(37,155,36)
-          : Color.rgb(244,67,54)); // Green 500 or Red 500
+      canvas.drawRect(battery_x, battery_y, battery_x + battery_width, battery_y + battery_height,
+          p);
+      p.setColor(battery_frac >= 0.3f ? Color.rgb(37, 155, 36)
+                                      : Color.rgb(244, 67, 54)); // Green 500 or Red 500
       p.setStyle(Paint.Style.FILL);
-      canvas.drawRect(battery_x + 1,battery_y + 1 + (1.0f - battery_frac) * (battery_height - 2),
-          battery_x + battery_width - 1,battery_y + battery_height - 1,p);
+      canvas.drawRect(battery_x + 1, battery_y + 1 + (1.0f - battery_frac) * (battery_height - 2),
+          battery_x + battery_width - 1, battery_y + battery_height - 1, p);
     }
 
     boolean store_location =
-        sharedPreferences.getBoolean(PreferenceKeys.getLocationPreferenceKey(),false);
+        sharedPreferences.getBoolean(PreferenceKeys.getLocationPreferenceKey(), false);
     if (store_location) {
       int location_x = (int) (20 * scale + 0.5f); // convert dps to pixels
       int location_y = top_y;
@@ -748,23 +762,25 @@ public class DrawPreview {
       if (ui_rotation == 180) {
         location_x = canvas.getWidth() - location_x - location_size;
       }
-      location_dest.set(location_x,location_y,location_x + location_size,
+      location_dest.set(location_x, location_y, location_x + location_size,
           location_y + location_size);
       if (applicationInterface.getLocation() != null) {
-        canvas.drawBitmap(location_bitmap,null,location_dest,p);
+        canvas.drawBitmap(location_bitmap, null, location_dest, p);
         int location_radius = location_size / 10;
         int indicator_x = location_x + location_size;
         int indicator_y = location_y + location_radius / 2 + 1;
         p.setStyle(Paint.Style.FILL);
-        p.setColor(applicationInterface.getLocation().getAccuracy() < 25.01f ? Color.rgb(37,155,36)
-            : Color.rgb(255,235,59)); // Green 500 or Yellow 500
-        canvas.drawCircle(indicator_x,indicator_y,location_radius,p);
+        p.setColor(
+            applicationInterface.getLocation().getAccuracy() < 25.01f ? Color.rgb(37, 155, 36)
+                                                                      : Color.rgb(255, 235,
+                                                                          59)); // Green 500 or Yellow 500
+        canvas.drawCircle(indicator_x, indicator_y, location_radius, p);
       } else {
-        canvas.drawBitmap(location_off_bitmap,null,location_dest,p);
+        canvas.drawBitmap(location_off_bitmap, null, location_dest, p);
       }
     }
 
-    if (sharedPreferences.getBoolean(PreferenceKeys.getShowTimePreferenceKey(),true)) {
+    if (sharedPreferences.getBoolean(PreferenceKeys.getShowTimePreferenceKey(), true)) {
       p.setTextSize(14 * scale + 0.5f); // convert dps to pixels
       p.setTextAlign(Paint.Align.LEFT);
       int location_x = (int) (50 * scale + 0.5f); // convert dps to pixels
@@ -789,12 +805,12 @@ public class DrawPreview {
       // http://code.google.com/p/android/issues/detail?id=42104
       String current_time = DateFormat.getTimeInstance().format(c.getTime());
       //String current_time = DateUtils.formatDateTime(getContext(), c.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
-      applicationInterface.drawTextWithBackground(canvas,p,current_time,Color.WHITE,Color.BLACK,
-          location_x,location_y,true);
+      applicationInterface.drawTextWithBackground(canvas, p, current_time, Color.WHITE, Color.BLACK,
+          location_x, location_y, true);
     }
 
     if (camera_controller != null && sharedPreferences.getBoolean(
-        PreferenceKeys.getShowFreeMemoryPreferenceKey(),true)) {
+        PreferenceKeys.getShowFreeMemoryPreferenceKey(), true)) {
       p.setTextSize(14 * scale + 0.5f); // convert dps to pixels
       p.setTextAlign(Paint.Align.LEFT);
       int location_x = (int) (50 * scale + 0.5f); // convert dps to pixels
@@ -821,11 +837,11 @@ public class DrawPreview {
             time_now; // always set this, so that in case of free memory not being available, we aren't calling freeMemory() every frame
       }
       if (free_memory_gb >= 0.0f) {
-        applicationInterface.drawTextWithBackground(canvas,p,
+        applicationInterface.drawTextWithBackground(canvas, p,
             getContext().getResources().getString(R.string.free_memory)
                 + ": "
                 + decimalFormat.format(free_memory_gb)
-                + "GB",Color.WHITE,Color.BLACK,location_x,location_y,true);
+                + "GB", Color.WHITE, Color.BLACK, location_x, location_y, true);
       }
     }
 
@@ -834,7 +850,7 @@ public class DrawPreview {
     if (camera_controller != null
         && !preview.isPreviewPaused()
         && has_level_angle
-        && sharedPreferences.getBoolean(PreferenceKeys.getShowAngleLinePreferenceKey(),false)) {
+        && sharedPreferences.getBoolean(PreferenceKeys.getShowAngleLinePreferenceKey(), false)) {
       // n.b., must draw this without the standard canvas rotation
       int radius_dps = (ui_rotation == 90 || ui_rotation == 270) ? 60 : 80;
       int radius = (int) (radius_dps * scale + 0.5f); // convert dps to pixels
@@ -867,7 +883,7 @@ public class DrawPreview {
       }
 
       canvas.save();
-      canvas.rotate((float) angle,cx,cy);
+      canvas.rotate((float) angle, cx, cy);
 
       final int line_alpha = 96;
       p.setStyle(Paint.Style.FILL);
@@ -876,13 +892,13 @@ public class DrawPreview {
       p.setColor(Color.BLACK);
       p.setAlpha(64);
       // can't use drawRoundRect(left, top, right, bottom, ...) as that requires API 21
-      draw_rect.set(cx - radius - hthickness,cy - 2 * hthickness,cx + radius + hthickness,
+      draw_rect.set(cx - radius - hthickness, cy - 2 * hthickness, cx + radius + hthickness,
           cy + 2 * hthickness);
-      canvas.drawRoundRect(draw_rect,2 * hthickness,2 * hthickness,p);
+      canvas.drawRoundRect(draw_rect, 2 * hthickness, 2 * hthickness, p);
       // draw the vertical crossbar
-      draw_rect.set(cx - 2 * hthickness,cy - radius / 2 - hthickness,cx + 2 * hthickness,
+      draw_rect.set(cx - 2 * hthickness, cy - radius / 2 - hthickness, cx + 2 * hthickness,
           cy + radius / 2 + hthickness);
-      canvas.drawRoundRect(draw_rect,hthickness,hthickness,p);
+      canvas.drawRoundRect(draw_rect, hthickness, hthickness, p);
       // draw inner portion
       if (is_level) {
         p.setColor(getAngleHighlightColor());
@@ -890,26 +906,26 @@ public class DrawPreview {
         p.setColor(Color.WHITE);
       }
       p.setAlpha(line_alpha);
-      draw_rect.set(cx - radius,cy - hthickness,cx + radius,cy + hthickness);
-      canvas.drawRoundRect(draw_rect,hthickness,hthickness,p);
+      draw_rect.set(cx - radius, cy - hthickness, cx + radius, cy + hthickness);
+      canvas.drawRoundRect(draw_rect, hthickness, hthickness, p);
 
       // draw the vertical crossbar
-      draw_rect.set(cx - hthickness,cy - radius / 2,cx + hthickness,cy + radius / 2);
-      canvas.drawRoundRect(draw_rect,hthickness,hthickness,p);
+      draw_rect.set(cx - hthickness, cy - radius / 2, cx + hthickness, cy + radius / 2);
+      canvas.drawRoundRect(draw_rect, hthickness, hthickness, p);
 
       if (is_level) {
         // draw a second line
 
         p.setColor(Color.BLACK);
         p.setAlpha(64);
-        draw_rect.set(cx - radius - hthickness,cy - 7 * hthickness,cx + radius + hthickness,
+        draw_rect.set(cx - radius - hthickness, cy - 7 * hthickness, cx + radius + hthickness,
             cy - 3 * hthickness);
-        canvas.drawRoundRect(draw_rect,2 * hthickness,2 * hthickness,p);
+        canvas.drawRoundRect(draw_rect, 2 * hthickness, 2 * hthickness, p);
 
         p.setColor(getAngleHighlightColor());
         p.setAlpha(line_alpha);
-        draw_rect.set(cx - radius,cy - 6 * hthickness,cx + radius,cy - 4 * hthickness);
-        canvas.drawRoundRect(draw_rect,hthickness,hthickness,p);
+        draw_rect.set(cx - radius, cy - 6 * hthickness, cx + radius, cy - 4 * hthickness);
+        canvas.drawRoundRect(draw_rect, hthickness, hthickness, p);
       }
       p.setAlpha(255);
       p.setStyle(Paint.Style.FILL); // reset
@@ -936,7 +952,7 @@ public class DrawPreview {
         }
 
         p.setStyle(Paint.Style.STROKE);
-        canvas.drawCircle(pos_x,pos_y,radius,p);
+        canvas.drawCircle(pos_x, pos_y, radius, p);
         p.setStyle(Paint.Style.FILL); // reset
       } else {
         continuous_focus_moving = false;
@@ -967,9 +983,9 @@ public class DrawPreview {
       int size = (int) radius;
 
       if (preview.isFocusRecentSuccess()) {
-        p.setColor(Color.rgb(20,231,21)); // Green A400
+        p.setColor(Color.rgb(20, 231, 21)); // Green A400
       } else if (preview.isFocusRecentFailure()) {
-        p.setColor(Color.rgb(244,67,54)); // Red 500
+        p.setColor(Color.rgb(244, 67, 54)); // Red 500
       } else {
         p.setColor(Color.WHITE);
       }
@@ -986,21 +1002,21 @@ public class DrawPreview {
       }
       float frac = 0.5f;
       // horizontal strokes
-      canvas.drawLine(pos_x - size,pos_y - size,pos_x - frac * size,pos_y - size,p);
-      canvas.drawLine(pos_x + frac * size,pos_y - size,pos_x + size,pos_y - size,p);
-      canvas.drawLine(pos_x - size,pos_y + size,pos_x - frac * size,pos_y + size,p);
-      canvas.drawLine(pos_x + frac * size,pos_y + size,pos_x + size,pos_y + size,p);
+      canvas.drawLine(pos_x - size, pos_y - size, pos_x - frac * size, pos_y - size, p);
+      canvas.drawLine(pos_x + frac * size, pos_y - size, pos_x + size, pos_y - size, p);
+      canvas.drawLine(pos_x - size, pos_y + size, pos_x - frac * size, pos_y + size, p);
+      canvas.drawLine(pos_x + frac * size, pos_y + size, pos_x + size, pos_y + size, p);
       // vertical strokes
-      canvas.drawLine(pos_x - size,pos_y - size,pos_x - size,pos_y - frac * size,p);
-      canvas.drawLine(pos_x - size,pos_y + frac * size,pos_x - size,pos_y + size,p);
-      canvas.drawLine(pos_x + size,pos_y - size,pos_x + size,pos_y - frac * size,p);
-      canvas.drawLine(pos_x + size,pos_y + frac * size,pos_x + size,pos_y + size,p);
+      canvas.drawLine(pos_x - size, pos_y - size, pos_x - size, pos_y - frac * size, p);
+      canvas.drawLine(pos_x - size, pos_y + frac * size, pos_x - size, pos_y + size, p);
+      canvas.drawLine(pos_x + size, pos_y - size, pos_x + size, pos_y - frac * size, p);
+      canvas.drawLine(pos_x + size, pos_y + frac * size, pos_x + size, pos_y + size, p);
       p.setStyle(Paint.Style.FILL); // reset
     }
 
     CameraController.Face[] faces_detected = preview.getFacesDetected();
     if (faces_detected != null) {
-      p.setColor(Color.rgb(255,235,59)); // Yellow 500
+      p.setColor(Color.rgb(255, 235, 59)); // Yellow 500
       p.setStyle(Paint.Style.STROKE);
       for (CameraController.Face face : faces_detected) {
         // Android doc recommends filtering out faces with score less than 50 (same for both Camera and Camera2 APIs)
@@ -1008,7 +1024,7 @@ public class DrawPreview {
           face_rect.set(face.rect);
           preview.getCameraToPreviewMatrix().mapRect(face_rect);
 
-          canvas.drawRect(face_rect,p);
+          canvas.drawRect(face_rect, p);
         }
       }
       p.setStyle(Paint.Style.FILL); // reset

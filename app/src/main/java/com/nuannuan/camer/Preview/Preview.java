@@ -4244,7 +4244,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
       Logger.d(TAG, "camera not opened!");
 
 			/*is_taking_photo_on_timer = false;
-			is_taking_photo = false;*/
+      is_taking_photo = false;*/
       this.phase = PHASE_NORMAL;
       applicationInterface.cameraInOperation(false);
       return;
